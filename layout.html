@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sistem Kerjasama Universitas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <!-- Chart core -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+
+    <!-- Dependency geo -->
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+
+    <!-- Chart Geo plugin (INI YANG DAFTARIN choropleth) -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-geo@4"></script>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+    <link rel="stylesheet" href="assets/cs/style.css" />
+    <!-- di dalam <head> -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="assets/img/logo unida.png"
+    />
+  </head>
+
+  <body class="bg-gray-50 overflow-x-hidden">
+    <!-- OVERLAY (MOBILE) -->
+    <div
+      id="sidebarOverlay"
+      onclick="toggleSidebar()"
+      class="fixed inset-0 bg-black/40 z-30 hidden md:hidden"
+    ></div>
+
+    <!-- SIDEBAR -->
+    <aside
+      id="sidebar"
+      class="fixed top-0 left-0 h-screen w-64 bg-gradient-to-b from-cyan-600 to-cyan-800 text-white z-40 overflow-y-auto transform -translate-x-full md:translate-x-0 transition-transform duration-300"
+    >
+      <!-- BRAND -->
+      <a
+        href="#"
+        onclick="loadPage('dashboard')"
+        class="block p-5 border-b border-purple-600 hover:bg-purple-800/30 transition"
+      >
+        <div class="flex items-center gap-3">
+          <img
+            src="assets/img/logo unida.png"
+            alt="Logo Universitas Darussalam Gontor"
+            class="w-10 h-10 object-contain"
+          />
+          <div class="leading-tight">
+            <div class="font-bold text-lg">KERJASAMA</div>
+            <p class="text-sm font-normal opacity-80">
+              Universitas Darussalam Gontor
+            </p>
+          </div>
+        </div>
+      </a>
+      <!-- USER PROFILE -->
+      <div
+        class="px-4 py-5 border-b border-cyan-500/40 flex items-center gap-3"
+      >
+        <img
+          src="assets/img/avatar.png"
+          alt="avatar"
+          class="w-11 h-11 rounded-full border-2 border-white/40"
+        />
+
+        <div class="leading-tight">
+          <p id="sidebarUsername" class="font-semibold text-sm text-white">
+            Username
+          </p>
+
+          <span
+            id="sidebarRole"
+            class="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800"
+          >
+            role
+          </span>
+        </div>
+      </div>
+
+      <!-- NAVIGATION -->
+      <nav class="p-4 space-y-2 text-sm">
+        <a
+          onclick="loadPage('dashboard')"
+          class="menu-link flex p-3 rounded hover:bg-purple-800/40 transition"
+        >
+          📊 Dashboard
+        </a>
+        <!-- ANALITIK -->
+        <div class="relative group">
+          <div
+            class="menu-link flex p-3 rounded hover:bg-purple-800/40 transition cursor-pointer"
+          >
+            📈 Analitik
+          </div>
+
+          <div class="hidden group-hover:block ml-4 mt-1 space-y-1">
+            <a
+              onclick="loadPage('analitik-status')"
+              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
+            >
+              ✅ Status Kerjasama
+            </a>
+
+            <a
+              onclick="loadPage('analitik-klasifikasi')"
+              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
+            >
+              🏷️ Klasifikasi Mitra
+            </a>
+
+            <a
+              onclick="loadPage('analitik-geo')"
+              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
+            >
+              🌍 Geo Mitra
+            </a>
+          </div>
+        </div>
+        <a
+          data-admin
+          onclick="loadPage('kerjasama')"
+          class="menu-link flex p-3 rounded hover:bg-purple-800/40 transition"
+        >
+          📄 Kerjasama
+        </a>
+
+        <a
+          data-admin
+          onclick="loadPage('kegiatan')"
+          class="menu-link flex p-3 rounded hover:bg-purple-800/40 transition"
+        >
+          📅 Kegiatan
+        </a>
+
+        <!-- DROPDOWN LAINYA -->
+        <div class="relative group">
+          <div
+            class="menu-link flex p-3 rounded hover:bg-purple-800/40 transition cursor-pointer"
+          >
+            📂 Lainya
+          </div>
+
+          <div class="hidden group-hover:block ml-4 mt-1 space-y-1">
+            <a
+              onclick="loadPage('mitra')"
+              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
+            >
+              🏢 Rekapitulasi Mitra
+            </a>
+
+            <a
+              onclick="loadPage('nilai-iku')"
+              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
+            >
+              📈 Nilai IKU
+            </a>
+
+            <a
+              onclick="loadPage('bentuk-kegiatan')"
+              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
+            >
+              🧩 Bentuk Kegiatan
+            </a>
+
+            <a
+              onclick="loadPage('jenis-mitra')"
+              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
+            >
+              🏷️ Jenis Mitra
+            </a>
+
+            <a
+              onclick="loadPage('tambah-mitra')"
+              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
+            >
+              ➕ Tambah Mitra
+            </a>
+
+            <a
+              onclick="loadPage('pendanaan')"
+              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
+            >
+              💰 Pendanaan
+            </a>
+
+            <a
+              onclick="loadPage('prodi-satker')"
+              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
+            >
+              🎓 Prodi / Satker
+            </a>
+
+            <a
+              onclick="loadPage('fakultas-satker')"
+              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
+            >
+              🏛️ Fakultas / Satker
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <div class="p-4 border-t border-purple-600 mt-auto">
+        <a
+          onclick="logout()"
+          class="flex items-center gap-2 p-3 rounded bg-red-600/80 hover:bg-red-700 transition text-sm"
+        >
+          🚪 Logout
+        </a>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <!-- MAIN -->
+    <main class="md:ml-64 min-h-screen">
+      <!-- TOPBAR / HEADER -->
+      <header
+        class="bg-white shadow-sm px-4 py-3 flex items-center justify-between sticky top-0 z-20"
+      >
+        <!-- LEFT -->
+        <div class="flex items-center gap-3">
+          <!-- HAMBURGER (MOBILE) -->
+          <button
+            onclick="toggleSidebar()"
+            class="md:hidden text-cyan-700 text-2xl focus:outline-none"
+          >
+            ☰
+          </button>
+
+          <!-- TITLE -->
+          <div>
+            <h1
+              id="page-title"
+              class="text-3xl md:text-2xl font-bold text-gray-800 leading-tight"
+            >
+              Dashboard
+            </h1>
+            <p class="text-sm text-gray-500">Sistem Kerjasama Universitas</p>
+          </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="flex items-center gap-4">
+          <!-- USER -->
+          <!-- USER DROPDOWN -->
+          <div class="relative">
+            <button
+              onclick="toggleUserMenu()"
+              class="flex items-center gap-2 focus:outline-none"
+            >
+              <img
+                src="assets/img/avatar.png"
+                alt="User"
+                class="w-8 h-8 rounded-full border"
+              />
+              <div class="hidden sm:block text-sm text-left">
+                <p
+                  id="headerUsername"
+                  class="font-medium text-gray-700 leading-tight"
+                >
+                  Username
+                </p>
+                <p id="headerRole" class="text-xs text-gray-500 leading-tight">
+                  Role
+                </p>
+              </div>
+              <span class="text-gray-500">▾</span>
+            </button>
+
+            <!-- DROPDOWN MENU -->
+            <div
+              id="userDropdown"
+              class="hidden absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border text-sm z-50"
+            >
+              <a
+                href="#"
+                onclick="openProfile()"
+                class="block px-4 py-2 hover:bg-gray-100"
+              >
+                👤 Profile
+              </a>
+
+              <button
+                onclick="logout()"
+                class="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600"
+              >
+                🚪 Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- CONTENT -->
+      <section id="app-content" class="p-6"></section>
+    </main>
+
+    <script src="assets/js/auth-guard.js"></script>
+    <script src="assets/js/api.js"></script>
+    <script src="assets/js/kegiatan.js"></script>
+    <script src="assets/js/jenis-mitra.js"></script>
+    <script src="assets/js/kerjasama.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/dashboard.js"></script>
+    <script src="assets/js/analitik-status.js"></script>
+    <script src="assets/js/analitik-klasifikasi.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="assets/js/analitik-geo.js"></script>
+    <script src="assets/js/mitra.js"></script>
+
+    <script src="assets/js/bentuk-kegiatan.js"></script>
+
+    <script src="assets/js/nilai-iku.js"></script>
+
+    <script src="assets/js/tambah-mitra.js"></script>
+    <script src="assets/js/pendanaan.js"></script>
+    <script src="assets/js/prodi-satker.js"></script>
+    <script src="assets/js/fakultas-satker.js"></script>
+  </body>
+</html>

@@ -1,0 +1,65 @@
+<div class="p-6">
+  <h1 class="text-xl font-bold mb-4">📈 Penilaian IKU 6</h1>
+  <div class="mb-4 flex flex-wrap items-center gap-4">
+    <!-- Filter Tahun -->
+    <div class="flex items-center gap-2">
+      <label class="text-sm font-medium">Tahun:</label>
+      <select
+        id="filterTahunIku"
+        class="border rounded px-2 py-1 text-sm"
+        onchange="renderNilaiIku()"
+      >
+        <option value="">Semua</option>
+      </select>
+    </div>
+
+    <!-- Filter Fakultas -->
+    <div class="flex items-center gap-2">
+      <label class="text-sm font-medium">Fakultas:</label>
+      <select
+        id="filterFakultasIku"
+        class="border rounded px-2 py-1 text-sm"
+        onchange="renderNilaiIku()"
+      >
+        <option value="">Semua</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full border border-gray-300 text-sm">
+      <thead class="bg-blue-400 text-white">
+        <tr>
+          <th class="border px-3 py-2">Jenis Mitra</th>
+          <th class="border px-3 py-2">
+            MoA<br />
+            <span class="text-xs">(Memorandum of Agreement)</span>
+          </th>
+          <th class="border px-3 py-2">
+            IA<br />
+            <span class="text-xs">(Implementation Arrangement)</span>
+          </th>
+          <th class="border px-3 py-2">Nilai</th>
+          <th class="border px-3 py-2">Jumlah</th>
+          <th class="border px-3 py-2">Nilai Akhir</th>
+        </tr>
+      </thead>
+
+      <tbody id="nilaiIkuBody" class="bg-white">
+        <!-- DATA DIISI DARI JS -->
+      </tbody>
+
+      <tfoot class="bg-gray-100 font-bold">
+        <tr>
+          <td class="border px-3 py-2 text-center">Jumlah</td>
+          <td class="border px-3 py-2 text-center" id="totalMoa">0</td>
+          <td class="border px-3 py-2 text-center" id="totalIa">0</td>
+          <td class="border px-3 py-2"></td>
+          <td class="border px-3 py-2 text-center" id="totalJumlah">0</td>
+          <td class="border px-3 py-2 text-center" id="totalNilaiAkhir">0</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+<script src="assets/js/nilai-iku.js"></script>
