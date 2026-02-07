@@ -48,13 +48,14 @@ function saveNilaiIku(data) {
    JENIS MITRA (DARI jenis-mitra.js)
 ================================ */
 function getJenisMitra() {
-  if (Array.isArray(window.JENIS_MITRA) && window.JENIS_MITRA.length > 0) {
-    return window.JENIS_MITRA.map((m, i) => ({
-      id: m.id ?? m.row ?? i + 1,
-      nama: m.nama?.trim(),
-    }));
-  }
-  return [];
+  if (!Array.isArray(window.JENIS_MITRA)) return [];
+
+  return window.JENIS_MITRA.map((m) => ({
+    id: Number(m.row), // ID stabil
+    row: Number(m.row), // dipakai update API
+    nama: (m.nama || "").trim(),
+    nilai_iku: Number(m.nilai_iku) || 0, // 🔥 SUMBER NILAI
+  }));
 }
 
 /* ===============================
@@ -142,7 +143,7 @@ function renderNilaiIku() {
     const moa = hitungDokumenByJenisMitra(mitra.nama, "moa");
     const ia = hitungDokumenByJenisMitra(mitra.nama, "ia");
 
-    const nilai = nilaiIku[mitra.id]?.nilai || 0;
+    const nilai = Number(mitra.nilai_iku) || 0;
     const jumlah = moa + ia;
     const nilaiAkhir = jumlah * nilai;
 
@@ -153,25 +154,17 @@ function renderNilaiIku() {
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td class="border px-3 py-2">${mitra.nama}</td>
-      <td class="border px-3 py-2 text-center">${moa}</td>
-      <td class="border px-3 py-2 text-center">${ia}</td>
-      <td
-  class="border px-3 py-2 text-center ${
-    isAdmin() ? "bg-yellow-50 cursor-text" : "bg-gray-100 text-gray-500"
-  }"
-  ${isAdmin() ? 'contenteditable="true"' : ""}
-  data-id="${mitra.id}"
-  ${isAdmin() ? 'onblur="updateNilaiIku(this)"' : ""}
-  ${isAdmin() ? 'onkeydown="handleNilaiKey(event, this)"' : ""}
->
-  ${nilai}
-</td>
+    <td class="border px-3 py-2">${mitra.nama}</td>
+    <td class="border px-3 py-2 text-center">${moa}</td>
+    <td class="border px-3 py-2 text-center">${ia}</td>
 
+    <td class="border px-3 py-2 text-center bg-gray-100 text-gray-700">
+    ${nilai}
+  </td>
 
-      <td class="border px-3 py-2 text-center">${jumlah}</td>
-      <td class="border px-3 py-2 text-center">${nilaiAkhir.toFixed(2)}</td>
-    `;
+    <td class="border px-3 py-2 text-center">${jumlah}</td>
+    <td class="border px-3 py-2 text-center">${nilaiAkhir.toFixed(2)}</td>
+  `;
     tbody.appendChild(tr);
   });
 
@@ -185,22 +178,40 @@ function renderNilaiIku() {
 /* ===============================
     EDIT NILAI IKU
 ================================ */
-function updateNilaiIku(el) {
-  if (!isAdmin()) {
-    renderNilaiIku(); // balikin tampilan
-    return;
+async function updateNilaiIku(el) {
+  if (!isAdmin()) return;
+
+  const row = Number(el.dataset.row);
+  let nilai = parseFloat(el.innerText.replace(",", "."));
+
+  if (isNaN(nilai) || nilai < 0) nilai = 0;
+
+  try {
+    const res = await fetch(API_BASE, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "update",
+        sheet: "JENIS MITRA",
+        row: row,
+        data: { nilai_iku: nilai },
+      }),
+    });
+
+    const json = await res.json();
+    if (!json.success) throw new Error(json.message || "Update gagal");
+
+    // update local state biar langsung sinkron
+    const m = window.JENIS_MITRA.find((x) => x.row === row);
+    if (m) m.nilai_iku = nilai;
+
+    el.innerText = nilai;
+    el.dataset.value = nilai;
+  } catch (err) {
+    console.error(err);
+    alert("Gagal menyimpan nilai IKU");
+    el.innerText = el.dataset.value || 0;
   }
-
-  const id = el.dataset.id;
-  let value = parseFloat(el.innerText.replace(",", "."));
-
-  if (isNaN(value) || value < 0) value = 0;
-
-  const data = getNilaiIku();
-  data[id] = { ...(data[id] || {}), nilai: value };
-  saveNilaiIku(data);
-
-  renderNilaiIku();
 }
 
 function handleNilaiKey(e, el) {
