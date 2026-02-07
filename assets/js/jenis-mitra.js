@@ -2,7 +2,7 @@
 // CONFIG
 // ===============================
 window.API_BASE =
-  "https://script.google.com/macros/s/AKfycbyevdBJNFAh-oAPxwfjWbTNs4xW9Wmt162wwlIQ21imS46JKYoLboTIGe9hFaOLZgs9qg/exec";
+  "https://script.google.com/macros/s/AKfycbzHzKcm-fPEVOfKeU9iWoC3OcaDiR-G2hoMEh868zO1d0KpGeTUXI8sA1ljP658gjSWxQ/exec";
 
 let JENIS_MITRA = [];
 let editRow = null;
@@ -20,7 +20,7 @@ async function fetchJenisMitra() {
   return json;
 }
 
-async function createJenisMitra(nama) {
+async function createJenisMitra(nama, nilai_iku) {
   const res = await fetch(API_BASE, {
     method: "POST",
     body: JSON.stringify({
@@ -28,13 +28,14 @@ async function createJenisMitra(nama) {
       sheet: "JENIS MITRA",
       data: {
         nama_jenis_mitra: nama,
+        nilai_iku: Number(nilai_iku) || 0,
       },
     }),
   });
   return await res.json();
 }
 
-async function updateJenisMitra(row, nama) {
+async function updateJenisMitra(row, nama, nilai_iku) {
   const res = await fetch(API_BASE, {
     method: "POST",
     body: JSON.stringify({
@@ -43,6 +44,7 @@ async function updateJenisMitra(row, nama) {
       row,
       data: {
         nama_jenis_mitra: nama,
+        nilai_iku: Number(nilai_iku) || 0,
       },
     }),
   });
@@ -71,7 +73,7 @@ function renderJenisMitra(loading = false) {
   if (loading) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="3" class="text-center py-6 text-gray-400">
+        <td colspan="4" class="text-center py-6 text-gray-400">
           ⏳ Memuat data...
         </td>
       </tr>
@@ -82,7 +84,7 @@ function renderJenisMitra(loading = false) {
   if (JENIS_MITRA.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="3" class="text-center py-6 text-gray-400">
+        <td colspan="4" class="text-center py-6 text-gray-400">
           Tidak ada data
         </td>
       </tr>
@@ -97,8 +99,9 @@ function renderJenisMitra(loading = false) {
       <tr>
         <td class="border px-3 py-2 text-center">${i + 1}</td>
         <td class="border px-3 py-2">${item.nama}</td>
+        <td class="border px-3 py-2 text-center">${item.nilai_iku}</td>
         <td class="border px-3 py-2 text-center">
-          <button onclick="editJenisMitra(${item.row}, '${item.nama}')">✏️</button>
+          <button onclick="editJenisMitra(${item.row}, '${item.nama}', ${item.nilai_iku})">✏️</button>
           <button onclick="hapusJenisMitra(${item.row})">🗑️</button>
         </td>
       </tr>
@@ -117,12 +120,13 @@ async function loadJenisMitra() {
     const data = Array.isArray(raw) ? raw : raw.data || [];
 
     JENIS_MITRA = data.map((r) => ({
-      id: r.row, // ✅ ID STABIL UNTUK IKU
+      id: r.row, // ID stabil
       nama: r.nama || r.nama_jenis_mitra || "",
-      row: r.row,
+      nilai_iku: Number(r.nilai_iku) || 0, // 🔥 FIX UTAMA
+      row: r.row, // row spreadsheet (0-based dari API)
     }));
 
-    // 🔥 WAJIB: expose ke global
+    // expose global
     window.JENIS_MITRA = JENIS_MITRA;
   } catch (err) {
     console.error("Load jenis mitra gagal:", err);
@@ -140,15 +144,17 @@ function openCreateJenisMitra() {
   showModal();
 }
 
-function editJenisMitra(row, nama) {
+function editJenisMitra(row, nama, nilai_iku) {
   editRow = row;
   document.getElementById("modalTitle").innerText = "Edit Jenis Mitra";
   document.getElementById("jenisMitraNama").value = nama;
+  document.getElementById("jenisMitraNilaiIku").value = nilai_iku;
   showModal();
 }
 
 async function saveJenisMitraFromModal() {
   const nama = document.getElementById("jenisMitraNama").value.trim();
+  const nilaiIku = document.getElementById("jenisMitraNilaiIku").value;
 
   if (!nama) {
     alert("Nama tidak boleh kosong");
@@ -157,10 +163,10 @@ async function saveJenisMitraFromModal() {
 
   try {
     if (editRow === null) {
-      const r = await createJenisMitra(nama);
+      const r = await createJenisMitra(nama, nilaiIku);
       if (!r.success) throw new Error(r.message);
     } else {
-      const r = await updateJenisMitra(editRow, nama);
+      const r = await updateJenisMitra(editRow, nama, nilaiIku);
       if (!r.success) throw new Error(r.message);
     }
 
