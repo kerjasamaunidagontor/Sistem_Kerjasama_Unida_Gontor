@@ -1,3 +1,5 @@
+const TOTAL_PRODI = 21; // t = jumlah prodi S1 + D4/D3/D2
+
 if (window.__NILAI_IKU_LOADED__) {
   console.warn("nilai-iku.js sudah dimuat");
 } else {
@@ -143,9 +145,10 @@ function renderNilaiIku() {
     const moa = hitungDokumenByJenisMitra(mitra.nama, "moa");
     const ia = hitungDokumenByJenisMitra(mitra.nama, "ia");
 
-    const nilai = Number(mitra.nilai_iku) || 0;
-    const jumlah = moa + ia;
-    const nilaiAkhir = jumlah * nilai;
+    const nilai = Number(mitra.nilai_iku) || 0; // k
+    const jumlah = moa + ia; // n
+
+    const nilaiAkhir = ((jumlah * nilai) / TOTAL_PRODI) * 100;
 
     totalMoa += moa;
     totalIa += ia;
@@ -159,11 +162,13 @@ function renderNilaiIku() {
     <td class="border px-3 py-2 text-center">${ia}</td>
 
     <td class="border px-3 py-2 text-center bg-gray-100 text-gray-700">
-    ${nilai}
-  </td>
+      ${nilai}
+    </td>
 
     <td class="border px-3 py-2 text-center">${jumlah}</td>
-    <td class="border px-3 py-2 text-center">${nilaiAkhir.toFixed(2)}</td>
+    <td class="border px-3 py-2 text-center">
+      ${nilaiAkhir.toFixed(2)}
+    </td>
   `;
     tbody.appendChild(tr);
   });
