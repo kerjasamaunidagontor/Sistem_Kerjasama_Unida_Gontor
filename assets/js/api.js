@@ -1,14 +1,14 @@
 /* ===============================
    GLOBAL API CONFIG
 =============================== */
-const BASE_API =
-  "https://script.google.com/macros/s/AKfycbwZN7hPdBWIokudpHy0EirokqyR0pNa0TDrfDb3r6Mw8GJgOu9s_amoiskW_84YKgvvqg/exec";
+window.API_BASE =
+  "https://script.google.com/macros/s/AKfycbzHzKcm-fPEVOfKeU9iWoC3OcaDiR-G2hoMEh868zO1d0KpGeTUXI8sA1ljP658gjSWxQ/exec";
 
-const API = {
-  kerjasama: `${BASE_API}?sheet=INPUT%20KERJASAMA`,
-  kegiatan: `${BASE_API}?sheet=INPUT%20KEGIATAN`,
-  pendanaan: `${BASE_API}?sheet=PENDANAAN`,
-  prodi: `${BASE_API}?sheet=PRODISATKER`,
-  fakultas: `${BASE_API}?sheet=FAKULTASSATKER`, 
-  auth: BASE_API,
+window.API = {
+  kerjasama: `${window.API_BASE}?sheet=INPUT%20KERJASAMA`,
+  kegiatan: `${window.API_BASE}?sheet=INPUT%20KEGIATAN`,
+  pendanaan: `${window.API_BASE}?sheet=PENDANAAN`,
+  prodi: `${window.API_BASE}?sheet=PRODISATKER`,
+  fakultas: `${window.API_BASE}?sheet=FAKULTASSATKER`,
+  auth: window.API_BASE,
 };
