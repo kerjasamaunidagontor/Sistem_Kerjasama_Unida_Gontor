@@ -1,0 +1,99 @@
+<div class="p-6">
+  <h2 class="text-xl font-semibold mb-4">📊 Rekapitulasi Laporan</h2>
+
+  <!-- 🔍 SEARCH -->
+  <div class="mb-4 flex justify-between items-center">
+    <input
+      type="text"
+      id="search-rekap"
+      placeholder="Cari laporan..."
+      onkeyup="renderRekapTable()"
+      class="border rounded-lg px-3 py-2 text-sm w-64 focus:ring-2 focus:ring-purple-500"
+    />
+  </div>
+
+  <div class="bg-white rounded-xl shadow overflow-x-auto">
+    <div class="bg-white rounded-xl shadow overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="p-3">PJ</th>
+            <th class="p-3">Bidang</th>
+            <th class="p-3">Bentuk</th>
+            <th class="p-3">Tingkat</th>
+            <th class="p-3">Tanggal</th>
+            <th class="p-3">Mitra</th>
+            <th class="p-3">Status Kegiatan</th>
+            <th class="p-3">Cek Laporan</th>
+            <th class="p-3 sticky right-0 bg-white">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="rekap-body"></tbody>
+      </table>
+
+      <!-- 🔥 PAGINATION SECTION -->
+      <div class="flex justify-between items-center px-4 py-3 border-t text-sm">
+        <span id="rekap-info" class="text-gray-600"></span>
+
+        <div id="rekap-pagination" class="flex gap-1"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DETAIL (COPY STRUKTUR KEGIATAN) -->
+  <div
+    id="rekap-detail-modal"
+    class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50"
+  >
+    <div class="bg-white max-w-4xl w-full rounded-xl p-6">
+      <h3 class="text-lg font-semibold mb-4">Detail Kegiatan & Laporan</h3>
+
+      <div
+        id="rekap-detail-content"
+        class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm"
+      ></div>
+
+      <div class="flex justify-between mt-6">
+        <div class="flex gap-2 mt-4">
+          <button
+            onclick="validasiLaporan('Diterima')"
+            class="px-3 py-1 rounded bg-green-600 text-white"
+          >
+            Diterima
+          </button>
+
+          <button
+            onclick="validasiLaporan('Direvisi')"
+            class="px-3 py-1 rounded bg-yellow-500 text-white"
+          >
+            Direvisi
+          </button>
+
+          <button
+            onclick="validasiLaporan('Belum Sesuai')"
+            class="px-3 py-1 rounded bg-red-600 text-white"
+          >
+            Belum Sesuai
+          </button>
+
+          <button
+            onclick="validasiLaporan('Proses')"
+            class="px-3 py-1 rounded bg-blue-600 text-white"
+          >
+            Proses
+          </button>
+        </div>
+
+        <button onclick="closeRekapDetail()" class="px-4 py-2 border rounded">
+          Tutup
+        </button>
+        <button
+          onclick="editRekapFull()"
+          class="bg-purple-600 text-white px-4 py-2 rounded"
+        >
+          Edit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
