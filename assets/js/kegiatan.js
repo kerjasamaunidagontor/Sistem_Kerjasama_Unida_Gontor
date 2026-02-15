@@ -66,33 +66,56 @@ function renderKegiatanTable() {
         <td class="p-3">${formatTanggal(k.tanggal)}</td>
         <td class="p-3">${k.deskripsi}</td>
         <td class="p-3">${k.mitra}</td>
-        <td class="p-3">${k.status}</td>
-        <td
-  class="p-2 text-center w-20 whitespace-nowrap
+        <td class="p-3">
+  ${renderStatusBadge(k.status)}
+</td>
+
+<td
+  class="p-2 text-center w-24 whitespace-nowrap
          sticky right-0 bg-white z-10"
 >
   <div class="flex justify-center gap-2">
-  <button
-    onclick="openKegiatanDetail(${k.row})"
-    title="Detail"
-    class="w-8 h-8 flex items-center justify-center rounded-lg
-           bg-green-100 text-green-600
-           hover:bg-green-200 transition"
-  >
-    🔍
-  </button>
 
-  <button
-    onclick="deleteKegiatan(${k.row})"
-    title="Hapus"
-    class="w-8 h-8 flex items-center justify-center rounded-lg
-           bg-red-100 text-red-600
-           hover:bg-red-200 transition"
-  >
-    🗑️
-  </button>
-</div>
+    <!-- DETAIL -->
+    <button
+      onclick="openKegiatanDetail(${k.row})"
+      title="Detail"
+      class="w-8 h-8 flex items-center justify-center rounded-lg
+             bg-green-100 text-green-600
+             hover:bg-green-200 transition"
+    >
+      🔍
+    </button>
 
+    <!-- LINK DOKUMEN (AUTO OPEN) -->
+    ${
+      k.linkSimkerma
+        ? `
+      <button
+        onclick="window.open('${k.linkSimkerma}', '_blank')"
+        title="Buka Dokumen"
+        class="w-8 h-8 flex items-center justify-center rounded-lg
+               bg-blue-100 text-blue-600
+               hover:bg-blue-200 transition"
+      >
+        📎
+      </button>
+      `
+        : ""
+    }
+
+    <!-- DELETE -->
+    <button
+      onclick="deleteKegiatan(${k.row})"
+      title="Hapus"
+      class="w-8 h-8 flex items-center justify-center rounded-lg
+             bg-red-100 text-red-600
+             hover:bg-red-200 transition"
+    >
+      🗑️
+    </button>
+
+  </div>
 </td>
 
       </tr>
@@ -168,18 +191,40 @@ function openKegiatanDetail(sheetRow) {
     <div><b>Penanggung Jawab</b><br>${k.pj || "-"}</div>
     <div><b>Tahun</b><br>${k.tahun || "-"}</div>
 
-    <div><b>Status</b><br>${k.status || "-"}</div>
+    <div>
+  <b>Status</b><br>
+  ${
+    isAdmin()
+      ? `<select id="detail-status" class="input">
+           <option value="">Status</option>
+           <option ${k.status === "Diterima" ? "selected" : ""}>Diterima</option>
+           <option ${k.status === "Direvisi" ? "selected" : ""}>Direvisi</option>
+           <option ${k.status === "Belum Sesuai" ? "selected" : ""}>Belum Sesuai</option>
+           <option ${k.status === "Proses" ? "selected" : ""}>Proses</option>
+         </select>`
+      : k.status || "-"
+  }
+</div>
+
     <div><b>SIMKERMA</b><br>${k.simkerma || "-"}</div>
 
     <div><b>Cek Laporan</b><br>${k.cekLaporan || "-"}</div>
     <div class="md:col-span-2">
-      <b>Link SIMKERMA</b><br>
-      ${
-        k.linkSimkerma
-          ? `<a href="${k.linkSimkerma}" target="_blank" class="text-blue-600 underline">Buka Link</a>`
-          : "-"
-      }
-    </div>
+  <b>Link SIMKERMA</b><br>
+  ${
+    isAdmin()
+      ? `<input
+            id="detail-link-simkerma"
+            type="text"
+            value="${k.linkSimkerma || ""}"
+            class="w-full border rounded px-2 py-1"
+         />`
+      : k.linkSimkerma
+        ? `<a href="${k.linkSimkerma}" target="_blank" class="text-blue-600 underline">Buka Link</a>`
+        : "-"
+  }
+</div>
+
 
     <div class="md:col-span-2">
       <b>Laporan Kegiatan</b><br>
@@ -204,9 +249,29 @@ function openKegiatanDetail(sheetRow) {
     </div>
 
     <div class="md:col-span-2">
-      <b>Catatan</b><br>${k.catatan || "-"}
-    </div>
-  `;
+  <b>Catatan</b><br>
+  ${
+    isAdmin()
+      ? `<textarea
+            id="detail-catatan"
+            class="w-full border rounded px-2 py-1"
+            rows="3"
+         >${k.catatan || ""}</textarea>`
+      : k.catatan || "-"
+  }
+</div>
+${
+  isAdmin()
+    ? `<div class="md:col-span-2 text-right mt-4">
+           <button
+             onclick="saveDetailAdmin()"
+             class="bg-purple-600 text-white px-4 py-2 rounded"
+           >
+             Simpan Perubahan
+           </button>
+         </div>`
+    : ""
+}`;
 
   const modal = document.getElementById("kegiatan-detail-modal");
   modal.classList.remove("hidden");
@@ -224,13 +289,19 @@ function editFromDetail() {
 
   closeKegiatanDetail();
 
-  // buka form edit
-  editKegiatan(k.row);
+  (async () => {
+    // 🔥 pastikan KERJASAMA sudah ada
+    if (!window.KERJASAMA || window.KERJASAMA.length === 0) {
+      if (typeof loadKerjasamaFromSheet === "function") {
+        await loadKerjasamaFromSheet();
+      }
+    }
 
-  // 🔥 set mitra setelah form siap
-  setTimeout(() => {
+    editKegiatan(k.row);
+
+    // 🔥 set mitra SETELAH dropdown siap
     setMitraForEdit(k.no);
-  }, 0);
+  })();
 }
 
 function editKegiatan(sheetRow) {
@@ -287,14 +358,15 @@ async function saveKegiatan() {
       fakultas: k_fakultas.value,
       pj: k_pj.value,
       tahun: k_tahun.value,
-      status: k_status.value,
+      // 🔐 PROTEKSI ROLE (INI YANG DITAMBAHKAN)
+      status: isAdmin() ? k_status?.value : "Proses",
       simkerma: k_simkerma.value,
       cekLaporan: k_cek_laporan.value,
-      linkSimkerma: k_link_simkerma.value,
+      linkSimkerma: isAdmin() ? k_link_simkerma?.value : "",
       laporan: k_laporan.value,
       dokumen: k_dokumen.value,
       deskripsi: k_deskripsi.value,
-      catatan: k_catatan.value,
+      catatan: isAdmin() ? k_catatan?.value : "",
     },
   };
 
@@ -387,16 +459,20 @@ async function loadKegiatanFromSheet() {
     console.log("KEGIATAN from sheet:", KEGIATAN);
 
     renderKegiatanTable();
+    renderDashboardRekapBidang(); // 🔥 TAMBAHKAN INI
 
     // 🔥 BUILD MITRA SETELAH KEGIATAN PASTI ADA
     if (typeof buildMitraFromKegiatan === "function") {
       buildMitraFromKegiatan();
       renderMitraGroupedTable();
     }
+
+    return KEGIATAN; // ✅ INI KUNCINYA
   } catch (err) {
     console.error("loadKegiatanFromSheet error:", err);
     KEGIATAN = [];
     renderKegiatanTable();
+    return []; // ✅ WAJIB JUGA
   }
 }
 
@@ -736,6 +812,65 @@ function bindKegiatanForm() {
 
     // ⬅️ penting: set kondisi awal (edit / load data)
     syncSimkermaWithLink();
+  }
+}
+/* ===============================
+    CEK ADMIN
+=============================== */
+function isAdmin() {
+  const role = (localStorage.getItem("role") || "").toLowerCase().trim();
+  return role === "admin";
+}
+function applyRoleToForm() {
+  if (!isAdmin()) {
+    const status = document.getElementById("admin-only-status");
+    const link = document.getElementById("admin-only-link");
+    const catatan = document.getElementById("admin-only-catatan");
+
+    if (status) status.style.display = "none";
+    if (link) link.style.display = "none";
+    if (catatan) catatan.style.display = "none";
+  }
+}
+
+/* ===============================
+   SAVE DETAIL (ADMIN ONLY)
+=============================== */
+async function saveDetailAdmin() {
+  if (!isAdmin()) {
+    alert("Akses ditolak");
+    return;
+  }
+
+  const statusEl = document.getElementById("detail-status");
+  const linkEl = document.getElementById("detail-link-simkerma");
+  const catatanEl = document.getElementById("detail-catatan");
+
+  const payload = {
+    action: "update",
+    sheet: "INPUT KEGIATAN",
+    row: Number(DETAIL_INDEX),
+    data: {
+      status: statusEl ? statusEl.value : "",
+      linkSimkerma: linkEl ? linkEl.value : "",
+      catatan: catatanEl ? catatanEl.value : "",
+    },
+  };
+
+  try {
+    await fetch(API.kegiatan, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    await loadKegiatanFromSheet();
+    closeKegiatanDetail();
+    alert("Berhasil disimpan");
+  } catch (err) {
+    console.error(err);
+    alert("Gagal menyimpan");
   }
 }
 /* ===============================
