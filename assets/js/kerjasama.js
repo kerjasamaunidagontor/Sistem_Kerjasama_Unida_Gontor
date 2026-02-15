@@ -146,6 +146,10 @@ function renderKerjasamaTable() {
                 class="w-7 h-7 bg-indigo-100 text-indigo-600 rounded-lg"
               >🔍</button>
               <button
+    onclick="openFile(${d.row})"
+    class="w-7 h-7 bg-green-100 text-green-600 rounded-lg"
+  >📎</button>
+              <button
                 onclick="deleteKerjasama(${d.row})"
                 class="w-7 h-7 bg-red-100 text-red-600 rounded-lg"
               >🗑️</button>
@@ -582,6 +586,24 @@ async function initJenisMitraSelect(selectedValue = "") {
   }
 
   renderJenisMitraSelect(selectedValue);
+}
+// ======= BUKA LINK DOKUMEN ======= //
+function openFile(row) {
+  const data = KERJASAMA.find((x) => Number(x.row) === Number(row));
+
+  if (!data) {
+    alert("Data tidak ditemukan");
+    return;
+  }
+
+  const fileLink = String(data.linkFile || "").trim();
+
+  if (!fileLink) {
+    alert("File tidak tersedia");
+    return;
+  }
+
+  window.open(fileLink, "_blank", "noopener");
 }
 
 //======== AMBIL DATA FAKULTAS / SATKER ========//
