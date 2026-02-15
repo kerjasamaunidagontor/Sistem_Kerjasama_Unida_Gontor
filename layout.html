@@ -46,7 +46,7 @@
     <!-- SIDEBAR -->
     <aside
       id="sidebar"
-      class="fixed top-0 left-0 h-screen w-64 bg-gradient-to-b from-cyan-600 to-cyan-800 text-white z-40 overflow-y-auto transform -translate-x-full md:translate-x-0 transition-all duration-300"
+      class="fixed top-0 left-0 h-screen w-64 bg-gradient-to-b from-cyan-600 to-cyan-800 text-white z-40 overflow-y-auto transform -translate-x-full md:translate-x-0 transition-transform duration-300"
     >
       <!-- BRAND -->
       <a
@@ -338,6 +338,40 @@
       <!-- CONTENT -->
       <section id="app-content" class="p-6"></section>
     </main>
+
+    <!-- GLOBAL LOADING -->
+<div
+  id="global-loading"
+  class="fixed inset-0 bg-black/40 hidden
+         items-center justify-center z-[9999]"
+>
+  <div class="bg-white rounded-xl px-6 py-5 flex items-center gap-4 shadow-lg">
+    <svg
+      class="animate-spin h-6 w-6 text-purple-600"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        class="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        stroke-width="4"
+      ></circle>
+      <path
+        class="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z"
+      ></path>
+    </svg>
+
+    <span id="global-loading-text" class="text-sm font-medium">
+      Memproses...
+    </span>
+  </div>
+</div>
 
     <script src="assets/js/auth-guard.js"></script>
     <script src="assets/js/api.js"></script>
