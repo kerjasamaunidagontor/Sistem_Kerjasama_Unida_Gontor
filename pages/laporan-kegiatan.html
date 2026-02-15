@@ -1,0 +1,62 @@
+<div class="flex flex-col gap-6">
+  <!-- HEADER -->
+  <div class="flex items-center justify-between">
+    <h2 class="text-lg font-semibold">📝 Laporan Kegiatan (Disetujui)</h2>
+
+    <input
+      type="text"
+      id="search-laporan"
+      placeholder="Cari laporan..."
+      onkeyup="renderLaporanTable()"
+      class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500"
+    />
+  </div>
+
+  <!-- TABLE -->
+  <div class="bg-white rounded-xl shadow overflow-x-auto">
+    <table class="w-full text-sm table-fixed">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="p-3 text-left w-40">Unit Pelaksana</th>
+          <th class="p-3 text-left w-24">Jenis</th>
+          <th class="p-3 text-left w-40">Bentuk Kegiatan</th>
+          <th class="p-3 text-left w-24">Tingkat</th>
+          <th class="p-3 text-left w-32">Tanggal</th>
+          <th class="p-3 text-left w-64">Judul Kerjasama</th>
+          <th class="p-3 text-left w-40">Mitra</th>
+          <th class="p-3 text-left w-32">Keterangan</th>
+          <th class="p-3 text-center w-20">Detail</th>
+        </tr>
+      </thead>
+
+      <tbody id="laporan-body"></tbody>
+    </table>
+  </div>
+  <div
+    id="laporan-detail-modal"
+    class="fixed inset-0 bg-black/40 hidden items-center justify-center z-50 px-4"
+  >
+    <div
+      class="bg-white rounded-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6"
+    >
+      <h3 class="font-semibold text-lg mb-4">Detail Laporan Kegiatan</h3>
+
+      <div
+        id="laporan-detail-content"
+        class="grid grid-cols-2 gap-3 text-sm"
+      ></div>
+
+      <div class="flex justify-end mt-6">
+        <button onclick="closeLaporanDetail()" class="border px-4 py-2 rounded">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGINATION -->
+  <div class="flex justify-between items-center text-sm">
+    <span id="laporan-info" class="text-gray-600"></span>
+    <div id="laporan-pagination" class="flex gap-1"></div>
+  </div>
+</div>

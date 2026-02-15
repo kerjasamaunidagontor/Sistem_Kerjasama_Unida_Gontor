@@ -1,0 +1,36 @@
+<div class="flex flex-col gap-6">
+  <!-- HEADER -->
+  <div class="flex items-center justify-between">
+    <h2 class="text-lg font-semibold flex items-center gap-2">
+      ✅ Cek Laporan
+    </h2>
+  </div>
+
+  <!-- TABLE -->
+  <div class="bg-white rounded-xl shadow overflow-x-auto">
+    <table class="w-full text-sm table-fixed">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="p-3 text-left w-40">PJ</th>
+          <th class="p-3 text-left w-40">Mitra</th>
+          <th class="p-3 text-left w-64">Judul</th>
+          <th class="p-3 text-left w-32">Tanggal</th>
+          <th class="p-3 text-left w-40">Status</th>
+          <th class="p-3 text-center w-20 sticky right-0 bg-gray-100 z-20">
+            Aksi
+          </th>
+        </tr>
+      </thead>
+
+      <tbody id="cek-laporan-body"></tbody>
+    </table>
+  </div>
+
+  <!-- INFO -->
+  <div class="text-xs text-gray-500 flex gap-4 flex-wrap">
+    <span>🟠 Direvisi → Revisi oleh User</span>
+    <span>🔵 Belum Sesuai → Catatan Admin</span>
+    <span>🟡 Proses</span>
+    <span>⚪ Belum Dicek</span>
+  </div>
+</div>
