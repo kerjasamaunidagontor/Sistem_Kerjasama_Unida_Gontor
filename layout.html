@@ -168,13 +168,6 @@
             >
               📊 Rekapitulasi Laporan
             </a>
-
-            <a
-              onclick="loadPage('cek-laporan')"
-              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
-            >
-              ✅ Cek Laporan
-            </a>
           </div>
         </div>
 
@@ -340,38 +333,39 @@
     </main>
 
     <!-- GLOBAL LOADING -->
-<div
-  id="global-loading"
-  class="fixed inset-0 bg-black/40 hidden
-         items-center justify-center z-[9999]"
->
-  <div class="bg-white rounded-xl px-6 py-5 flex items-center gap-4 shadow-lg">
-    <svg
-      class="animate-spin h-6 w-6 text-purple-600"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
+    <div
+      id="global-loading"
+      class="fixed inset-0 bg-black/40 hidden items-center justify-center z-[9999]"
     >
-      <circle
-        class="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        stroke-width="4"
-      ></circle>
-      <path
-        class="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z"
-      ></path>
-    </svg>
+      <div
+        class="bg-white rounded-xl px-6 py-5 flex items-center gap-4 shadow-lg"
+      >
+        <svg
+          class="animate-spin h-6 w-6 text-purple-600"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"
+          ></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z"
+          ></path>
+        </svg>
 
-    <span id="global-loading-text" class="text-sm font-medium">
-      Memproses...
-    </span>
-  </div>
-</div>
+        <span id="global-loading-text" class="text-sm font-medium">
+          Memproses...
+        </span>
+      </div>
+    </div>
 
     <script src="assets/js/auth-guard.js"></script>
     <script src="assets/js/api.js"></script>
@@ -388,7 +382,7 @@
     <script src="assets/js/mitra.js"></script>
     <script src="assets/js/laporan-kegiatan.js"></script>
     <script src="assets/js/rekap-laporan.js"></script>
-    <script src="assets/js/cek-laporan.js"></script>
+
     <script src="assets/js/bentuk-kegiatan.js"></script>
 
     <script src="assets/js/nilai-iku.js"></script>
