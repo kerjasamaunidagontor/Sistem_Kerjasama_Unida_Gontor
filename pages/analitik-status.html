@@ -1,0 +1,95 @@
+<div class="p-6 space-y-6">
+  <!-- HEADER -->
+  <div>
+    <h1 class="text-xl font-semibold">Dashboard Status Kerjasama</h1>
+    <p class="text-sm text-gray-500">Analitik & monitoring kerjasama</p>
+  </div>
+
+  <!-- GRID -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- KALENDER -->
+    <div class="lg:col-span-2 bg-white rounded-lg shadow p-4">
+      <h2 class="font-semibold mb-3 flex items-center gap-2">
+        📅 Kalender Kerjasama
+      </h2>
+      <div id="kalenderKerjasama"></div>
+    </div>
+
+    <!-- DONUT STATUS -->
+    <div class="bg-white rounded-xl shadow p-4">
+      <h2 class="font-semibold mb-3">📄 MoU vs MoA vs IA</h2>
+
+      <canvas id="chartStatusDokumen" height="200"></canvas>
+
+      <!-- 🔥 DETAIL SAAT DONUT DIKLIK -->
+      <div
+        id="chart-detail"
+        class="mt-4 p-3 border rounded-lg text-sm hidden bg-gray-50"
+      >
+        <!-- isi otomatis dari JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- BAR SEBARAN -->
+  <div class="bg-white rounded-xl shadow p-4">
+    <!-- HEADER CARD -->
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="font-semibold">📊 Sebaran Dokumen</h2>
+
+      <!-- FILTER STATUS -->
+      <div class="flex gap-2">
+        <button
+          data-status-filter="all"
+          onclick="setStatusFilter('all')"
+          class="px-3 py-1 rounded bg-gray-200 text-sm"
+        >
+          Semua
+        </button>
+
+        <button
+          data-status-filter="Aktif"
+          onclick="setStatusFilter('Aktif')"
+          class="px-3 py-1 rounded bg-green-500 text-white text-sm"
+        >
+          Aktif
+        </button>
+
+        <button
+          data-status-filter="Tidak Aktif"
+          onclick="setStatusFilter('Tidak Aktif')"
+          class="px-3 py-1 rounded bg-red-500 text-white text-sm"
+        >
+          Tidak Aktif
+        </button>
+      </div>
+    </div>
+
+    <!-- CHART -->
+    <canvas id="chartSebaranDokumen" height="120"></canvas>
+  </div>
+
+  <!-- TABEL -->
+  <div class="bg-white rounded-xl shadow p-4">
+    <h2 class="font-semibold mb-3">📋 Daftar Kerjasama</h2>
+
+    <table class="w-full text-sm border">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="border px-3 py-2">No</th>
+          <th class="border px-3 py-2">Judul</th>
+          <th class="border px-3 py-2">Jenis</th>
+          <th class="border px-3 py-2">Tanggal</th>
+          <th class="border px-3 py-2">Status</th>
+        </tr>
+      </thead>
+      <tbody id="statusKerjasamaBody">
+        <tr>
+          <td colspan="5" class="text-center py-6 text-gray-400">
+            Memuat data...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
