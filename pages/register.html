@@ -8,8 +8,19 @@
   </head>
 
   <body
-    class="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-purple-700 to-purple-600 overflow-hidden"
+    class="relative min-h-screen flex items-center justify-center overflow-hidden"
   >
+    <!-- Background Image -->
+    <div class="absolute inset-0 -z-10">
+      <img
+        src="../assets/img/Perfotoan mitra.jpg"
+        class="w-full h-full object-cover blur-sm scale-110"
+      />
+
+      <!-- Overlay gelap -->
+      <div class="absolute inset-0 bg-black/40"></div>
+    </div>
+
     <!-- Glow Background -->
     <div
       class="absolute w-96 h-96 bg-purple-400 rounded-full blur-3xl opacity-30 -top-20 -left-20"
@@ -19,7 +30,7 @@
     ></div>
 
     <div
-      class="relative backdrop-blur-lg bg-white/90 w-full max-w-md p-8 rounded-2xl shadow-2xl border border-white/20"
+      class="relative bg-white/70 backdrop-blur-xl w-full max-w-md p-8 rounded-2xl shadow-2xl border border-white/30"
     >
       <h1 class="text-2xl font-bold text-purple-700 text-center mb-6">
         Register Akun
