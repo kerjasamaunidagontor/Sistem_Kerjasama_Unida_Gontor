@@ -308,3 +308,35 @@ body {
     min-height: 70px;
   }
 }
+
+/* ===============================
+   DOT EVENT FULLCALENDAR
+================================ */
+
+/* wrapper */
+.fc-dot-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* DOT NYA */
+.fc-dot {
+  width: 14px; /* 🔥 sebelumnya pasti 4px / 6px */
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* BADGE ANGKA */
+.fc-dot-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  font-weight: 600;
+}
