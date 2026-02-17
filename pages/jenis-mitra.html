@@ -1,0 +1,80 @@
+<div class="p-6">
+  <h1 class="text-xl font-semibold mb-4">🏷️ Jenis Mitra</h1>
+
+  <!-- BUTTON -->
+  <div class="mb-4">
+    <button
+      onclick="openCreateJenisMitra()"
+      class="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded"
+    >
+      + Create Jenis Mitra
+    </button>
+  </div>
+
+  <!-- TABLE -->
+  <div class="overflow-x-auto bg-white rounded shadow">
+    <table class="min-w-full text-sm border">
+      <thead class="bg-blue-600 text-white">
+        <tr>
+          <th class="border px-3 py-2 w-20">ID</th>
+          <th class="border px-3 py-2">Nama</th>
+          <th class="border px-3 py-2 w-32 text-center">Nilai IKU</th>
+          <th class="border px-3 py-2 w-32 text-center">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="jenisMitraBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div
+  id="jenisMitraModal"
+  class="fixed inset-0 bg-black/40 flex items-center justify-center hidden z-50"
+>
+  <div class="bg-white rounded-lg w-full max-w-md p-6">
+    <h2 id="modalTitle" class="text-lg font-semibold mb-4">
+      Create Jenis Mitra
+    </h2>
+
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-1">Nama Jenis Mitra</label>
+      <input
+        id="jenisMitraNama"
+        type="text"
+        class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-purple-300"
+        placeholder="Masukkan nama jenis mitra"
+      />
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-1">Nilai IKU</label>
+      <input
+        id="jenisMitraNilaiIku"
+        type="number"
+        min="0"
+        class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-purple-300"
+        placeholder="Contoh: 5"
+      />
+    </div>
+
+    <div class="flex justify-end gap-2">
+      <button
+        onclick="closeJenisMitraModal()"
+        class="px-4 py-2 text-sm rounded border"
+      >
+        Batal
+      </button>
+
+      <button
+        onclick="saveJenisMitraFromModal()"
+        class="px-4 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-700"
+      >
+        Simpan
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPT -->
+<script src="/assets/js/jenis-mitra.js" defer></script>

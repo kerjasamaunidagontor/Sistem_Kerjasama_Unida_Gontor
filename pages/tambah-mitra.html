@@ -1,0 +1,56 @@
+<div class="p-6">
+  <h1 class="text-xl font-semibold mb-4">➕ Tambah Mitra</h1>
+  <button
+    onclick="openTambahMitra()"
+    class="mb-4 bg-green-600 text-white px-4 py-2 rounded"
+  >
+    + Create Mitra
+  </button>
+  <table class="min-w-full border bg-white text-sm">
+    <thead class="bg-blue-600 text-white">
+      <tr>
+        <th class="border px-3 py-2 w-20">ID</th>
+        <th class="border px-3 py-2">Nama</th>
+        <th class="border px-3 py-2 w-32 text-center">Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="tambahMitraBody"></tbody>
+  </table>
+</div>
+
+<div
+  id="tambahMitraModal"
+  class="fixed inset-0 bg-black/40 hidden flex items-center justify-center"
+>
+  <div class="bg-white rounded-lg w-full max-w-md p-6">
+    <h2 id="tambahMitraModalTitle" class="text-lg font-semibold mb-4">
+      Create Mitra
+    </h2>
+
+    <input type="hidden" id="tambahMitraIndex" />
+
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-1"> Nama Mitra </label>
+      <input
+        id="tambahMitraNama"
+        type="text"
+        class="w-full border rounded px-3 py-2"
+        placeholder="Masukkan nama mitra"
+      />
+    </div>
+
+    <div class="flex justify-end gap-2">
+      <button onclick="closeTambahMitra()" class="px-4 py-2 border rounded">
+        Batal
+      </button>
+      <button
+        onclick="saveTambahMitra()"
+        class="bg-blue-600 text-white px-4 py-2 rounded"
+      >
+        Simpan
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/tambah-mitra.js"></script>
