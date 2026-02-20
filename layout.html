@@ -101,14 +101,16 @@
           📊 Dashboard
         </a>
         <!-- ANALITIK -->
-        <div class="relative group">
-          <div
-            class="menu-link flex p-3 rounded hover:bg-purple-800/40 transition cursor-pointer"
-          >
-            📈 Analitik
-          </div>
+        <div class="relative">
+  <button
+    onclick="toggleSidebarDropdown('analitikDropdown')"
+    class="menu-link w-full text-left flex justify-between items-center p-3 rounded hover:bg-purple-800/40 transition"
+  >
+    <span>📈 Analitik</span>
+    <span>▾</span>
+  </button>
 
-          <div class="hidden group-hover:block ml-4 mt-1 space-y-1">
+  <div id="analitikDropdown" class="hidden ml-4 mt-1 space-y-1">
             <a
               onclick="loadPage('analitik-status')"
               class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
@@ -140,14 +142,16 @@
         </a>
 
         <!-- INPUT KEGIATAN -->
-        <div class="relative group">
-          <div
-            class="menu-link flex p-3 rounded hover:bg-purple-800/40 transition cursor-pointer"
-          >
-            📥 Input Kegiatan
-          </div>
+         <div class="relative">
+  <button
+    onclick="toggleSidebarDropdown('kegiatanDropdown')"
+    class="menu-link w-full text-left flex justify-between items-center p-3 rounded hover:bg-purple-800/40 transition"
+  >
+    <span>📥 Input Kegiatan</span>
+    <span>▾</span>
+  </button>
 
-          <div class="hidden group-hover:block ml-4 mt-1 space-y-1">
+  <div id="kegiatanDropdown" class="hidden ml-4 mt-1 space-y-1">
             <a
               onclick="loadPage('kegiatan')"
               class="menu-link flex p-3 rounded hover:bg-purple-800/40 transition"
@@ -172,14 +176,16 @@
         </div>
 
         <!-- DROPDOWN LAINYA -->
-        <div class="relative group">
-          <div
-            class="menu-link flex p-3 rounded hover:bg-purple-800/40 transition cursor-pointer"
-          >
-            📂 Lainya
-          </div>
+         <div class="relative">
+  <button
+    onclick="toggleSidebarDropdown('lainyaDropdown')"
+    class="menu-link w-full text-left flex justify-between items-center p-3 rounded hover:bg-purple-800/40 transition"
+  >
+    <span>📂 Lainya</span>
+    <span>▾</span>
+  </button>
 
-          <div class="hidden group-hover:block ml-4 mt-1 space-y-1">
+  <div id="lainyaDropdown" class="hidden ml-4 mt-1 space-y-1">
             <a
               onclick="loadPage('mitra')"
               class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
