@@ -184,43 +184,68 @@ function renderMitraPagination(total) {
        - ${Math.min(MITRA_PAGE * MITRA_PER_PAGE, total)} dari ${total} data`
     : "Menampilkan 0 data";
 
-  const maxVisible = 5;
-  let start = Math.max(1, MITRA_PAGE - Math.floor(maxVisible / 2));
-  let end = Math.min(pageCount, start + maxVisible - 1);
+  if (pageCount <= 1) return;
 
-  if (end - start < maxVisible - 1) {
-    start = Math.max(1, end - maxVisible + 1);
-  }
+  const isMobile = window.innerWidth < 640;
 
-  // ⬅ Prev
+  // ======================
+  // ⬅ PREV
+  // ======================
   pagination.innerHTML += `
     <button onclick="goToMitraPage(${Math.max(1, MITRA_PAGE - 1)})"
-      class="px-3 py-1 border rounded-lg hover:bg-gray-100">
+      class="px-2 py-1 text-xs border rounded-md hover:bg-gray-100">
       ◀
     </button>
   `;
 
-  // Page 1
-  if (start > 1) {
-    pagination.innerHTML += mitraPageButton(1);
-    if (start > 2) pagination.innerHTML += mitraEllipsis();
+  // ======================
+  // 📱 MOBILE MODE
+  // ======================
+  if (isMobile) {
+
+    // First page
+    if (MITRA_PAGE > 2) {
+      pagination.innerHTML += mitraPageButton(1);
+    }
+
+    // Ellipsis kiri
+    if (MITRA_PAGE > 3) {
+      pagination.innerHTML += mitraEllipsis();
+    }
+
+    // Current page
+    pagination.innerHTML += mitraPageButton(MITRA_PAGE);
+
+    // Ellipsis kanan
+    if (MITRA_PAGE < pageCount - 2) {
+      pagination.innerHTML += mitraEllipsis();
+    }
+
+    // Last page
+    if (MITRA_PAGE < pageCount - 1) {
+      pagination.innerHTML += mitraPageButton(pageCount);
+    }
+
+  } else {
+
+    // ======================
+    // 💻 DESKTOP MODE
+    // ======================
+    const maxVisible = 5;
+    let start = Math.max(1, MITRA_PAGE - 2);
+    let end = Math.min(pageCount, start + maxVisible - 1);
+
+    for (let i = start; i <= end; i++) {
+      pagination.innerHTML += mitraPageButton(i);
+    }
   }
 
-  // Middle pages
-  for (let i = start; i <= end; i++) {
-    pagination.innerHTML += mitraPageButton(i);
-  }
-
-  // Last page
-  if (end < pageCount) {
-    if (end < pageCount - 1) pagination.innerHTML += mitraEllipsis();
-    pagination.innerHTML += mitraPageButton(pageCount);
-  }
-
-  // Next ➡
+  // ======================
+  // ➡ NEXT
+  // ======================
   pagination.innerHTML += `
     <button onclick="goToMitraPage(${Math.min(pageCount, MITRA_PAGE + 1)})"
-      class="px-3 py-1 border rounded-lg hover:bg-gray-100">
+      class="px-2 py-1 text-xs border rounded-md hover:bg-gray-100">
       ▶
     </button>
   `;
