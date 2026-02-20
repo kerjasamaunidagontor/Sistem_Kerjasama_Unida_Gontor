@@ -1,0 +1,58 @@
+<div class="p-6">
+  <h1 class="text-xl font-semibold mb-4">💰 Pendanaan</h1>
+
+  <button
+    onclick="openPendanaan()"
+    class="mb-4 bg-green-600 text-white px-4 py-2 rounded"
+  >
+    + Create Pendanaan
+  </button>
+
+  <table class="min-w-full border bg-white text-sm">
+    <thead class="bg-blue-600 text-white">
+      <tr>
+        <th class="border px-3 py-2 w-20">ID</th>
+        <th class="border px-3 py-2">Nama</th>
+        <th class="border px-3 py-2 w-32 text-center">Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="pendanaanBody"></tbody>
+  </table>
+</div>
+
+<div
+  id="pendanaanModal"
+  class="fixed inset-0 bg-black/40 hidden flex items-center justify-center"
+>
+  <div class="bg-white rounded-lg w-full max-w-md p-6">
+    <h2 id="pendanaanModalTitle" class="text-lg font-semibold mb-4">
+      Create Pendanaan
+    </h2>
+
+    <input type="hidden" id="pendanaanIndex" />
+
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-1"> Nama Pendanaan </label>
+      <input
+        id="pendanaanNama"
+        type="text"
+        class="w-full border rounded px-3 py-2"
+        placeholder="Masukkan nama pendanaan"
+      />
+    </div>
+
+    <div class="flex justify-end gap-2">
+      <button onclick="closePendanaan()" class="px-4 py-2 border rounded">
+        Batal
+      </button>
+      <button
+        onclick="savePendanaan()"
+        class="bg-blue-600 text-white px-4 py-2 rounded"
+      >
+        Simpan
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/pendanaan.js"></script>
