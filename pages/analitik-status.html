@@ -1,10 +1,7 @@
 <div class="p-4 sm:p-6 space-y-6">
-
   <!-- HEADER -->
   <div>
-    <h1 class="text-lg sm:text-xl font-semibold">
-      Dashboard Status Kerjasama
-    </h1>
+    <h1 class="text-lg sm:text-xl font-semibold">Dashboard Status Kerjasama</h1>
     <p class="text-xs sm:text-sm text-gray-500">
       Analitik & monitoring kerjasama
     </p>
@@ -12,10 +9,11 @@
 
   <!-- GRID -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-
     <!-- KALENDER -->
     <div class="lg:col-span-2 bg-white rounded-xl shadow p-4">
-      <h2 class="font-semibold mb-3 flex items-center gap-2 text-sm sm:text-base">
+      <h2
+        class="font-semibold mb-3 flex items-center gap-2 text-sm sm:text-base"
+      >
         📅 Kalender Kerjasama
       </h2>
       <div id="kalenderKerjasama" class="min-h-[420px] sm:min-h-[520px]"></div>
@@ -27,8 +25,8 @@
         📄 MoU vs MoA vs IA
       </h2>
 
-      <div class="relative h-[220px] sm:h-[260px]">
-        <canvas id="chartStatusDokumen"></canvas>
+      <div class="relative w-full h-[300px]">
+        <canvas id="chartStatusDokumen" class="!w-full !h-full"></canvas>
       </div>
 
       <!-- DETAIL -->
@@ -37,18 +35,15 @@
         class="mt-4 p-3 border rounded-lg text-xs sm:text-sm hidden bg-gray-50"
       ></div>
     </div>
-
   </div>
 
   <!-- BAR SEBARAN -->
   <div class="bg-white rounded-xl shadow p-4">
-    
     <!-- HEADER CARD -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-      
-      <h2 class="font-semibold text-sm sm:text-base">
-        📊 Sebaran Dokumen
-      </h2>
+    <div
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4"
+    >
+      <h2 class="font-semibold text-sm sm:text-base">📊 Sebaran Dokumen</h2>
 
       <!-- FILTER STATUS -->
       <div class="flex flex-wrap gap-2">
@@ -79,16 +74,14 @@
     </div>
 
     <!-- CHART -->
-    <div class="relative h-[250px] sm:h-[300px]">
-      <canvas id="chartSebaranDokumen"></canvas>
+    <div class="relative w-full h-[300px] sm:h-[380px]">
+      <canvas id="chartSebaranDokumen" class="!w-full !h-full"></canvas>
     </div>
   </div>
 
   <!-- TABEL -->
   <div class="bg-white rounded-xl shadow p-4">
-    <h2 class="font-semibold mb-3 text-sm sm:text-base">
-      📋 Daftar Kerjasama
-    </h2>
+    <h2 class="font-semibold mb-3 text-sm sm:text-base">📋 Daftar Kerjasama</h2>
 
     <div class="overflow-x-auto">
       <table class="min-w-[600px] w-full text-xs sm:text-sm border">
@@ -110,7 +103,5 @@
         </tbody>
       </table>
     </div>
-
   </div>
-
 </div>
