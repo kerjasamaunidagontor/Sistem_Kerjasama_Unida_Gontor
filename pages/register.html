@@ -58,15 +58,20 @@
           />
         </div>
         <div>
-          <label class="text-sm font-medium">Password</label>
-          <input
-            id="password"
-            type="password"
-            placeholder="Password"
-            required
-            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
-          />
-        </div>
+  <label class="text-sm font-medium">Password</label>
+  <input
+    id="password"
+    type="password"
+    placeholder="Password (huruf & angka)"
+    required
+    pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$"
+    title="Password minimal 6 karakter dan harus mengandung huruf dan angka"
+    class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
+  />
+  <p id="passwordWarning" class="text-sm text-red-500 mt-1 hidden">
+    Password harus minimal 6 karakter dan mengandung huruf serta angka.
+  </p>
+</div>
         <button
           class="w-full bg-purple-700 hover:bg-purple-800 text-white py-2 rounded-lg transition"
         >
