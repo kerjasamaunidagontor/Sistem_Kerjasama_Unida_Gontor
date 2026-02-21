@@ -219,11 +219,20 @@ function renderChartStatus() {
       ],
     },
     options: {
+      responsive: true,
+      maintainAspectRatio: false, // 🔥 WAJIB supaya full container
       cutout: "65%",
+      layout: {
+        padding: 10,
+      },
       plugins: {
-        legend: { position: "bottom" },
+        legend: {
+          position: "bottom",
+          labels: {
+            boxWidth: 12,
+          },
+        },
 
-        // 🔥 INI KUNCI TOOLTIP HITAM
         tooltip: {
           callbacks: {
             label(ctx) {
@@ -236,7 +245,6 @@ function renderChartStatus() {
         },
       },
 
-      // klik tetap jalan
       onClick(_, elements) {
         if (!elements.length) return;
         const index = elements[0].index;
@@ -404,13 +412,27 @@ function renderChartSebaran() {
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false, // 🔥 WAJIB
       indexAxis: "y",
+      layout: {
+        padding: 10,
+      },
       scales: {
-        x: { stacked: true },
-        y: { stacked: true },
+        x: {
+          stacked: true,
+          beginAtZero: true,
+        },
+        y: {
+          stacked: true,
+        },
       },
       plugins: {
-        legend: { position: "bottom" },
+        legend: {
+          position: "bottom",
+          labels: {
+            boxWidth: 12,
+          },
+        },
       },
     },
   });
