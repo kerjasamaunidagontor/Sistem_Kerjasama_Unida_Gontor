@@ -18,18 +18,19 @@ const GEO_PER_PAGE = 10; // 🔧 ubah sesuai selera
 /*********************************
  * INIT (SATU PINTU)
  *********************************/
-function initAnalitikGeo() {
-  setTimeout(() => {
-    if (!window.KERJASAMA || !window.KERJASAMA.length) return;
+async function initAnalitikGeo() {
+  // 🔥 Pastikan data ada dulu
+  if (!Array.isArray(window.KERJASAMA) || window.KERJASAMA.length === 0) {
+    await loadKerjasamaFromSheet();
+  }
 
-    if (GEO_MODE === "leaflet") {
-      renderLeafletMap();
-    } else {
-      renderChartGeo();
-    }
+  if (GEO_MODE === "leaflet") {
+    renderLeafletMap();
+  } else {
+    renderChartGeo();
+  }
 
-    renderGeoSummary(); // ⬅️ TAMBAHAN
-  }, 0);
+  renderGeoSummary();
 }
 
 /*********************************
@@ -368,3 +369,4 @@ function goToGeoPage(page) {
   GEO_CURRENT_PAGE = page;
   renderGeoSummary();
 }
+
