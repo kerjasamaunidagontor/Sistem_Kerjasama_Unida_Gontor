@@ -1,0 +1,78 @@
+<div class="flex flex-col gap-6">
+
+  <!-- HEADER -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+    <h2 class="text-lg font-semibold">
+      📝 Laporan Kegiatan (Disetujui)
+    </h2>
+
+    <input
+      type="text"
+      id="search-laporan"
+      placeholder="Cari laporan..."
+      onkeyup="renderLaporanTable()"
+      class="w-full md:w-64 border rounded-lg px-3 py-2 text-sm 
+             focus:ring-2 focus:ring-purple-500 focus:outline-none"
+    />
+  </div>
+
+
+  <!-- TABLE -->
+  <div class="bg-white rounded-xl shadow overflow-x-auto">
+    <table class="min-w-[900px] w-full text-sm">
+      <thead class="bg-gray-100 text-xs uppercase text-gray-600">
+        <tr>
+          <th class="p-3 text-left">Unit</th>
+          <th class="p-3 text-left">Jenis</th>
+          <th class="p-3 text-left">Bentuk</th>
+          <th class="p-3 text-left">Tingkat</th>
+          <th class="p-3 text-left">Tanggal</th>
+          <th class="p-3 text-left">Judul</th>
+          <th class="p-3 text-left">Mitra</th>
+          <th class="p-3 text-left">Ket</th>
+          <th class="p-3 text-center">Detail</th>
+        </tr>
+      </thead>
+
+      <tbody id="laporan-body" class="divide-y"></tbody>
+    </table>
+  </div>
+
+
+  <!-- MODAL DETAIL -->
+  <div
+    id="laporan-detail-modal"
+    class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 px-4"
+  >
+    <div
+      class="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] 
+             overflow-y-auto p-6 shadow-xl"
+    >
+      <h3 class="font-semibold text-lg mb-4">
+        Detail Laporan Kegiatan
+      </h3>
+
+      <div
+        id="laporan-detail-content"
+        class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm"
+      ></div>
+
+      <div class="flex justify-end mt-6">
+        <button 
+          onclick="closeLaporanDetail()" 
+          class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition"
+        >
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- PAGINATION -->
+  <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 text-sm">
+    <span id="laporan-info" class="text-gray-600"></span>
+    <div id="laporan-pagination" class="flex flex-wrap gap-1"></div>
+  </div>
+
+</div>

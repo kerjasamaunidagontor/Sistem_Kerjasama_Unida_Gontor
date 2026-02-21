@@ -1,0 +1,65 @@
+<!-- FILTER SECTION -->
+<div class="bg-white p-4 rounded-xl shadow mb-6">
+  <div class="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+    
+    <!-- SEARCH -->
+    <input
+      id="mitra-search"
+      oninput="applyMitraFilter()"
+      placeholder="Cari mitra / kegiatan / PJ..."
+      class="border rounded-lg px-4 py-2 w-full sm:w-72 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+    />
+
+    <!-- FILTER -->
+    <select
+      id="mitra-filter-jenis"
+      onchange="applyMitraFilter()"
+      class="border rounded-lg px-4 py-2 text-sm w-full sm:w-60 focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+    >
+      <option value="">Semua Jenis Mitra</option>
+      <option value="Lokal">Lokal</option>
+      <option value="Nasional">Nasional</option>
+      <option value="Internasional">Internasional</option>
+    </select>
+  </div>
+</div>
+
+
+<!-- DATA SECTION -->
+<div class="flex flex-col gap-4">
+  
+  <h2 class="text-xl font-semibold text-gray-800">
+    📋 Data Mitra
+  </h2>
+
+  <!-- TABLE -->
+  <div class="bg-white rounded-xl shadow overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-[800px] w-full text-xs sm:text-sm">
+        <thead class="bg-gray-100 text-gray-600 uppercase text-[11px] sm:text-xs tracking-wide">
+          <tr>
+            <th class="p-3 text-left">Mitra</th>
+            <th class="p-3 text-left">Tingkat Kerjasama</th>
+            <th class="p-3 text-left">Jumlah Kegiatan</th>
+            <th class="p-3 text-center">Jenis Mitra</th>
+            <th class="p-3 text-center">Detail</th>
+          </tr>
+        </thead>
+
+        <tbody id="mitra-body" class="divide-y"></tbody>
+      </table>
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 px-4 py-3 border-t text-sm">
+
+  <div id="mitra-info"
+       class="text-gray-600 text-center sm:text-left"></div>
+
+  <div class="w-full overflow-x-auto">
+    <div id="mitra-pagination"
+         class="flex items-center gap-2 min-w-max justify-start sm:justify-end">
+    </div>
+  </div>
+
+</div>

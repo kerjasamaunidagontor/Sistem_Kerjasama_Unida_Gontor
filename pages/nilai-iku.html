@@ -1,0 +1,102 @@
+<div class="p-6">
+  <h1 class="text-xl font-bold mb-4">📈 Penilaian IKU 6</h1>
+  <div class="mb-4 flex flex-wrap items-center gap-4">
+    <!-- Filter Tahun -->
+    <div class="flex items-center gap-2">
+      <label class="text-sm font-medium">Tahun:</label>
+      <select
+        id="filterTahunIku"
+        class="border rounded px-2 py-1 text-sm"
+        onchange="renderNilaiIku()"
+      >
+        <option value="">Semua</option>
+      </select>
+    </div>
+
+    <!-- Filter Fakultas -->
+    <div class="flex items-center gap-2">
+      <label class="text-sm font-medium">Fakultas:</label>
+      <select
+        id="filterFakultasIku"
+        class="border rounded px-2 py-1 text-sm"
+        onchange="renderNilaiIku()"
+      >
+        <option value="">Semua</option>
+      </select>
+    </div>
+  </div>
+  <!-- FORMULA IKU 6 -->
+  <div class="mt-6 border border-blue-300 rounded-lg overflow-hidden">
+    <div class="bg-blue-500 text-white px-4 py-2 font-semibold">
+      Formula Penilaian IKU 6
+    </div>
+
+    <div class="bg-blue-50 p-4 text-sm text-gray-800 space-y-3">
+      <!-- Rumus -->
+      <div class="flex flex-wrap items-center gap-2 font-semibold">
+        <span>IKU 6 =</span>
+        <span class="bg-white border px-3 py-1 rounded"> Σ (n × k) </span>
+        <span>/ t × 100</span>
+      </div>
+
+      <!-- Keterangan -->
+      <ul class="list-disc ml-5 space-y-1">
+        <li>
+          <strong>n</strong> = jumlah kerjasama pada program studi S1 dan
+          D4/D3/D2 yang memenuhi kriteria.
+        </li>
+        <li><strong>t</strong> = jumlah program studi S1 dan D4/D3/D2.</li>
+        <li>
+          <strong>k</strong> = konstanta bobot (pembobotan mempertimbangkan
+          reputasi mitra).
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="min-w-full border border-gray-300 text-sm">
+      <thead class="bg-blue-400 text-white">
+        <tr>
+          <th class="border px-3 py-2">Jenis Mitra</th>
+          <th class="border px-3 py-2">
+            MoA<br />
+            <span class="text-xs">(Memorandum of Agreement)</span>
+          </th>
+          <th class="border px-3 py-2">
+            IA<br />
+            <span class="text-xs">(Implementation Arrangement)</span>
+          </th>
+          <th class="border px-3 py-2">Nilai</th>
+          <th class="border px-3 py-2">Jumlah</th>
+          <th class="border px-3 py-2">Nilai Akhir</th>
+        </tr>
+      </thead>
+
+      <tbody id="nilaiIkuBody" class="bg-white">
+        <!-- DATA DIISI DARI JS -->
+      </tbody>
+
+      <tfoot class="bg-gray-100 font-bold">
+        <tr>
+          <td class="border px-3 py-2 text-center">Jumlah</td>
+          <td class="border px-3 py-2 text-center" id="totalMoa">0</td>
+          <td class="border px-3 py-2 text-center" id="totalIa">0</td>
+          <td
+            class="border px-3 py-2 text-center bg-yellow-50 cursor-text"
+            contenteditable="true"
+            data-row="3"
+            data-value="0"
+            onblur="updateNilaiIku(this)"
+            onkeydown="handleNilaiKey(event, this)"
+          >
+            0
+          </td>
+
+          <td class="border px-3 py-2 text-center" id="totalJumlah">0</td>
+          <td class="border px-3 py-2 text-center" id="totalNilaiAkhir">0</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+<script src="assets/js/nilai-iku.js"></script>
