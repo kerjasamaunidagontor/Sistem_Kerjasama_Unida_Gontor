@@ -96,7 +96,7 @@ async function loadDashboardStats() {
     const stats = { ia: 0, mou: 0, moa: 0 };
     let aktif = 0;
     let tidakAktif = 0;
-    const growth = {}; // { tahun: jumlah }
+    const growth = {}; // { tahun: {MoU, MoA, IA} }
 
     data.forEach((d) => {
       const jenis = (d.jenisDokumen || "").toLowerCase();
@@ -117,7 +117,13 @@ async function loadDashboardStats() {
 
       // ===== GROWTH LINE =====
       if (tahun) {
-        growth[tahun] = (growth[tahun] || 0) + 1;
+        if (!growth[tahun]) {
+          growth[tahun] = { MoU: 0, MoA: 0, IA: 0 };
+        }
+
+        if (jenis.includes("implementation")) growth[tahun].IA++;
+        else if (jenis.includes("understanding")) growth[tahun].MoU++;
+        else if (jenis.includes("agreement")) growth[tahun].MoA++;
       }
     });
 
@@ -166,8 +172,7 @@ async function loadDashboardFeed() {
   sorted.forEach((k) => {
     const user = k.pj || "User";
     const judul =
-      k.deskripsi ||
-      `${k.bentuk || "Kegiatan"} (${k.bidang || "-"})`;
+      k.deskripsi || `${k.bentuk || "Kegiatan"} (${k.bidang || "-"})`;
 
     const tanggal = formatTanggal(k.tanggal);
 
@@ -251,7 +256,10 @@ function renderGrowthChart(growth = {}) {
   if (!canvas) return;
 
   const years = Object.keys(growth).sort((a, b) => a - b);
-  const values = years.map((year) => growth[year] ?? 0);
+
+  const mouData = years.map((y) => growth[y]?.MoU ?? 0);
+  const moaData = years.map((y) => growth[y]?.MoA ?? 0);
+  const iaData = years.map((y) => growth[y]?.IA ?? 0);
 
   if (growthChart) growthChart.destroy();
 
@@ -261,17 +269,34 @@ function renderGrowthChart(growth = {}) {
       labels: years,
       datasets: [
         {
-          label: "Jumlah Kerjasama",
-          data: values,
-          borderColor: "#6366f1",
-          backgroundColor: "rgba(99,102,241,0.12)",
-          borderWidth: 2,
+          label: "MoU",
+          data: mouData,
+          borderColor: "#2563eb",
+          backgroundColor: "rgba(37,99,235,0.1)",
           tension: 0.35,
-          fill: true,
+          borderWidth: 2,
           pointRadius: 4,
-          pointHoverRadius: 6,
-          pointBackgroundColor: "#6366f1",
-          spanGaps: true,
+          fill: false,
+        },
+        {
+          label: "MoA",
+          data: moaData,
+          borderColor: "#f59e0b",
+          backgroundColor: "rgba(245,158,11,0.1)",
+          tension: 0.35,
+          borderWidth: 2,
+          pointRadius: 4,
+          fill: false,
+        },
+        {
+          label: "IA",
+          data: iaData,
+          borderColor: "#10b981",
+          backgroundColor: "rgba(16,185,129,0.1)",
+          tension: 0.35,
+          borderWidth: 2,
+          pointRadius: 4,
+          fill: false,
         },
       ],
     },
@@ -279,30 +304,24 @@ function renderGrowthChart(growth = {}) {
       responsive: true,
       maintainAspectRatio: false,
       layout: {
-        padding: { left: 8, right: 50, top: 4, bottom: 0 },
+        padding: { left: 8, right: 20, top: 4, bottom: 0 },
       },
       scales: {
         x: {
           offset: true,
           grid: { display: false },
-          ticks: {
-            autoSkip: true,
-            maxRotation: 0,
-            font: { size: 11 },
-          },
         },
         y: {
           beginAtZero: true,
           grid: {
             color: "rgba(0,0,0,0.05)",
           },
-          ticks: {
-            font: { size: 11 },
-          },
         },
       },
       plugins: {
-        legend: { display: false },
+        legend: {
+          position: "bottom", // 🔥 sekarang legend tampil
+        },
         tooltip: {
           mode: "index",
           intersect: false,
@@ -315,6 +334,26 @@ function renderGrowthChart(growth = {}) {
       },
     },
   });
+}
+function hitungGrowthPerJenis(data = []) {
+  const result = {};
+
+  data.forEach((d) => {
+    const tahun = (d.tanggal || "").slice(-4); // ambil tahun
+    if (!tahun) return;
+
+    if (!result[tahun]) {
+      result[tahun] = { MoU: 0, MoA: 0, IA: 0 };
+    }
+
+    const jenis = (d.jenisDokumen || "").toUpperCase();
+
+    if (jenis.includes("MOU")) result[tahun].MoU++;
+    else if (jenis.includes("MOA")) result[tahun].MoA++;
+    else if (jenis.includes("IA")) result[tahun].IA++;
+  });
+
+  return result;
 }
 /* ===============================
    BAGIAN CHARTS KEGIATAN
