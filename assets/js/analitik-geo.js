@@ -369,4 +369,3 @@ function goToGeoPage(page) {
   GEO_CURRENT_PAGE = page;
   renderGeoSummary();
 }
-
