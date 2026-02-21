@@ -1,0 +1,485 @@
+/* =====================================================
+   GLOBAL
+===================================================== */
+body {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =====================================================
+   SIDEBAR
+===================================================== */
+.sidebar {
+  transition: transform 0.3s ease;
+}
+
+.sidebar a {
+  transition: all 0.2s ease;
+}
+
+.sidebar a:hover {
+  padding-left: 1.25rem;
+}
+
+.sidebar a.active {
+  background: rgba(255, 255, 255, 0.25);
+  border-left: 4px solid #cffafe;
+  font-weight: 600;
+}
+
+/* =====================================================
+   CARD
+===================================================== */
+.card {
+  transition: all 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* =====================================================
+   TABLE
+===================================================== */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table th {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.table td {
+  font-size: 0.875rem;
+}
+
+/* =====================================================
+   FORM
+===================================================== */
+.input {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #06b6d4;
+  box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.35);
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #4b5563;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+/* =====================================================
+   MODAL ANIMATION
+===================================================== */
+.modal-show {
+  animation: scaleIn 0.2s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* =====================================================
+   BADGE
+===================================================== */
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badge-expired {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* =====================================================
+   FADE IN
+===================================================== */
+.fade-in {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =====================================================
+   AUTOCOMPLETE
+===================================================== */
+.autocomplete-wrapper {
+  position: relative;
+}
+
+.autocomplete-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  max-height: 220px;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.autocomplete-dropdown div {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.autocomplete-dropdown div:hover {
+  background-color: #f3f4f6;
+}
+
+/* =====================================================
+   CALENDAR
+===================================================== */
+#kalenderKerjasama {
+  min-height: 520px;
+}
+
+.fc {
+  height: auto !important;
+}
+
+.fc-daygrid-day {
+  min-height: 90px;
+}
+
+.fc-daygrid-day-frame {
+  display: flex;
+  flex-direction: column;
+}
+
+.fc-daygrid-day-events {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3px;
+}
+
+/* Tooltip */
+.fc-tooltip {
+  position: absolute;
+  z-index: 9999;
+  background: #111827;
+  color: white;
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* =====================================================
+   THEME OVERRIDE (Cyan)
+===================================================== */
+.bg-purple-500,
+.bg-purple-600,
+.bg-purple-700 {
+  background-color: #06b6d4 !important;
+}
+
+.text-purple-500,
+.text-purple-600,
+.text-purple-700 {
+  color: #0891b2 !important;
+}
+
+.border-purple-500,
+.border-purple-600 {
+  border-color: #06b6d4 !important;
+}
+
+.ring-purple-500,
+.ring-purple-600 {
+  --tw-ring-color: rgba(6, 182, 212, 0.4) !important;
+}
+
+.stat-number,
+.stat-value {
+  color: #06b6d4;
+  font-weight: 700;
+}
+
+/* =====================================================
+   DOT EVENT FULLCALENDAR
+===================================================== */
+.fc-dot-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fc-dot {
+  width: 14px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.fc-dot-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background: #ef4444;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 9999px;
+  font-weight: 600;
+}
+
+/* =====================================================
+   RESPONSIVE MOBILE IMPROVED
+===================================================== */
+@media (max-width: 768px) {
+
+  body {
+    font-size: 14px;
+    overflow-x: hidden;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 250px;
+    max-width: 85%;
+    transform: translateX(-100%);
+    z-index: 1100;
+    background: #111827;
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(2px);
+    z-index: 1050;
+  }
+
+  /* TABLE */
+  .table {
+    min-width: 600px;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.5rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  /* FORM */
+  .input {
+    font-size: 16px;
+    padding: 0.75rem;
+  }
+
+  .label {
+    font-size: 0.8rem;
+  }
+
+  button {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    border-radius: 10px;
+  }
+
+  .badge {
+    font-size: 0.65rem;
+    padding: 0.25rem 0.6rem;
+  }
+
+  /* CALENDAR */
+  #kalenderKerjasama {
+    min-height: 420px;
+  }
+
+  .fc-daygrid-day {
+    min-height: 65px;
+  }
+
+  .fc-daygrid-day-number {
+    font-size: 0.75rem;
+  }
+
+  .fc-dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .fc-dot-badge {
+    font-size: 9px;
+    padding: 1px 5px;
+  }
+}
+/* =====================================================
+   FIX LAYOUT MOBILE FULL WIDTH
+===================================================== */
+@media (max-width: 768px) {
+
+  /* Wrapper utama layout (biasanya container / main / content) */
+  .container,
+  .main-content,
+  .content-wrapper,
+  main {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 12px !important;
+  }
+
+  /* Kalau pakai flex layout */
+  .layout,
+  .app-layout {
+    display: block !important;
+  }
+
+  /* Card dashboard */
+  .card {
+    width: 100% !important;
+    margin-bottom: 16px;
+  }
+
+  /* Hilangkan padding besar desktop */
+  .p-6 {
+    padding: 1rem !important;
+  }
+
+  .p-8 {
+    padding: 1.25rem !important;
+  }
+
+}
+.leaflet-container {
+  border-radius: 12px;
+}
+/* =====================================================
+   BUTTON VARIANT (MERGE TAMBAHAN)
+===================================================== */
+
+.btn-green,
+.btn-blue,
+.btn-red {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 0.9rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #ffffff;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-green {
+  background-color: #16a34a;
+}
+
+.btn-green:hover {
+  background-color: #15803d;
+}
+
+.btn-blue {
+  background-color: #2563eb;
+}
+
+.btn-blue:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-red {
+  background-color: #dc2626;
+}
+
+.btn-red:hover {
+  background-color: #b91c1c;
+}
+
+/* =====================================================
+   RESPONSIVE BUTTON FIX (MOBILE)
+===================================================== */
+@media (max-width: 768px) {
+
+  .btn-green,
+  .btn-blue,
+  .btn-red {
+    width: 100%;
+    font-size: 0.85rem;
+    padding: 0.7rem;
+    border-radius: 10px;
+  }
+
+}
+@media (max-width: 768px) {
+
+  #laporan-pagination button {
+    width: auto !important;
+    padding: 0.4rem 0.7rem !important;
+    font-size: 0.8rem !important;
+  }
+
+}
+#laporan-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+#laporan-pagination button {
+  min-width: 36px;
+  border-radius: 8px;
+}
