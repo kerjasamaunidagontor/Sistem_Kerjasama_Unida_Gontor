@@ -1,7 +1,7 @@
 /* ==============================
    VARIABEL GLOBAL
 ============================== */
-let bentukChart, mitraChart, topMitraChart;
+let bentukChart, mitraChart, topMitraChart, topQSChart;
 const kegiatan = JSON.parse(localStorage.getItem("kegiatan")) || [];
 
 /* ==============================
@@ -366,6 +366,7 @@ async function loadDashboardKegiatan() {
     const bentukMap = {};
     const mitraMap = {};
     const topMitraMap = {};
+    const topQSMap = {}; // ✅ map baru
 
     data.forEach((k) => {
       const bentuk = (k.bentuk || "-").trim();
@@ -375,6 +376,14 @@ async function loadDashboardKegiatan() {
       bentukMap[bentuk] = (bentukMap[bentuk] || 0) + 1;
       mitraMap[jenisMitra] = (mitraMap[jenisMitra] || 0) + 1;
       topMitraMap[mitra] = (topMitraMap[mitra] || 0) + 1;
+
+      // ✅ FILTER KHUSUS QS200 BY SUBJECT
+      if (
+        jenisMitra ===
+        "Perguruan Tinggi yang masuk dalam daftar QS200 berdasarkan bidang ilmu (QS200 by subject)"
+      ) {
+        topQSMap[mitra] = (topQSMap[mitra] || 0) + 1;
+      }
     });
 
     const topBentuk = Object.entries(bentukMap)
@@ -389,9 +398,14 @@ async function loadDashboardKegiatan() {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5);
 
+    const topQS = Object.entries(topQSMap)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+
     renderBentukChart(topBentuk);
     renderMitraChart(topJenisMitra);
     renderTopMitraChart(topMitra);
+    renderTopQSChart(topQS); // ✅ render baru
   } catch (err) {
     console.error("Dashboard kegiatan error:", err);
   }
@@ -501,6 +515,29 @@ function renderTopMitraChart(data = []) {
         {
           data: data.map((d) => d[1]),
           backgroundColor: "#f59e0b",
+          borderRadius: 8,
+          categoryPercentage: 0.7,
+          barPercentage: 0.8,
+        },
+      ],
+    },
+    options: getHorizontalBarOptions(),
+  });
+}
+function renderTopQSChart(data = []) {
+  const canvas = document.getElementById("topQSChart");
+  if (!canvas) return;
+
+  if (topQSChart) topQSChart.destroy();
+
+  topQSChart = new Chart(canvas, {
+    type: "bar",
+    data: {
+      labels: data.map((d) => d[0]),
+      datasets: [
+        {
+          data: data.map((d) => d[1]),
+          backgroundColor: "#10b981", // warna hijau biar beda
           borderRadius: 8,
           categoryPercentage: 0.7,
           barPercentage: 0.8,
