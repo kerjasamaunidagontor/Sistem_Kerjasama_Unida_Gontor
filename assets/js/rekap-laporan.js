@@ -322,8 +322,7 @@ function renderRekapPagination(total) {
 
   info.textContent = total
     ? `Menampilkan ${(REKAP_PAGE - 1) * REKAP_PER_PAGE + 1}
-       - ${Math.min(REKAP_PAGE * REKAP_PER_PAGE, total)}
-       dari ${total} data`
+       - ${Math.min(REKAP_PAGE * REKAP_PER_PAGE, total)} dari ${total} data`
     : "Menampilkan 0 data";
 
   if (pageCount <= 1) return;
@@ -391,6 +390,4 @@ function rekapEllipsis() {
 function goToRekapPage(page) {
   REKAP_PAGE = page;
   renderRekapTable();
-
-  document.getElementById("rekap-body")?.scrollIntoView({ behavior: "smooth" });
 }
