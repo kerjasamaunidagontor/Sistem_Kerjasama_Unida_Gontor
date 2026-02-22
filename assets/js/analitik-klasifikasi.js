@@ -6,8 +6,8 @@ let currentFilterFakultas = "all";
 
 const JENIS_DOKUMEN_ALLOWED = [
   "IA (Implementation Arrangement)",
-  "MoA (Memorandum Of Agreement)",
-  "MoU (Memorandum Of Understanding)",
+  "MoA (Memorandum of Agreement)",
+  "MoU (Memorandum of Understanding)",
 ];
 
 function renderChartJenisDokumen() {
@@ -228,3 +228,4 @@ function initAnalitikKlasifikasi() {
   renderChartJenisDokumen();
   renderChartProdi();
 }
+
