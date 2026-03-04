@@ -550,8 +550,9 @@ function renderTopQSChart(data = []) {
 /* ==============================
    BAGIAN BIDANG LAPORAN KEGIATAN
 ============================== */
-async function renderDashboardRekapBidang() {
+async function renderDashboardRekapBidang(selectedYear = "ALL") {
   const tbody = document.getElementById("dashboard-rekap-bidang");
+  const selectYear = document.getElementById("filter-tahun-bidang");
   if (!tbody) return;
 
   tbody.innerHTML = "";
@@ -571,9 +572,43 @@ async function renderDashboardRekapBidang() {
       return;
     }
 
-    const rekap = {};
+    // ==============================
+    // 🔥 AMBIL LIST TAHUN UNIK
+    // ==============================
+    const tahunSet = new Set();
 
     data.forEach((k) => {
+      if (k.tanggal) {
+        const tahun = k.tanggal.toString().slice(-4);
+        tahunSet.add(tahun);
+      }
+    });
+
+    const tahunList = Array.from(tahunSet).sort((a, b) => b - a);
+
+    // isi dropdown (hanya pertama kali)
+    if (selectYear && selectYear.options.length <= 1) {
+      tahunList.forEach((t) => {
+        selectYear.innerHTML += `<option value="${t}">${t}</option>`;
+      });
+    }
+
+    // ==============================
+    // 🔥 FILTER DATA BERDASARKAN TAHUN
+    // ==============================
+    const filteredData =
+      selectedYear === "ALL"
+        ? data
+        : data.filter((k) =>
+            k.tahun?.toString().endsWith(selectedYear)
+          );
+
+    // ==============================
+    // 🔥 REKAP PER BIDANG
+    // ==============================
+    const rekap = {};
+
+    filteredData.forEach((k) => {
       const bidang = k.bidang?.trim() || "Tidak Diketahui";
       const tingkat = (k.tingkat || "").toLowerCase();
 
@@ -595,7 +630,7 @@ async function renderDashboardRekapBidang() {
         b[1].international +
         b[1].nasional +
         b[1].lokal -
-        (a[1].international + a[1].nasional + a[1].lokal),
+        (a[1].international + a[1].nasional + a[1].lokal)
     );
 
     let grandInternational = 0;
@@ -629,7 +664,8 @@ async function renderDashboardRekapBidang() {
       `;
     });
 
-    const grandTotal = grandInternational + grandNasional + grandLokal;
+    const grandTotal =
+      grandInternational + grandNasional + grandLokal;
 
     tbody.innerHTML += `
       <tr class="bg-gray-100 font-bold">
