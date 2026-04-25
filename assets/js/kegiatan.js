@@ -599,7 +599,14 @@ async function loadKegiatanFromSheet() {
     if (!res.ok) throw new Error("HTTP " + res.status);
 
     const json = await res.json();
-    KEGIATAN = Array.isArray(json) ? json : [];
+    
+    // 🔥 REVERSE: Data terbaru (row terbesar) tampil di atas
+    KEGIATAN = Array.isArray(json) ? json.reverse() : [];
+    
+    // ALTERNATIF: Jika ingin sort berdasarkan tanggal (terbaru dulu):
+    // KEGIATAN = Array.isArray(json) ? json 
+    //   .sort((a, b) => new Date(b.tanggal || 0) - new Date(a.tanggal || 0)) 
+    //   : [];
 
     console.log("KEGIATAN from sheet:", KEGIATAN);
 
