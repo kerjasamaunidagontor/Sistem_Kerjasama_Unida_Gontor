@@ -558,17 +558,19 @@ function loadBenuaDropdown() {
 // DATA MITRA UNTUK DROPDOWN
 // ===============================
 function getMitraList() {
+  console.log("DEBUG KERJASAMA:", KERJASAMA);
+
   return [
-    ...new Set((window.KERJASAMA || []).map((d) => d.mitra).filter(Boolean)),
+    ...new Set(
+      KERJASAMA.map((d) => d.mitra) // ⬅️ PASTIKAN KEY INI BENAR
+        .filter(Boolean),
+    ),
   ];
 }
 
 function filterMitraDropdown(forceShow = false) {
   // 🔒 BLOK SAAT MODE TAMBAH MITRA BARU
   if (IS_ADD_MITRA_MODE) return;
-
-  // ❗ HANYA BLOK SAAT DETAIL (readonly)
-  if (IS_EDIT_MODE && !forceShow) return;
 
   const input = document.getElementById("mitra");
   const dropdown = document.getElementById("k-no-dropdown");
@@ -578,6 +580,8 @@ function filterMitraDropdown(forceShow = false) {
   dropdown.innerHTML = "";
 
   const data = getMitraList();
+  
+  console.log("Mitra list:", data); // Debug
 
   const filtered = keyword
     ? data.filter((m) => m.toLowerCase().includes(keyword))
@@ -588,6 +592,7 @@ function filterMitraDropdown(forceShow = false) {
     return;
   }
 
+  // Render hasil filter
   filtered.forEach((nama) => {
     const item = document.createElement("div");
     item.textContent = nama;
@@ -601,27 +606,21 @@ function filterMitraDropdown(forceShow = false) {
     dropdown.appendChild(item);
   });
 
-  // ===============================
   // ➕ TAMBAH MENU "TAMBAH MITRA"
-  // ===============================
   const addItem = document.createElement("div");
-  addItem.textContent = "+ Tambah Mitra";
+  addItem.textContent = "+ Tambah Mitra Baru";
   addItem.className =
-    "px-3 py-2 text-sm cursor-pointer font-semibold text-purple-700 hover:bg-purple-100 border-t";
+    "px-3 py-2 text-sm cursor-pointer font-semibold text-purple-700 hover:bg-purple-100 border-t mt-1";
 
   addItem.onclick = () => {
-    IS_ADD_MITRA_MODE = true; // 🔥 AKTIFKAN MODE TAMBAH MITRA
+    IS_ADD_MITRA_MODE = true;
     dropdown.classList.add("hidden");
-
-    input.value = ""; // kosongkan input
+    input.value = "";
     input.focus();
-
-    // 🔒 MATIKAN DROPDOWN TOTAL
-    input.oninput = null;
+    input.placeholder = "Ketik nama mitra baru...";
   };
 
   dropdown.appendChild(addItem);
-
   dropdown.classList.remove("hidden");
 }
 
@@ -656,16 +655,7 @@ document.addEventListener("click", (e) => {
   }
 });
 
-function getMitraList() {
-  console.log("DEBUG KERJASAMA:", KERJASAMA);
 
-  return [
-    ...new Set(
-      KERJASAMA.map((d) => d.mitra) // ⬅️ PASTIKAN KEY INI BENAR
-        .filter(Boolean),
-    ),
-  ];
-}
 
 /* ===============================
    JENIS MITRA SELECT (FORM)
@@ -860,17 +850,17 @@ function toDateInputValue(val) {
 /* ===============================
   STATUS KERJASAMA HITUNG SISA WAKTU
 =============================== */
+/* ===============================
+  STATUS & KETERANGAN KERJASAMA
+=============================== */
 function hitungSisaWaktu(tglBerakhirVal) {
   if (!tglBerakhirVal) return "";
 
   const now = new Date();
   const end = new Date(tglBerakhirVal);
 
-  if (isNaN(end)) return "";
-
-  if (end < now) {
-    return "Tidak Aktif";
-  }
+  if (isNaN(end)) return "Tidak Aktif";
+  if (end < now) return "Tidak Aktif";
 
   let years = end.getFullYear() - now.getFullYear();
   let months = end.getMonth() - now.getMonth();
@@ -881,22 +871,57 @@ function hitungSisaWaktu(tglBerakhirVal) {
     const prevMonth = new Date(end.getFullYear(), end.getMonth(), 0);
     days += prevMonth.getDate();
   }
-
   if (months < 0) {
     years--;
     months += 12;
   }
 
-  // 🔥 PAKSA FORMAT SELALU MUNCUL
   return `${years} Tahun ${months} Bulan ${days} Hari`;
 }
 
+// 🔥 FUNGSI BARU: Hitung Keterangan (Aktif/Tidak Aktif)
+function hitungKeterangan(tglBerakhirVal) {
+  if (!tglBerakhirVal) return "Aktif";
+  
+  const now = new Date();
+  const end = new Date(tglBerakhirVal);
+  
+  if (isNaN(end)) return "Aktif";
+  
+  // Jika tanggal berakhir sudah lewat → Tidak Aktif
+  return end < now ? "Tidak Aktif" : "Aktif";
+}
+
+// 🔥 UPDATE: Sync BOTH status DAN keterangan
 function syncStatusKerjasama() {
   const tglBerakhir = document.getElementById("tglBerakhir");
   const status = document.getElementById("status");
-  if (!tglBerakhir || !status) return;
+  const keterangan = document.getElementById("keterangan");
+  
+  if (!tglBerakhir) return;
 
-  status.value = hitungSisaWaktu(tglBerakhir.value);
+  const statusValue = hitungSisaWaktu(tglBerakhir.value);
+  const keteranganValue = hitungKeterangan(tglBerakhir.value);
+
+  // Update Status (sisa waktu)
+  if (status) {
+    status.value = statusValue;
+    console.log("✅ Status di-set:", statusValue); // 🔥 DEBUG
+  }
+  
+  // Update Keterangan (Aktif/Tidak Aktif)
+  if (keterangan) {
+    keterangan.value = keteranganValue;
+    console.log("✅ Keterangan di-set:", keteranganValue); // 🔥 DEBUG
+  }
+  
+  // 🔥 PAKSA TRIGGER CHANGE EVENT
+  if (status) {
+    status.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+  if (keterangan) {
+    keterangan.dispatchEvent(new Event('change', { bubbles: true }));
+  }
 }
 
 /* ===============================
@@ -923,7 +948,7 @@ async function saveKerjasama() {
       jenisMitra: jenisMitra.value,
       jenisDokumen: jenisDokumen.value,
       tingkat: tingkat.value,
-      status: status.value,
+      status: statusEl.value,
       tglMulai: tglMulai.value,
       tglBerakhir: tglBerakhir.value,
       tahunMulai: tahunMulai.value,
@@ -932,16 +957,26 @@ async function saveKerjasama() {
     },
   };
 
+  // 🔥 DEBUG: Lihat payload sebelum kirim
+  console.log("📤 PAYLOAD YANG DIKIRIM:", JSON.stringify(payload, null, 2));
+  console.log("📊 Status value:", status.value);
+  console.log("📊 Keterangan value:", keterangan.value);
+
   try {
-    await fetch(API.kerjasama, {
+    const response = await fetch(API.kerjasama, {
       method: "POST",
-      mode: "no-cors",
+      mode: "no-cors",  // ⚠️ INI MASALAHNYA!
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
+    console.log("✅ Response:", response);
+    
     await loadKerjasamaFromSheet();
     closeKerjasamaForm();
+  } catch (err) {
+    console.error("❌ Save error:", err);
+    alert("Gagal menyimpan: " + err.message);
   } finally {
     hideLoading();
   }
@@ -955,8 +990,15 @@ function setFormReadonly(isReadonly) {
   document
     .querySelectorAll("#kerjasama-form input, #kerjasama-form textarea")
     .forEach((el) => {
-      if (ALWAYS_READONLY_FIELDS.includes(el.id)) {
-        el.readOnly = true; // 🔒 PERMANEN
+      // 🔥 HANYA tahunMulai & tahunBerakhir yang permanent readonly
+      if (el.id === "tahunMulai" || el.id === "tahunBerakhir") {
+        el.readOnly = true;
+        return;
+      }
+
+      // Status dan keterangan tetap bisa diisi JS tapi readonly untuk user
+      if (el.id === "status" || el.id === "keterangan") {
+        el.readOnly = true; // User tidak bisa edit manual
         return;
       }
 
@@ -1051,7 +1093,7 @@ function editKerjasama(i) {
   jenisMitra.value = d.jenisMitra;
   jenisDokumen.value = d.jenisDokumen;
   tingkat.value = d.tingkat;
-  status.value = d.status;
+  statusEl.value = d.status;
   tglMulai.value = d.tglMulai;
   tglBerakhir.value = d.tglBerakhir;
   tahunMulai.value = d.tahunMulai;
@@ -1104,20 +1146,42 @@ function bindKerjasamaForm() {
   window.jenisMitra = document.getElementById("jenisMitra");
   window.jenisDokumen = document.getElementById("jenisDokumen");
   window.tingkat = document.getElementById("tingkat");
-  window.status = document.getElementById("status");
+  window.statusEl = document.getElementById("status");
   window.tglMulai = document.getElementById("tglMulai");
   window.tglBerakhir = document.getElementById("tglBerakhir");
   window.tahunMulai = document.getElementById("tahunMulai");
   window.tahunBerakhir = document.getElementById("tahunBerakhir");
   window.keterangan = document.getElementById("keterangan");
-  // 🔥 AUTO SYNC TAHUN
-  tglMulai?.addEventListener("change", () => {
-    syncTahunFromTanggal();
-    syncStatusKerjasama();
+
+  console.log("🔧 Binding form elements...");
+  console.log("tglBerakhir element:", tglBerakhir);
+  console.log("status element:", status);
+  // 🔥 AUTO SYNC TAHUN & STATUS
+tglMulai?.addEventListener("change", () => {
+  syncTahunFromTanggal();
+  syncStatusKerjasama();
+});
+
+tglBerakhir?.addEventListener("change", () => {
+  syncTahunFromTanggal();
+  syncStatusKerjasama(); // 🔥 Ini sekarang update status + keterangan
+});
+
+// 🔥 Realtime sync saat user mengetik/milih tanggal
+tglBerakhir?.addEventListener("input", () => {
+  syncStatusKerjasama();
+});
+  // 🔥 TAMBAH INI - Event listener untuk search mitra
+  mitra?.addEventListener("input", () => {
+    if (!IS_ADD_MITRA_MODE && !IS_EDIT_MODE) {
+      filterMitraDropdown(false);
+    }
   });
 
-  tglBerakhir?.addEventListener("change", () => {
-    syncTahunFromTanggal();
-    syncStatusKerjasama();
+  mitra?.addEventListener("focus", () => {
+    if (!IS_ADD_MITRA_MODE) {
+      filterMitraDropdown(true);
+    }
   });
+
 }
