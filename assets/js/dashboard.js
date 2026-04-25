@@ -147,53 +147,64 @@ async function loadDashboardStats() {
    DASHBOARD FEED AKTIVITAS
 ============================== */
 
+/* ==============================
+   DASHBOARD FEED AKTIVITAS
+============================== */
+
 async function loadDashboardFeed() {
   const feedEl = document.getElementById("dashboard-feed");
   if (!feedEl) return;
 
-  await ensureKegiatanLoaded(); // 🔥 KUNCI UTAMA
-
   feedEl.innerHTML = "";
 
-  if (!Array.isArray(KEGIATAN) || KEGIATAN.length === 0) {
-    feedEl.innerHTML = `
-      <li class="text-gray-400 text-center py-4">
-        Belum ada aktivitas
-      </li>
-    `;
-    return;
-  }
+  try {
+    // 🔥 FETCH DATA LANGSUNG DARI API
+    const res = await fetch(API.kegiatan);
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    
+    const json = await res.json();
+    const kegiatanData = Array.isArray(json) ? json : [];
 
-  const sorted = [...KEGIATAN]
-    .filter((k) => k.tanggal)
-    .sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal))
-    .slice(0, 5);
-
-  sorted.forEach((k) => {
-    const user = k.pj || "User";
-    const judul =
-      k.deskripsi || `${k.bentuk || "Kegiatan"} (${k.bidang || "-"})`;
-
-    const tanggal = formatTanggal(k.tanggal);
-
-    feedEl.innerHTML += `
-      <li
-        class="border-b pb-3 last:border-0 cursor-pointer hover:bg-gray-50 rounded px-2"
-        onclick="openKegiatanDetail(${k.row})"
-      >
-        🔔 <b>${user}</b> menambahkan kegiatan<br />
-        <span class="text-gray-600">${judul}</span><br />
-        <span class="text-gray-400 text-xs">${tanggal}</span>
-      </li>
-    `;
-  });
-}
-
-async function ensureKegiatanLoaded() {
-  if (!Array.isArray(KEGIATAN) || KEGIATAN.length === 0) {
-    if (typeof loadKegiatanFromSheet === "function") {
-      await loadKegiatanFromSheet();
+    if (kegiatanData.length === 0) {
+      feedEl.innerHTML = `
+        <li class="text-gray-400 text-center py-4">
+          Belum ada aktivitas
+        </li>
+      `;
+      return;
     }
+
+    // 🔥 AMBIL 6 DATA TERAKHIR BERDASARKAN ROW (URUTAN INPUT)
+    // Filter yang punya tanggal, sort by row descending, ambil 6 terbaru
+    const latestSix = [...kegiatanData]
+      .filter((k) => k.tanggal && k.row !== undefined)
+      .sort((a, b) => Number(b.row) - Number(a.row)) // 🔥 Row terbesar = input terakhir
+      .slice(0, 6); // 🔥 Ambil 6 data
+
+    latestSix.forEach((k) => {
+      const user = k.pj || k.fakultas || "User";
+      const judul =
+        k.deskripsi || `${k.bentuk || "Kegiatan"} (${k.bidang || "-"})`;
+      const tanggal = formatTanggal(k.tanggal);
+
+      feedEl.innerHTML += `
+        <li
+          class="border-b pb-3 last:border-0 cursor-pointer hover:bg-gray-50 rounded px-2"
+          onclick="openKegiatanDetail(${k.row})"
+        >
+          🔔 <b>${user}</b> menambahkan kegiatan<br />
+          <span class="text-gray-600 text-sm">${judul}</span><br />
+          <span class="text-gray-400 text-xs">${tanggal}</span>
+        </li>
+      `;
+    });
+  } catch (err) {
+    console.error("loadDashboardFeed error:", err);
+    feedEl.innerHTML = `
+      <li class="text-red-400 text-center py-4">
+        Gagal memuat aktivitas
+      </li>
+    `;
   }
 }
 
