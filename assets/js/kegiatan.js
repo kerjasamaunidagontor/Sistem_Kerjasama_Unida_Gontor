@@ -513,6 +513,10 @@ async function saveKegiatan() {
     });
 
     await loadKegiatanFromSheet(); // 🔄 refresh dari sheet
+    // 🔥 TAMBAH INI: Refresh dashboard feed
+    if (typeof loadDashboardFeed === "function") {
+      await loadDashboardFeed();
+    }
     closeKegiatanForm();
   } catch (err) {
     console.error("saveKegiatan error:", err);
@@ -540,6 +544,11 @@ async function deleteKegiatan(sheetRow) {
     });
 
     await loadKegiatanFromSheet();
+
+    // 🔥 TAMBAH INI: Refresh dashboard feed
+    if (typeof loadDashboardFeed === "function") {
+      await loadDashboardFeed();
+    }
   } finally {
     hideLoading();
   }
