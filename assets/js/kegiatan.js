@@ -35,6 +35,11 @@ function getFilteredKegiatan() {
 /* ===============================
    DOWNLOAD FILE (ADVANCED)
 =============================== */
+/* ===============================
+   DOWNLOAD FILE (ADVANCED) - UPDATED v2
+=============================== */
+
+// 🔥 CSV DOWNLOAD - DENGAN JENIS MITRA, LAPORAN & DOKUMEN
 function downloadKegiatanCSV() {
   const data = getFilteredKegiatan();
 
@@ -51,7 +56,10 @@ function downloadKegiatanCSV() {
     "Tanggal",
     "Judul",
     "Mitra",
+    "Jenis Mitra",   // 🔥 BARU
     "Status",
+    "Laporan",
+    "Dokumen",
   ];
 
   const rows = data.map((d) => [
@@ -62,7 +70,10 @@ function downloadKegiatanCSV() {
     d.tanggal,
     d.judul,
     d.mitra,
+    d.jenisMitra || "",   // 🔥 BARU
     d.status,
+    d.laporan || "",
+    d.dokumen || "",
   ]);
 
   let csvContent =
@@ -76,6 +87,8 @@ function downloadKegiatanCSV() {
   a.download = "data-kegiatan.csv";
   a.click();
 }
+
+// 🔥 EXCEL DOWNLOAD - DENGAN JENIS MITRA, LAPORAN & DOKUMEN
 function downloadKegiatanExcel() {
   const data = getFilteredKegiatan();
 
@@ -92,7 +105,10 @@ function downloadKegiatanExcel() {
     Tanggal: d.tanggal,
     Judul: d.judul,
     Mitra: d.mitra,
+    "Jenis Mitra": d.jenisMitra || "",   // 🔥 BARU
     Status: d.status,
+    Laporan: d.laporan || "",
+    Dokumen: d.dokumen || "",
   }));
 
   const worksheet = XLSX.utils.json_to_sheet(formatted);
@@ -101,6 +117,8 @@ function downloadKegiatanExcel() {
 
   XLSX.writeFile(workbook, "data-kegiatan.xlsx");
 }
+
+// 🔥 PDF DOWNLOAD - DENGAN JENIS MITRA, LAPORAN & DOKUMEN
 async function downloadKegiatanPDF() {
   const data = getFilteredKegiatan();
 
@@ -110,7 +128,7 @@ async function downloadKegiatanPDF() {
   }
 
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF("l", "mm", "a4"); // landscape biar muat
+  const doc = new jsPDF("l", "mm", "a4"); // landscape biar muat 11 kolom
 
   const tableData = data.map((d) => [
     d.fakultas,
@@ -120,7 +138,10 @@ async function downloadKegiatanPDF() {
     d.tanggal,
     d.judul,
     d.mitra,
+    d.jenisMitra || "",   // 🔥 BARU
     d.status,
+    d.laporan || "",
+    d.dokumen || "",
   ]);
 
   doc.text("Data Kegiatan Kerjasama", 14, 10);
@@ -135,12 +156,26 @@ async function downloadKegiatanPDF() {
         "Tanggal",
         "Judul",
         "Mitra",
+        "Jenis Mitra",   // 🔥 BARU
         "Status",
+        "Laporan",
+        "Dokumen",
       ],
     ],
     body: tableData,
     startY: 20,
-    styles: { fontSize: 7 },
+    styles: { 
+      fontSize: 5,              // 🔥 diperkecil lagi agar muat 11 kolom
+      cellWidth: "wrap",
+      overflow: "linebreak",
+      halign: "left",
+    },
+    columnStyles: {
+      5: { cellWidth: 50 },  // Judul (teks panjang)
+      7: { cellWidth: 30 },  // Jenis Mitra
+      9: { cellWidth: 35 },  // Laporan
+      10: { cellWidth: 35 }, // Dokumen
+    },
   });
 
   doc.save("data-kegiatan.pdf");
