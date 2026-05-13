@@ -18,19 +18,111 @@ function applyKegiatanFilter() {
 }
 
 function getFilteredKegiatan() {
-  const keyword =
-    document.getElementById("search-kegiatan")?.value.toLowerCase() || "";
-  const bidang = document.getElementById("filter-kegiatan")?.value || "";
+  // 🔍 Global search (existing)
+  const globalKeyword = document.getElementById("search-kegiatan")?.value.toLowerCase() || "";
+  const bidangDropdown = document.getElementById("filter-kegiatan")?.value || "";
+
+  // 🔍 Filter per kolom (dropdown & date range)
+  const filterUnit = document.getElementById("filter-unit")?.value.toLowerCase() || "";
+  const filterJenis = document.getElementById("filter-jenis")?.value.toLowerCase() || "";
+  const filterBentuk = document.getElementById("filter-bentuk")?.value.toLowerCase() || "";
+  const filterTingkat = document.getElementById("filter-tingkat")?.value.toLowerCase() || "";
+  const filterTanggalFrom = document.getElementById("filter-tanggal-from")?.value || "";
+  const filterTanggalTo = document.getElementById("filter-tanggal-to")?.value || "";
+  const searchJudul = document.getElementById("search-judul")?.value.toLowerCase() || "";
+  const filterMitra = document.getElementById("filter-mitra")?.value.toLowerCase() || "";
+  const filterKeterangan = document.getElementById("filter-keterangan")?.value.toLowerCase() || "";
 
   return KEGIATAN.filter((k) => {
-    const matchBidang = !bidang || k.bidang === bidang;
+    // Filter bidang dari dropdown utama
+    const matchBidang = !bidangDropdown || (k.bidang ?? "").toLowerCase() === bidangDropdown;
 
-    const matchSearch = Object.values(k).some((v) =>
-      String(v).toLowerCase().includes(keyword),
+    // Filter global search
+    const matchGlobal = !globalKeyword || Object.values(k).some((v) =>
+      String(v ?? "").toLowerCase().includes(globalKeyword)
     );
 
-    return matchBidang && matchSearch;
+    // 🔍 Filter per kolom
+    const matchUnit = !filterUnit || (k.pj ?? "").toLowerCase().includes(filterUnit);
+    const matchJenis = !filterJenis || (k.bidang ?? "").toLowerCase() === filterJenis;
+    const matchBentuk = !filterBentuk || (k.bentuk ?? "").toLowerCase() === filterBentuk;
+    const matchTingkat = !filterTingkat || (k.tingkat ?? "").toLowerCase() === filterTingkat;
+    
+    // 📅 Filter Date Range
+    const tanggalKegiatan = k.tanggal ? new Date(k.tanggal) : null;
+    const dateFrom = filterTanggalFrom ? new Date(filterTanggalFrom) : null;
+    const dateTo = filterTanggalTo ? new Date(filterTanggalTo + 'T23:59:59') : null; // include whole day
+    
+    const matchTanggal = (!dateFrom || (tanggalKegiatan && tanggalKegiatan >= dateFrom)) &&
+                         (!dateTo || (tanggalKegiatan && tanggalKegiatan <= dateTo));
+    
+    const matchJudul = !searchJudul || (k.deskripsi ?? "").toLowerCase().includes(searchJudul);
+    const matchMitra = !filterMitra || (k.mitra ?? "").toLowerCase().includes(filterMitra);
+    const matchKeterangan = !filterKeterangan || (k.status ?? "").toLowerCase() === filterKeterangan;
+
+    return matchBidang && matchGlobal && 
+           matchUnit && matchJenis && matchBentuk && matchTingkat && 
+           matchTanggal && matchJudul && matchMitra && matchKeterangan;
   });
+}
+function resetAllFilters() {
+  // Reset semua dropdown
+  ['unit', 'jenis', 'bentuk', 'tingkat', 'keterangan'].forEach(id => {
+    const el = document.getElementById(`filter-${id}`);
+    if (el) el.value = '';
+  });
+  
+  // Reset date range
+  document.getElementById('filter-tanggal-from').value = '';
+  document.getElementById('filter-tanggal-to').value = '';
+  
+  // Reset text search
+  ['judul', 'mitra'].forEach(id => {
+    const el = document.getElementById(`search-${id}`);
+    if (el) el.value = '';
+  });
+  
+  // Reset global search & filter
+  const globalSearch = document.getElementById('search-kegiatan');
+  const filterKegiatan = document.getElementById('filter-kegiatan');
+  if (globalSearch) globalSearch.value = '';
+  if (filterKegiatan) filterKegiatan.value = '';
+  
+  // Re-apply filter
+  applyKegiatanFilter();
+}
+/* ===============================
+   POPULATE DROPDOWN FILTER DARI DATA
+=============================== */
+function populateColumnFilters() {
+  // 🔹 Ambil data unik untuk setiap kolom
+  const units = [...new Set(KEGIATAN.map(k => k.pj).filter(Boolean))].sort();
+  const bentuk = [...new Set(KEGIATAN.map(k => k.bentuk).filter(Boolean))].sort();
+  const mitra = [...new Set(KEGIATAN.map(k => k.mitra).filter(Boolean))].sort();
+
+  // 🔹 Helper: isi select
+  const fillSelect = (id, items, placeholder = "Pilih...") => {
+    const select = document.getElementById(id);
+    if (!select) return;
+    
+    const currentValue = select.value; // preserve selected
+    select.innerHTML = `<option value="">${placeholder}</option>`;
+    
+    items.forEach(item => {
+      const opt = document.createElement("option");
+      opt.value = item;
+      opt.textContent = item;
+      if (item.toLowerCase() === currentValue.toLowerCase()) {
+        opt.selected = true;
+      }
+      select.appendChild(opt);
+    });
+  };
+
+  // 🔹 Isi dropdown
+  fillSelect("filter-unit", units, "Semua Unit");
+  fillSelect("filter-bentuk", bentuk, "Semua Bentuk");
+  fillSelect("filter-mitra", mitra, "Semua Mitra");
 }
 /* ===============================
    DOWNLOAD FILE (ADVANCED)
@@ -663,6 +755,8 @@ async function loadKegiatanFromSheet() {
       buildMitraFromKegiatan();
       renderMitraGroupedTable();
     }
+    // 🔥 POPULATE DROPDOWN FILTER SETELAH DATA SIAP
+    populateColumnFilters();
 
     // =====================================================
     // 🔥 AUTO EDIT JIKA DATANG DARI REKAP (TAMBAHAN BARU)
