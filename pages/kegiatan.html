@@ -15,6 +15,7 @@
     </button>
   </div>
 
+
   <div class="flex flex-col sm:flex-row gap-2">
 
     <select
@@ -45,6 +46,27 @@
     </div>
 
   </div>
+  <!-- Tombol Reset Filter - Ghost dengan Badge -->
+<div class="flex justify-end mb-3">
+  <button onclick="resetAllFilters()" 
+          class="group relative inline-flex items-center gap-2 px-4 py-2 text-gray-600 text-xs font-medium 
+                 hover:text-purple-600 hover:bg-purple-50 
+                 focus:outline-none focus:ring-2 focus:ring-purple-400 
+                 rounded-lg transition-all duration-200">
+    <span class="relative">
+      <svg class="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" 
+           fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+      </svg>
+      <span class="absolute -top-1 -right-1 flex h-2 w-2">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+      </span>
+    </span>
+    <span>Reset Filter</span>
+  </button>
+</div>
 
 </div>
 
@@ -53,24 +75,109 @@
   <div class="overflow-x-auto">
     <table class="min-w-[1100px] w-full text-xs sm:text-sm">
       <thead class="bg-gray-100 text-gray-600 uppercase text-[11px] sm:text-xs tracking-wide">
-        <tr>
-          <th class="p-3 text-left w-40">Unit Pelaksana</th>
-          <th class="p-3 text-left w-24">Jenis</th>
-          <th class="p-3 text-left w-40">Bentuk Kegiatan</th>
-          <th class="p-3 text-left w-24">Tingkat</th>
-          <th class="p-3 text-left w-32">Tanggal</th>
-          <th class="p-3 text-left w-64">Judul Kerjasama</th>
-          <th class="p-3 text-left w-40">Mitra</th>
-          <th class="p-3 text-left w-32">Keterangan</th>
-
-          <!-- AKSI -->
-          <th
-            class="p-3 text-center w-20 whitespace-nowrap sticky right-0 bg-gray-100 z-20"
-          >
-            Aksi
-          </th>
-        </tr>
-      </thead>
+  <tr>
+    <th class="p-3 text-left w-40">Unit Pelaksana</th>
+    <th class="p-3 text-left w-24">Jenis</th>
+    <th class="p-3 text-left w-40">Bentuk Kegiatan</th>
+    <th class="p-3 text-left w-24">Tingkat</th>
+    <th class="p-3 text-left w-32">Tanggal</th>
+    <th class="p-3 text-left w-64">Judul Kerjasama</th>
+    <th class="p-3 text-left w-40">Mitra</th>
+    <th class="p-3 text-left w-32">Keterangan</th>
+    <th class="p-3 text-center w-20 whitespace-nowrap sticky right-0 bg-gray-100 z-20">Aksi</th>
+  </tr>
+  
+  <!-- 🔍 BARIS FILTER PER KOLOM -->
+<tr class="bg-gray-50 border-t">
+  
+  <!-- Unit Pelaksana - DROPDOWN -->
+  <th class="p-2">
+    <select id="filter-unit" 
+            class="w-full text-xs px-2 py-1.5 border border-gray-300 rounded bg-white focus:border-purple-500 focus:ring-1 focus:ring-purple-200 outline-none transition" 
+            onchange="applyKegiatanFilter()">
+      <option value="">Semua Unit</option>
+    </select>
+  </th>
+  
+  <!-- Jenis - DROPDOWN -->
+  <th class="p-2">
+    <select id="filter-jenis" 
+            class="w-full text-xs px-2 py-1.5 border border-gray-300 rounded bg-white focus:border-purple-500 focus:ring-1 focus:ring-purple-200 outline-none transition" 
+            onchange="applyKegiatanFilter()">
+      <option value="">Semua Jenis</option>
+      <option value="Pendidikan">Pendidikan</option>
+      <option value="Penelitian">Penelitian</option>
+      <option value="Pengabdian Kepada Masyarakat">Pengabdian</option>
+    </select>
+  </th>
+  
+  <!-- Bentuk Kegiatan - DROPDOWN -->
+  <th class="p-2">
+    <select id="filter-bentuk" 
+            class="w-full text-xs px-2 py-1.5 border border-gray-300 rounded bg-white focus:border-purple-500 focus:ring-1 focus:ring-purple-200 outline-none transition" 
+            onchange="applyKegiatanFilter()">
+      <option value="">Semua Bentuk</option>
+    </select>
+  </th>
+  
+  <!-- Tingkat - DROPDOWN -->
+  <th class="p-2">
+    <select id="filter-tingkat" 
+            class="w-full text-xs px-2 py-1.5 border border-gray-300 rounded bg-white focus:border-purple-500 focus:ring-1 focus:ring-purple-200 outline-none transition" 
+            onchange="applyKegiatanFilter()">
+      <option value="">Semua Tingkat</option>
+      <option value="International">International</option>
+      <option value="Nasional">Nasional</option>
+      <option value="Lokal">Lokal</option>
+    </select>
+  </th>
+  
+  <!-- Tanggal - DATE RANGE (COMPACT) -->
+  <th class="p-2">
+    <div class="flex items-center gap-1">
+      <input type="date" id="filter-tanggal-from" 
+             class="w-full text-[10px] sm:text-xs px-1.5 py-1.5 border border-gray-300 rounded bg-white focus:border-purple-500 focus:ring-1 focus:ring-purple-200 outline-none transition min-w-[70px]" 
+             onchange="applyKegiatanFilter()">
+      <span class="text-gray-400 text-[10px] font-medium">-</span>
+      <input type="date" id="filter-tanggal-to" 
+             class="w-full text-[10px] sm:text-xs px-1.5 py-1.5 border border-gray-300 rounded bg-white focus:border-purple-500 focus:ring-1 focus:ring-purple-200 outline-none transition min-w-[70px]" 
+             onchange="applyKegiatanFilter()">
+    </div>
+  </th>
+  
+  <!-- Judul Kerjasama - TEXT SEARCH -->
+  <th class="p-2">
+    <input type="text" id="search-judul" 
+           placeholder="Cari judul..." 
+           class="w-full text-xs px-2 py-1.5 border border-gray-300 rounded bg-white focus:border-purple-500 focus:ring-1 focus:ring-purple-200 outline-none transition placeholder-gray-400" 
+           onkeyup="applyKegiatanFilter()">
+  </th>
+  
+  <!-- Mitra - TEXT SEARCH (atau bisa dropdown) -->
+  <th class="p-2">
+    <input type="text" id="search-mitra" 
+           placeholder="Cari mitra..." 
+           class="w-full text-xs px-2 py-1.5 border border-gray-300 rounded bg-white focus:border-purple-500 focus:ring-1 focus:ring-purple-200 outline-none transition placeholder-gray-400" 
+           onkeyup="applyKegiatanFilter()">
+  </th>
+  
+  <!-- Keterangan/Status - DROPDOWN -->
+  <th class="p-2">
+    <select id="filter-keterangan" 
+            class="w-full text-xs px-2 py-1.5 border border-gray-300 rounded bg-white focus:border-purple-500 focus:ring-1 focus:ring-purple-200 outline-none transition" 
+            onchange="applyKegiatanFilter()">
+      <option value="">Semua Status</option>
+      <option value="Diterima">Diterima</option>
+      <option value="Direvisi">Direvisi</option>
+      <option value="Belum Sesuai">Belum Sesuai</option>
+      <option value="Proses">Proses</option>
+    </select>
+  </th>
+  
+  <!-- Aksi Column - Empty -->
+  <th class="p-2 sticky right-0 bg-gray-50 z-20"></th>
+</tr>
+</thead>
 
       <tbody id="kegiatan-body"></tbody>
     </table>
