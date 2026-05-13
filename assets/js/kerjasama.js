@@ -23,9 +23,14 @@ async function loadKerjasamaFromSheet() {
     KERJASAMA = Array.isArray(json) ? json : json.data || [];
 
     console.log("KERJASAMA from sheet:", KERJASAMA);
+    
     renderKerjasamaTable();
     renderChartStatus();
     renderChartSebaran();
+    
+    // 🔥 POPULATE DROPDOWN FILTER SETELAH DATA SIAP
+    populateKerjasamaFilters();
+    
   } catch (err) {
     console.error("loadKerjasamaFromSheet error:", err);
     KERJASAMA = [];
@@ -42,22 +47,96 @@ let CURRENT_PAGE = 1;
 const PER_PAGE = 50;
 let SEARCH_KEY = "";
 
+
 /* ===============================
-   SEARCH
+   APPLY FILTER (GLOBAL + PER KOLOM)
 =============================== */
-function handleSearch() {
-  SEARCH_KEY = document.getElementById("searchKerjasama").value.toLowerCase();
+function applyKerjasamaFilter() {
+  // Update global search
+  SEARCH_KEY = document.getElementById("searchKerjasama")?.value.toLowerCase() || "";
+  
+  // Reset ke halaman 1 saat filter berubah
   CURRENT_PAGE = 1;
   renderKerjasamaTable();
 }
-
+/* ===============================
+   GET FILTERED DATA (ADVANCED)
+=============================== */
 function getFilteredData() {
-  if (!SEARCH_KEY) return KERJASAMA;
-  return KERJASAMA.filter((item) =>
-    Object.values(item).some((val) =>
-      String(val).toLowerCase().includes(SEARCH_KEY),
-    ),
-  );
+  // 🔍 Global search
+  const globalKeyword = SEARCH_KEY;
+  
+  // 🔍 Filter per kolom (KECUALI jumlah)
+  const filterMitra = document.getElementById("filter-mitra")?.value.toLowerCase() || "";
+  const filterBenua = document.getElementById("filter-benua")?.value.toLowerCase() || "";
+  const filterNegara = document.getElementById("filter-negara")?.value.toLowerCase() || "";
+  const filterJenisMitra = document.getElementById("filter-jenis-mitra")?.value.toLowerCase() || "";
+
+  return KERJASAMA.filter((item) => {
+    // Global search
+    const matchGlobal = !globalKeyword || Object.values(item).some((val) =>
+      String(val ?? "").toLowerCase().includes(globalKeyword)
+    );
+
+    // Filter per kolom (data mentah)
+    const matchMitra = !filterMitra || (item.mitra ?? "").toLowerCase().includes(filterMitra);
+    const matchBenua = !filterBenua || (item.benua ?? "").toLowerCase() === filterBenua;
+    const matchNegara = !filterNegara || (item.negara ?? "").toLowerCase() === filterNegara;
+    const matchJenisMitra = !filterJenisMitra || (item.jenisMitra ?? "").toLowerCase() === filterJenisMitra;
+
+    // ✅ Hanya filter yang sudah didefinisikan
+return matchGlobal && matchMitra && matchBenua && matchNegara && matchJenisMitra;
+  });
+}
+/* ===============================
+   POPULATE DROPDOWN FILTER DARI DATA
+=============================== */
+function populateKerjasamaFilters() {
+  // 🔹 Ambil data unik untuk dropdown
+  const benuaList = [...new Set(KERJASAMA.map(k => k.benua).filter(Boolean))].sort();
+  const negaraList = [...new Set(KERJASAMA.map(k => k.negara).filter(Boolean))].sort();
+  const jenisMitraList = [...new Set(KERJASAMA.map(k => k.jenisMitra).filter(Boolean))].sort();
+
+  // 🔹 Helper: isi select dengan preserve selected value
+  const fillSelect = (id, items, placeholder = "Pilih...") => {
+    const select = document.getElementById(id);
+    if (!select) return;
+    
+    const currentValue = select.value;
+    select.innerHTML = `<option value="">${placeholder}</option>`;
+    
+    items.forEach(item => {
+      const opt = document.createElement("option");
+      opt.value = item;
+      opt.textContent = item;
+      if (item.toLowerCase() === currentValue.toLowerCase()) {
+        opt.selected = true;
+      }
+      select.appendChild(opt);
+    });
+  };
+
+  // 🔹 Isi dropdown
+  fillSelect("filter-benua", benuaList, "Semua Benua");
+  fillSelect("filter-negara", negaraList, "Semua Negara");
+  fillSelect("filter-jenis-mitra", jenisMitraList, "Semua Jenis");
+}
+
+function resetKerjasamaFilters() {
+  // Reset text search
+  document.getElementById('filter-mitra').value = '';
+  
+  // Reset number filter (single)
+  document.getElementById('filter-jumlah').value = '';
+  
+  // Reset dropdowns
+  ['benua', 'negara', 'jenis-mitra'].forEach(id => {
+    const el = document.getElementById(`filter-${id}`);
+    if (el) el.value = '';
+  });
+  
+  // Re-apply filter
+  applyKerjasamaFilter();
 }
 /* ===============================
    GROUP BY MITRA
@@ -172,12 +251,12 @@ function renderKerjasamaTable() {
   const tbody = document.getElementById("kerjasama-body");
   if (!tbody) return;
 
-  const filtered = getFilteredData();
+  const filtered = getFilteredData(); // Filter data mentah dulu
 
   if (filtered.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="8" class="p-4 text-center text-gray-500">
+        <td colspan="6" class="p-4 text-center text-gray-500">
           Data tidak ditemukan
         </td>
       </tr>`;
@@ -189,7 +268,36 @@ function renderKerjasamaTable() {
   // GROUP BY MITRA
   // ===============================
   const grouped = groupKerjasamaByMitra(filtered);
+  
+  // 🔥 FILTER JUMLAH IMPLEMENTASI (SETELAH GROUPING!)
+  const filterJumlah = document.getElementById("filter-jumlah")?.value || "";
+  
+  if (filterJumlah) {
+    const targetJumlah = parseInt(filterJumlah);
+    
+    // Filter grouped data berdasarkan jumlah
+    Object.keys(grouped).forEach(mitra => {
+      if (grouped[mitra].length !== targetJumlah) {
+        delete grouped[mitra]; // Hapus mitra yang jumlahnya tidak match
+      }
+    });
+  }
+  
   const mitraList = Object.keys(grouped);
+
+  // ===============================
+  // CHECK IF EMPTY AFTER JUMLAH FILTER
+  // ===============================
+  if (mitraList.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="p-4 text-center text-gray-500">
+          Data tidak ditemukan
+        </td>
+      </tr>`;
+    renderPagination(0);
+    return;
+  }
 
   // ===============================
   // PAGINATION (PER MITRA)
@@ -199,7 +307,7 @@ function renderKerjasamaTable() {
   const pageMitra = mitraList.slice(start, start + PER_PAGE);
 
   // ===============================
-  // RENDER (STRING BUFFER)
+  // RENDER TABLE
   // ===============================
   let html = "";
 
@@ -207,6 +315,7 @@ function renderKerjasamaTable() {
     const items = grouped[mitra];
     const first = items[0];
     const safeMitra = mitra.replace(/"/g, "&quot;");
+    const jumlahImplementasi = items.length; // 🔥 Hitung dari grouped data
 
     // 🔹 BARIS RINGKASAN MITRA
     html += `
@@ -214,7 +323,7 @@ function renderKerjasamaTable() {
         <td class="p-3">${mitra}</td>
         <td class="p-3">${first.benua || "-"}</td>
         <td class="p-3">${first.negara || "-"}</td>
-        <td class="p-3">${items.length} Kerjasama</td>
+        <td class="p-3">${jumlahImplementasi} Kerjasama</td>
         <td class="p-3">${first.jenisMitra || "-"}</td>
         <td class="p-2 text-center">
           <button
@@ -234,21 +343,21 @@ function renderKerjasamaTable() {
         <tr class="border-b bg-gray-50 mitra-detail hidden"
             data-mitra="${safeMitra}">
           <td class="p-3 pl-6 text-sm">* ${d.mitraTerkait || "-"}</td>
-          <td class="p-3 text-sm">${d.noSurat}</td>
-          <td class="p-3 text-sm">${d.jenisDokumen}</td>
-          <td class="p-3 text-sm">${d.tingkat}</td>
-          <td class="p-3 text-sm">${d.status}</td>
+          <td class="p-3 text-sm">${d.noSurat || "-"}</td>
+          <td class="p-3 text-sm">${d.jenisDokumen || "-"}</td>
+          <td class="p-3 text-sm">${d.tingkat || "-"}</td>
+          <td class="p-3 text-sm">${d.status || "-"}</td>
           <td class="p-3 text-sm">
-            ${d.tahunMulai} – ${d.tahunBerakhir}
+            ${d.tahunMulai || "-"} – ${d.tahunBerakhir || "-"}
             <div class="flex gap-2 mt-1">
               <button
                 onclick="openDetailKerjasama(${d.row})"
                 class="w-7 h-7 bg-indigo-100 text-indigo-600 rounded-lg"
               >🔍</button>
               <button
-    onclick="openFile(${d.row})"
-    class="w-7 h-7 bg-green-100 text-green-600 rounded-lg"
-  >📎</button>
+                onclick="openFile(${d.row})"
+                class="w-7 h-7 bg-green-100 text-green-600 rounded-lg"
+              >📎</button>
               <button
                 onclick="deleteKerjasama(${d.row})"
                 class="w-7 h-7 bg-red-100 text-red-600 rounded-lg"
@@ -260,9 +369,7 @@ function renderKerjasamaTable() {
     }
   });
 
-  // 🔥 1x DOM UPDATE
   tbody.innerHTML = html;
-
   bindToggleButtons();
   renderPagination(total);
 }
