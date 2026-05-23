@@ -923,35 +923,44 @@ function syncTahunFromTanggal() {
   const tahunBerakhir = document.getElementById("tahunBerakhir");
 
   if (tglMulai?.value) {
-    tahunMulai.value = new Date(tglMulai.value).getFullYear();
+    // ✅ Ambil tahun langsung dari string YYYY-MM-DD
+    tahunMulai.value = tglMulai.value.split("-")[0];
   } else {
     tahunMulai.value = "";
   }
 
   if (tglBerakhir?.value) {
-    tahunBerakhir.value = new Date(tglBerakhir.value).getFullYear();
+    tahunBerakhir.value = tglBerakhir.value.split("-")[0];
   } else {
     tahunBerakhir.value = "";
   }
 }
 function toDateInputValue(val) {
   if (!val) return "";
-
-  // kalau sudah ISO
+  
+  // ✅ Jika sudah format YYYY-MM-DD, kembalikan langsung
   if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
-
-  // dd/mm/yyyy atau d/m/yyyy
+  
+  // ✅ Handle format MM/DD/YYYY (dari Google Sheets US format)
   if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(val)) {
-    const [d, m, y] = val.split("/");
+    const [m, d, y] = val.split("/");
     return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
   }
-
-  // fallback (Date object / timestamp)
+  
+  // ✅ Handle format DD/MM/YYYY (jika diperlukan)
+  // Jika Anda pakai format Indonesia, swap m dan d di bawah:
+  // const [d, m, y] = val.split("/");
+  
+  // ✅ Fallback: Date object / timestamp - gunakan LOCAL date components
   const dt = new Date(val);
   if (!isNaN(dt)) {
-    return dt.toISOString().slice(0, 10);
+    // ⚠️ PENTING: Gunakan getFullYear/getMonth/getDate untuk ambil tanggal LOKAL
+    const year = dt.getFullYear();
+    const month = String(dt.getMonth() + 1).padStart(2, "0");
+    const day = String(dt.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   }
-
+  
   return "";
 }
 /* ===============================
@@ -963,12 +972,19 @@ function toDateInputValue(val) {
 function hitungSisaWaktu(tglBerakhirVal) {
   if (!tglBerakhirVal) return "";
 
+  // ✅ Parse tanggal tanpa timezone shift: gunakan komponen lokal
+  const [y, m, d] = tglBerakhirVal.split("-").map(Number);
+  const end = new Date(y, (m || 1) - 1, d || 1); // Month 0-indexed
   const now = new Date();
-  const end = new Date(tglBerakhirVal);
+  
+  // ✅ Reset waktu ke midnight untuk perbandingan tanggal yang akurat
+  now.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
 
   if (isNaN(end)) return "Tidak Aktif";
   if (end < now) return "Tidak Aktif";
 
+  // Hitung selisih
   let years = end.getFullYear() - now.getFullYear();
   let months = end.getMonth() - now.getMonth();
   let days = end.getDate() - now.getDate();
@@ -986,16 +1002,18 @@ function hitungSisaWaktu(tglBerakhirVal) {
   return `${years} Tahun ${months} Bulan ${days} Hari`;
 }
 
-// 🔥 FUNGSI BARU: Hitung Keterangan (Aktif/Tidak Aktif)
 function hitungKeterangan(tglBerakhirVal) {
   if (!tglBerakhirVal) return "Aktif";
   
+  const [y, m, d] = tglBerakhirVal.split("-").map(Number);
+  const end = new Date(y, (m || 1) - 1, d || 1);
   const now = new Date();
-  const end = new Date(tglBerakhirVal);
+  
+  now.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
   
   if (isNaN(end)) return "Aktif";
   
-  // Jika tanggal berakhir sudah lewat → Tidak Aktif
   return end < now ? "Tidak Aktif" : "Aktif";
 }
 
@@ -1291,4 +1309,13 @@ tglBerakhir?.addEventListener("input", () => {
     }
   });
 
+}
+// 🔍 Debug helper - panggil di console untuk cek
+function debugDate(val, label = "") {
+  console.log(`📅 ${label}:`, {
+    original: val,
+    toDateInputValue: toDateInputValue(val),
+    newDate: new Date(val),
+    local: new Date(val).toLocaleDateString('id-ID')
+  });
 }
