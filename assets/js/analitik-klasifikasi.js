@@ -218,6 +218,45 @@ function initFilterProdi() {
   });
 }
 
+// ================== FUNGSI DOWNLOAD CHART ================ //
+function downloadChartAsPNG(canvasId, filename) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+
+  // Gunakan toDataURL dari canvas Chart.js
+  const imageURL = canvas.toDataURL('image/png');
+  
+  // Buat link download temporary
+  const link = document.createElement('a');
+  link.href = imageURL;
+  link.download = `${filename}.png`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+// Handler untuk tombol download Card 1
+function setupDownloadProdi() {
+  const btn = document.getElementById('btnDownloadProdi');
+  if (!btn) return;
+
+  btn.addEventListener('click', () => {
+    // Disable tombol sementara untuk mencegah double-click
+    btn.disabled = true;
+    
+    // Ambil info filter untuk nama file
+    const tahunLabel = currentFilterTahun === 'all' ? 'SemuaTahun' : currentFilterTahun;
+    const fakultasLabel = currentFilterFakultas === 'all' ? 'SemuaFakultas' : currentFilterFakultas.replace(/\s+/g, '_');
+    
+    const filename = `Kegiatan_Prodi_PJ_${tahunLabel}_${fakultasLabel}`;
+    
+    // Download chart
+    downloadChartAsPNG('chartProdi', filename);
+    
+    // Re-enable tombol setelah 1 detik
+    setTimeout(() => { btn.disabled = false; }, 1000);
+  });
+}
 // ================== INIT CHARTS ================= //
 function initAnalitikKlasifikasi() {
   if (!Array.isArray(KEGIATAN) || KEGIATAN.length === 0) {
@@ -227,5 +266,6 @@ function initAnalitikKlasifikasi() {
   initFilterProdi();
   renderChartJenisDokumen();
   renderChartProdi();
+  setupDownloadProdi();
 }
 
