@@ -38,46 +38,52 @@
   </div>
 
   <!-- BAR SEBARAN -->
-  <div class="bg-white rounded-xl shadow p-4">
-    <!-- HEADER CARD -->
-    <div
-      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4"
-    >
-      <h2 class="font-semibold text-sm sm:text-base">📊 Sebaran Dokumen</h2>
+<div class="bg-white rounded-xl shadow p-4">
+  <!-- HEADER CARD -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+    
+    <h2 class="font-semibold text-sm sm:text-base">📊 Sebaran Dokumen</h2>
 
+    <!-- 🔥 CONTAINER KANAN: FILTER + DOWNLOAD -->
+    <div class="flex flex-wrap items-center gap-2">
+      
       <!-- FILTER STATUS -->
       <div class="flex flex-wrap gap-2">
-        <button
-          data-status-filter="all"
-          onclick="setStatusFilter('all')"
-          class="px-3 py-1 rounded bg-gray-200 text-xs sm:text-sm"
-        >
+        <button data-status-filter="all" onclick="setStatusFilter('all')"
+          class="px-3 py-1 rounded bg-gray-200 text-xs sm:text-sm hover:bg-gray-300 transition">
           Semua
         </button>
-
-        <button
-          data-status-filter="Aktif"
-          onclick="setStatusFilter('Aktif')"
-          class="px-3 py-1 rounded bg-green-500 text-white text-xs sm:text-sm"
-        >
+        <button data-status-filter="Aktif" onclick="setStatusFilter('Aktif')"
+          class="px-3 py-1 rounded bg-green-500 text-white text-xs sm:text-sm hover:bg-green-600 transition">
           Aktif
         </button>
-
-        <button
-          data-status-filter="Tidak Aktif"
-          onclick="setStatusFilter('Tidak Aktif')"
-          class="px-3 py-1 rounded bg-red-500 text-white text-xs sm:text-sm"
-        >
+        <button data-status-filter="Tidak Aktif" onclick="setStatusFilter('Tidak Aktif')"
+          class="px-3 py-1 rounded bg-red-500 text-white text-xs sm:text-sm hover:bg-red-600 transition">
           Tidak Aktif
         </button>
       </div>
-    </div>
 
-    <!-- CHART -->
-    <div class="relative w-full h-[300px] sm:h-[380px]">
-      <canvas id="chartSebaranDokumen" class="!w-full !h-full"></canvas>
+      <!-- 🔥 TOMBOL DOWNLOAD -->
+      <button id="btnDownloadSebaran"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium 
+               text-white bg-blue-600 rounded-lg hover:bg-blue-700 
+               focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+               transition disabled:opacity-50 disabled:cursor-not-allowed"
+        title="Download bagan sesuai filter aktif">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        <span class="hidden sm:inline">Download</span>
+      </button>
+
     </div>
   </div>
+
+  <!-- CHART -->
+  <div class="relative w-full h-[300px] sm:h-[380px]">
+    <canvas id="chartSebaranDokumen" class="!w-full !h-full"></canvas>
+  </div>
+</div>
 
   <!-- TABEL -->
   <div class="bg-white rounded-xl shadow p-4">
