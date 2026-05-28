@@ -60,71 +60,134 @@ function renderLeafletMap() {
     leafletMap = null;
   }
 
-  // 🔒 FIXED INITIAL VIEW
-  const initialCenter = [-2, 118];
-  const initialZoom = 4;
+  // 🌍 TAMPILKAN SELURUH DUNIA
+  const initialCenter = [20, 0];  // ✅ Pusat dunia (Afrika/Eropa)
+  const initialZoom = 2;           // ✅ Zoom out untuk lihat semua benua
 
   leafletMap = L.map("map", {
-    zoomControl: true,
-    scrollWheelZoom: false, // ⛔ no accidental zoom
-    doubleClickZoom: false, // ⛔ no jump zoom
+    zoomControl: false,
+    scrollWheelZoom: true,
+    doubleClickZoom: true,
     touchZoom: true,
+    attributionControl: false,
+    // ✅ Batasi zoom minimum agar tetap bisa lihat dunia penuh
+    minZoom: 1,
+    maxZoom: 10,
   }).setView(initialCenter, initialZoom);
 
-  L.tileLayer(
-    "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
-    { attribution: "&copy; OpenStreetMap" },
-  ).addTo(leafletMap);
+  // 🎨 PREMIUM TILE LAYER
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 20
+  }).addTo(leafletMap);
 
+  // Add zoom control in top-right
+  L.control.zoom({
+    position: 'topright'
+  }).addTo(leafletMap);
+
+  // 📊 COUNT DATA
   const count = {};
   window.KERJASAMA.forEach((d) => {
     const n = (d.negara || "Indonesia").trim();
     count[n] = (count[n] || 0) + 1;
   });
 
-  fetch(
-    "https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json",
-  )
+  // 🌍 LOAD GEOJSON
+  fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
     .then((r) => r.json())
     .then((geo) => {
       const geoLayer = L.geoJSON(geo, {
         interactive: true,
-        style: (f) => ({
-          fillColor: getColor(count[f.properties.name] || 0),
-          weight: 0.6,
-          color: "#94a3b8",
-          fillOpacity: 0.85,
-        }),
+        style: (f) => {
+          const value = count[f.properties.name] || 0;
+          const color = getColor(value);
+          return {
+            fillColor: color,
+            weight: 1,
+            color: "#ffffff",
+            fillOpacity: value > 0 ? 0.85 : 0.3,
+            className: value >= 10 ? 'high-activity' : 'geo-country'
+          };
+        },
         onEachFeature: (f, l) => {
-          // ❌ NO CLICK ZOOM
-          l.on("click", (e) => {
-            L.DomEvent.stop(e);
+          const value = count[f.properties.name] || 0;
+          
+          const popupContent = `
+            <div class="custom-popup-header">
+              <span class="country-flag">${getCountryFlag(f.properties.name)}</span>
+              ${f.properties.name}
+            </div>
+            <div class="custom-popup-body">
+              <div class="stat-row">
+                <span class="stat-label">📊 Total Kerjasama</span>
+                <span class="stat-value">${value}</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">🌟 Status</span>
+                <span class="stat-value" style="background: ${value >= 10 ? '#fee2e2' : value >= 5 ? '#fef3c7' : '#f0fdf4'}; color: ${value >= 10 ? '#dc2626' : value >= 5 ? '#f59e0b' : '#10b981'}">
+                  ${value >= 10 ? 'Sangat Aktif' : value >= 5 ? 'Aktif' : value > 0 ? 'Moderat' : 'Tidak Ada'}
+                </span>
+              </div>
+              ${value > 0 ? `
+              <div class="stat-row">
+                <span class="stat-label">📈 Aktivitas</span>
+                <span class="stat-value">${getActivityLevel(value)}</span>
+              </div>
+              ` : ''}
+            </div>
+          `;
+
+          l.bindPopup(popupContent, {
+            closeButton: true,
+            autoClose: true,
+            closeOnEscapeKey: true,
+            maxWidth: 300,
+            className: 'custom-popup'
           });
 
-          l.bindTooltip(
-            `<b>${f.properties.name}</b><br/>Kerjasama: ${
-              count[f.properties.name] || 0
-            }`,
-            {
-              sticky: false, // ⛔ stop auto pan
-              direction: "top",
-              opacity: 0.95,
-            },
-          );
+          l.on('mouseover', function() {
+            this.setStyle({
+              weight: 2,
+              color: '#10b981',
+              fillOpacity: 0.95
+            });
+            this.bringToFront();
+          });
+
+          l.on('mouseout', function() {
+            const val = count[this.feature.properties.name] || 0;
+            this.setStyle({
+              weight: 1,
+              color: "#ffffff",
+              fillOpacity: val > 0 ? 0.85 : 0.3
+            });
+          });
         },
       }).addTo(leafletMap);
 
-      // 🔒 PREVENT MAP RECENTERING
-      leafletMap.fitBounds(geoLayer.getBounds(), {
-        animate: false,
-        padding: [0, 0],
-      });
+      // ❌ HAPUS ATAU KOMENTARI BAGIAN INI (yang auto zoom ke negara)
+      // leafletMap.fitBounds(geoLayer.getBounds(), {
+      //   animate: true,
+      //   padding: [20, 20],
+      //   duration: 1.5
+      // });
 
-      // balik ke view awal (INI KUNCI)
-      leafletMap.setView(initialCenter, initialZoom, {
-        animate: false,
-      });
+      // ❌ JANGAN RESET KE VIEW INDONESIA
+      // setTimeout(() => {
+      //   leafletMap.setView(initialCenter, initialZoom, {
+      //     animate: true,
+      //     duration: 1
+      //   });
+      // }, 1000);
+      
+      // ✅ TETAPKAN VIEW DUNIA PENUH
+      leafletMap.setView(initialCenter, initialZoom);
     });
+
+  // ADD CUSTOM LEGEND
+  addLegend();
 }
 
 /*********************************
@@ -201,11 +264,75 @@ async function renderChartGeo() {
  * COLOR SCALE
  *********************************/
 function getColor(v) {
-  if (v >= 20) return "#7f1d1d";
-  if (v >= 10) return "#dc2626";
-  if (v >= 5) return "#f97316";
-  if (v >= 1) return "#fde68a";
-  return "#f8fafc";
+  if (v >= 20) return "#dc2626";      // Red-600
+  if (v >= 10) return "#ea580c";      // Orange-600
+  if (v >= 5) return "#f59e0b";       // Amber-500
+  if (v >= 1) return "#10b981";       // Emerald-500
+  return "#cbd5e1";                   // Slate-300
+}
+// 📊 Get Activity Level Text
+function getActivityLevel(value) {
+  if (value >= 20) return "🔥 Sangat Tinggi";
+  if (value >= 10) return "⭐ Tinggi";
+  if (value >= 5) return "📈 Sedang";
+  return "📊 Rendah";
+}
+// 🏳️ Simple Country Flag Emoji (You can enhance this)
+function getCountryFlag(countryName) {
+  const flagMap = {
+    "Indonesia": "🇮",
+    "Malaysia": "🇲",
+    "Singapore": "🇸🇬",
+    "Thailand": "🇹",
+    "Philippines": "🇵🇭",
+    "Vietnam": "🇻🇳",
+    "Japan": "🇯🇵",
+    "South Korea": "🇰🇷",
+    "China": "🇨🇳",
+    "Australia": "🇦🇺",
+    "United States": "🇺",
+    "United Kingdom": "🇬🇧",
+    "Germany": "🇩",
+    "Netherlands": "🇳",
+    "France": "🇫🇷",
+    "Saudi Arabia": "🇸🇦",
+    "United Arab Emirates": "🇦🇪",
+  };
+  return flagMap[countryName] || "🌍";
+}
+// 📍 Add Legend Control
+function addLegend() {
+  const legend = L.control({ position: 'bottomleft' });
+  
+  legend.onAdd = function(map) {
+    const div = L.DomUtil.create('div', 'legend');
+    div.innerHTML = `
+      <div class="legend-title">📊 Intensitas Kerjasama</div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #dc2626"></div>
+        <span>≥ 20 (Sangat Tinggi)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #ea580c"></div>
+        <span>10 - 19 (Tinggi)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #f59e0b"></div>
+        <span>5 - 9 (Sedang)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #10b981"></div>
+        <span>1 - 4 (Rendah)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #cbd5e1"></div>
+        <span>Tidak Ada Data</span>
+      </div>
+    `;
+    return div;
+  };
+  
+  legend.addTo(leafletMap);
 }
 /*********************************
  * SUMMARY & TOP COUNTRY
@@ -213,7 +340,8 @@ function getColor(v) {
 function renderGeoSummary() {
   if (!window.KERJASAMA || !window.KERJASAMA.length) return;
 
-  const map = {};
+const map = {};
+  let totalKerjasama = 0;
 
   window.KERJASAMA.forEach((d) => {
     const negara = (d.negara || "Indonesia").trim();
@@ -223,26 +351,25 @@ function renderGeoSummary() {
       map[negara] = { MoU: 0, MoA: 0, IA: 0 };
     }
 
-    if (
-      jenisRaw.includes("memorandum of understanding") ||
-      jenisRaw === "mou"
-    ) {
+    totalKerjasama++;
+
+    if (jenisRaw.includes("memorandum of understanding") || jenisRaw === "mou") {
       map[negara].MoU++;
-    } else if (
-      jenisRaw.includes("memorandum of agreement") ||
-      jenisRaw === "moa"
-    ) {
+    } else if (jenisRaw.includes("memorandum of agreement") || jenisRaw === "moa") {
       map[negara].MoA++;
-    } else if (
-      jenisRaw.includes("implementation arrangement") ||
-      jenisRaw === "ia"
-    ) {
+    } else if (jenisRaw.includes("implementation arrangement") || jenisRaw === "ia") {
       map[negara].IA++;
     }
   });
 
-  // TOTAL NEGARA
-  document.getElementById("totalNegara").innerText = Object.keys(map).length;
+  // Update mini stats
+  const totalNegara = Object.keys(map).length;
+  const negaraAktif = Object.values(map).filter(v => (v.MoU + v.MoA + v.IA) >= 5).length;
+  
+  
+  document.getElementById("statTotalNegara").innerText = totalNegara;
+  document.getElementById("statAktif").innerText = negaraAktif;
+  document.getElementById("statTotalKerjasama").innerText = totalKerjasama;
 
   // FLATTEN + SORT
   const rows = Object.entries(map)
