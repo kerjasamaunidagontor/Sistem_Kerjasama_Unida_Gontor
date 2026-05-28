@@ -13,8 +13,10 @@ const KEGIATAN_PER_PAGE = 50;
    FILTER + SEARCH
 =============================== */
 function applyKegiatanFilter() {
-  KEGIATAN_PAGE = 1;
-  renderKegiatanTable();
+  setTimeout(() => {
+    KEGIATAN_PAGE = 1;
+    renderKegiatanTable();
+  }, 10); // Delay 10ms untuk pastikan DOM update
 }
 
 function getFilteredKegiatan() {
