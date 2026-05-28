@@ -454,10 +454,10 @@ function renderChartSebaran() {
         datalabels: {
           anchor: 'center',
           align: 'center',
-          color: '#ffffff',
+          color: '#fff',
           font: {
             weight: 'bold',
-            size: 12,
+            size: 11,
           },
           formatter: (value) => {
             return value > 0 ? value : '';
