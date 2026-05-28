@@ -1,378 +1,408 @@
 <!doctype html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <title>Sistem Kerjasama Universitas</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Sistem Manajemen Kerjasama Universitas Darussalam Gontor" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: '#f0f9ff',
+                100: '#e0f2fe',
+                500: '#06b6d4',
+                600: '#0891b2',
+                700: '#0e7490',
+                800: '#155e75',
+                900: '#164e63',
+              },
+              sidebar: {
+                DEFAULT: '#0f172a',
+                highlight: '#1e293b',
+              }
+            },
+            animation: {
+              'fade-in': 'fadeIn 0.3s ease-out',
+              'slide-up': 'slideUp 0.4s ease-out',
+              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              slideUp: {
+                '0%': { opacity: '0', transform: 'translateY(12px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              }
+            },
+            boxShadow: {
+              'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
+              'elevated': '0 4px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 30px -8px rgba(0, 0, 0, 0.08)',
+            }
+          }
+        }
+      }
+    </script>
 
-    <!-- Chart core -->
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Chart.js & Geo Plugin -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
-
-    <!-- Dependency geo -->
     <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
-
-    <!-- Chart Geo plugin (INI YANG DAFTARIN choropleth) -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-geo@4"></script>
 
-    <link
-      href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css"
-      rel="stylesheet"
-    />
+    <!-- 🔥 Chart.js DataLabels Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
 
+    <!-- FullCalendar -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/cs/style.css" />
-    <!-- di dalam <head> -->
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="assets/img/logo unida.png"
-    />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/logo unida.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/logo unida.png" />
   </head>
 
-  <body class="bg-gray-50 overflow-x-hidden">
+  <body class="bg-gradient-to-br from-slate-50 via-white to-cyan-50/30 overflow-x-hidden antialiased">
+    
+    <!-- ✨ BACKGROUND DECORATION -->
+    <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+      <div class="absolute -top-40 -right-40 w-80 h-80 bg-cyan-200/20 rounded-full blur-3xl"></div>
+      <div class="absolute top-1/2 -left-20 w-60 h-60 bg-purple-200/20 rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-20 right-1/3 w-72 h-72 bg-blue-200/20 rounded-full blur-3xl"></div>
+    </div>
+
     <!-- OVERLAY (MOBILE) -->
     <div
       id="sidebarOverlay"
       onclick="toggleSidebar()"
-      class="fixed inset-0 bg-black/40 z-30 hidden md:hidden"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden md:hidden transition-opacity duration-300"
     ></div>
 
-    <!-- SIDEBAR -->
+    <!-- ✨ SIDEBAR - Enhanced -->
     <aside
       id="sidebar"
-      class="fixed top-0 left-0 h-screen w-64 bg-gradient-to-b from-cyan-600 to-cyan-800 text-white z-40 overflow-y-auto transform -translate-x-full md:translate-x-0 transition-transform duration-300"
+      class="fixed top-0 left-0 h-screen w-64 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white z-50 overflow-y-auto transform -translate-x-full md:translate-x-0 transition-all duration-300 shadow-2xl border-r border-white/10"
     >
-      <!-- BRAND -->
+      <!-- BRAND - Enhanced -->
       <a
         href="#"
         onclick="loadPage('dashboard')"
-        class="block p-5 border-b border-purple-600 hover:bg-purple-800/30 transition"
+        class="block p-5 border-b border-white/10 hover:bg-white/5 transition-all duration-200 group"
       >
         <div class="flex items-center gap-3">
-          <img
-            src="assets/img/logo unida.png"
-            alt="Logo Universitas Darussalam Gontor"
-            class="w-10 h-10 object-contain"
-          />
+          <div class="relative">
+            <img
+              src="assets/img/logo unida.png"
+              alt="Logo Universitas Darussalam Gontor"
+              class="w-11 h-11 object-contain drop-shadow-lg transition-transform group-hover:scale-105"
+            />
+            <div class="absolute -inset-1 bg-cyan-400/20 rounded-full blur animate-pulse-slow"></div>
+          </div>
           <div class="leading-tight">
-            <div class="font-bold text-lg">KERJASAMA</div>
-            <p class="text-sm font-normal opacity-80">
-              Universitas Darussalam Gontor
-            </p>
+            <div class="font-bold text-lg tracking-tight">KERJASAMA</div>
+            <p class="text-xs font-medium opacity-70">Universitas Darussalam Gontor</p>
           </div>
         </div>
       </a>
-      <!-- USER PROFILE -->
-      <div
-        class="px-4 py-5 border-b border-cyan-500/40 flex items-center gap-3"
-      >
-        <img
-          src="assets/img/iconuser.png"
-          alt="avatar"
-          class="w-11 h-11 rounded-full border-2 border-white/40"
-        />
 
-        <div class="leading-tight">
-          <p id="sidebarUsername" class="font-semibold text-sm text-white">
-            Username
-          </p>
-
-          <span
-            id="sidebarRole"
-            class="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800"
-          >
-            role
-          </span>
+      <!-- USER PROFILE - Enhanced -->
+      <div class="px-4 py-4 border-b border-white/10 bg-white/5">
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <img
+              src="assets/img/iconuser.png"
+              alt="avatar"
+              class="w-11 h-11 rounded-full border-2 border-cyan-400/50 shadow-lg object-cover"
+            />
+            <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-slate-800 rounded-full"></span>
+          </div>
+          <div class="leading-tight min-w-0 flex-1">
+            <p id="sidebarUsername" class="font-semibold text-sm text-white truncate">Username</p>
+            <span
+              id="sidebarRole"
+              class="inline-block mt-1 text-xs px-2.5 py-0.5 rounded-full bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/30 text-cyan-200 font-medium"
+            >
+              role
+            </span>
+          </div>
         </div>
       </div>
 
-      <!-- NAVIGATION -->
-      <nav class="p-4 space-y-2 text-sm">
+      <!-- NAVIGATION - Enhanced -->
+      <nav class="p-3 space-y-1 text-sm">
+        <!-- Dashboard -->
         <a
           onclick="loadPage('dashboard')"
-          class="menu-link flex p-3 rounded hover:bg-purple-800/40 transition"
+          class="menu-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 hover:translate-x-1 transition-all duration-200 group"
         >
-          📊 Dashboard
+          <span class="text-lg group-hover:scale-110 transition-transform">📊</span>
+          <span class="font-medium">Dashboard</span>
         </a>
-        <!-- ANALITIK -->
+
+        <!-- ANALITIK Dropdown -->
         <div class="relative">
           <button
             onclick="toggleSidebarDropdown('analitikDropdown')"
-            class="menu-link w-full text-left flex justify-between items-center p-3 rounded hover:bg-purple-800/40 transition"
+            class="menu-link w-full text-left flex justify-between items-center px-4 py-3 rounded-xl hover:bg-white/10 hover:translate-x-1 transition-all duration-200 group"
           >
-            <span>📈 Analitik</span>
-            <span>▾</span>
+            <div class="flex items-center gap-3">
+              <span class="text-lg group-hover:scale-110 transition-transform">📈</span>
+              <span class="font-medium">Analitik</span>
+            </div>
+            <span class="transform transition-transform duration-200 text-cyan-300">▾</span>
           </button>
 
-          <div id="analitikDropdown" class="hidden ml-4 mt-1 space-y-1">
+          <div id="analitikDropdown" class="hidden ml-4 mt-1 space-y-1 pl-2 border-l-2 border-cyan-400/30">
             <a
               onclick="loadPage('analitik-status')"
-              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
+              class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90"
             >
-              ✅ Status Kerjasama
+              <span>✅</span> Status Kerjasama
             </a>
-
             <a
               onclick="loadPage('analitik-klasifikasi')"
-              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
+              class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90"
             >
-              🏷️ Klasifikasi Mitra
+              <span>🏷️</span> Klasifikasi Mitra
             </a>
-
             <a
               onclick="loadPage('analitik-geo')"
-              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
+              class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90"
             >
-              🌍 Geo Mitra
+              <span>🌍</span> Geo Mitra
             </a>
           </div>
         </div>
+
+        <!-- Kerjasama -->
         <a
           data-admin
           onclick="loadPage('kerjasama')"
-          class="menu-link flex p-3 rounded hover:bg-purple-800/40 transition"
+          class="menu-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 hover:translate-x-1 transition-all duration-200 group"
         >
-          📄 Kerjasama
+          <span class="text-lg group-hover:scale-110 transition-transform">📄</span>
+          <span class="font-medium">Kerjasama</span>
         </a>
 
-        <!-- INPUT KEGIATAN -->
+        <!-- INPUT KEGIATAN Dropdown -->
         <div class="relative">
           <button
             onclick="toggleSidebarDropdown('kegiatanDropdown')"
-            class="menu-link w-full text-left flex justify-between items-center p-3 rounded hover:bg-purple-800/40 transition"
+            class="menu-link w-full text-left flex justify-between items-center px-4 py-3 rounded-xl hover:bg-white/10 hover:translate-x-1 transition-all duration-200 group"
           >
-            <span>📥 Input Kegiatan</span>
-            <span>▾</span>
+            <div class="flex items-center gap-3">
+              <span class="text-lg group-hover:scale-110 transition-transform">📥</span>
+              <span class="font-medium">Input Kegiatan</span>
+            </div>
+            <span class="transform transition-transform duration-200 text-cyan-300">▾</span>
           </button>
 
-          <div id="kegiatanDropdown" class="hidden ml-4 mt-1 space-y-1">
-            <a
-              onclick="loadPage('kegiatan')"
-              class="menu-link flex p-3 rounded hover:bg-purple-800/40 transition"
-            >
-              📅 Kegiatan
-            </a>
-
-            <a
-              onclick="loadPage('laporan-kegiatan')"
-              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
-            >
-              📝 Laporan Kegiatan
-            </a>
-
-            <a
-              onclick="loadPage('rekap-laporan')"
-              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
-            >
-              📊 Rekapitulasi Laporan
-            </a>
+          <div id="kegiatanDropdown" class="hidden ml-4 mt-1 space-y-1 pl-2 border-l-2 border-cyan-400/30">
+            <a onclick="loadPage('kegiatan')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">📅 Kegiatan</a>
+            <a onclick="loadPage('laporan-kegiatan')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">📝 Laporan</a>
+            <a onclick="loadPage('rekap-laporan')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">📊 Rekapitulasi</a>
           </div>
         </div>
 
-        <!-- DROPDOWN LAINYA -->
+        <!-- LAINYA Dropdown -->
         <div class="relative">
           <button
             onclick="toggleSidebarDropdown('lainyaDropdown')"
-            class="menu-link w-full text-left flex justify-between items-center p-3 rounded hover:bg-purple-800/40 transition"
+            class="menu-link w-full text-left flex justify-between items-center px-4 py-3 rounded-xl hover:bg-white/10 hover:translate-x-1 transition-all duration-200 group"
           >
-            <span>📂 Lainya</span>
-            <span>▾</span>
+            <div class="flex items-center gap-3">
+              <span class="text-lg group-hover:scale-110 transition-transform">📂</span>
+              <span class="font-medium">Lainnya</span>
+            </div>
+            <span class="transform transition-transform duration-200 text-cyan-300">▾</span>
           </button>
 
-          <div id="lainyaDropdown" class="hidden ml-4 mt-1 space-y-1">
-            <a
-              onclick="loadPage('mitra')"
-              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
-            >
-              🏢 Rekapitulasi Mitra
-            </a>
-
-            <a
-              data-admin
-              onclick="loadPage('nilai-iku')"
-              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
-            >
-              📈 Nilai IKU
-            </a>
-
-            <a
-              data-admin
-              onclick="loadPage('bentuk-kegiatan')"
-              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
-            >
-              🧩 Bentuk Kegiatan
-            </a>
-
-            <a
-              data-admin
-              onclick="loadPage('jenis-mitra')"
-              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
-            >
-              🏷️ Jenis Mitra
-            </a>
-
-            <a
-              data-admin
-              onclick="loadPage('tambah-mitra')"
-              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
-            >
-              ➕ Tambah Mitra
-            </a>
-
-            <a
-              data-admin
-              onclick="loadPage('pendanaan')"
-              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
-            >
-              💰 Pendanaan
-            </a>
-
-            <a
-              data-admin
-              onclick="loadPage('prodi-satker')"
-              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
-            >
-              🎓 Prodi / Satker
-            </a>
-
-            <a
-              data-admin
-              onclick="loadPage('fakultas-satker')"
-              class="menu-link flex p-2 rounded hover:bg-purple-800/40 transition"
-            >
-              🏛️ Fakultas / Satker
-            </a>
+          <div id="lainyaDropdown" class="hidden ml-4 mt-1 space-y-1 pl-2 border-l-2 border-cyan-400/30 max-h-64 overflow-y-auto custom-scrollbar">
+            <a onclick="loadPage('mitra')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">🏢 Rekapitulasi Mitra</a>
+            <a data-admin onclick="loadPage('nilai-iku')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">📈 Nilai IKU</a>
+            <a data-admin onclick="loadPage('bentuk-kegiatan')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">🧩 Bentuk Kegiatan</a>
+            <a data-admin onclick="loadPage('jenis-mitra')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">🏷️ Jenis Mitra</a>
+            <a data-admin onclick="loadPage('tambah-mitra')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">➕ Tambah Mitra</a>
+            <a data-admin onclick="loadPage('pendanaan')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">💰 Pendanaan</a>
+            <a data-admin onclick="loadPage('prodi-satker')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">🎓 Prodi / Satker</a>
+            <a data-admin onclick="loadPage('fakultas-satker')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">🏛️ Fakultas / Satker</a>
           </div>
         </div>
       </nav>
+
+      <!-- ✨ Sidebar Footer -->
+      <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-white/10 bg-gradient-to-t from-slate-900 to-transparent">
+        <div class="text-xs text-center text-white/50">
+          <p>v2.0 • © 2026 UNIDA Gontor</p>
+        </div>
+      </div>
     </aside>
 
-    <!-- MAIN -->
-    <!-- MAIN -->
-    <main class="md:ml-64 min-h-screen">
-      <!-- TOPBAR / HEADER -->
+    <!-- ✨ MAIN CONTENT - Enhanced -->
+    <main class="md:ml-64 min-h-screen transition-all duration-300">
+      
+      <!-- TOPBAR / HEADER - Enhanced -->
       <header
-        class="bg-white/80 backdrop-blur-md shadow-sm px-6 py-3 flex items-center justify-between sticky top-0 z-20 border-b"
+        class="bg-white/70 backdrop-blur-xl shadow-soft px-4 md:px-6 py-3 flex items-center justify-between sticky top-0 z-30 border-b border-gray-200/60"
       >
         <!-- LEFT -->
         <div class="flex items-center gap-3">
           <!-- HAMBURGER (MOBILE) -->
           <button
             onclick="toggleSidebar()"
-            class="md:hidden text-cyan-700 text-2xl focus:outline-none"
+            class="md:hidden p-2 text-slate-600 hover:text-cyan-600 hover:bg-cyan-50 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+            aria-label="Toggle sidebar"
           >
-            ☰
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
           </button>
 
           <!-- TITLE -->
-          <div>
+          <div class="py-1">
             <h1
               id="page-title"
-              class="text-3xl md:text-2xl font-bold text-gray-800 leading-tight"
+              class="text-xl md:text-2xl font-bold text-slate-800 leading-tight tracking-tight"
             >
               Dashboard
             </h1>
-            <p class="text-sm text-gray-500">Sistem Kerjasama Universitas</p>
+            <p class="text-xs md:text-sm text-slate-500 font-medium">Sistem Kerjasama Universitas</p>
           </div>
         </div>
 
         <!-- RIGHT -->
-        <div class="flex items-center gap-4">
-          <!-- USER -->
-          <!-- USER DROPDOWN -->
+        <div class="flex items-center gap-2 md:gap-4">
+          <!-- ✨ Notification Bell (Optional Enhancement) -->
+          <button class="relative p-2 text-slate-500 hover:text-cyan-600 hover:bg-cyan-50 rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-400/50">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+            </svg>
+            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+          </button>
+
+          <!-- USER DROPDOWN - Enhanced -->
           <div class="relative">
             <button
               onclick="toggleUserMenu()"
-              class="flex items-center gap-2 focus:outline-none"
+              class="flex items-center gap-2 md:gap-3 p-1.5 pr-3 rounded-xl hover:bg-slate-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 group"
             >
-              <img
-                src="assets/img/iconuser.png"
-                alt="User"
-                class="w-8 h-8 rounded-full border"
-              />
+              <div class="relative">
+                <img
+                  src="assets/img/iconuser.png"
+                  alt="User"
+                  class="w-8 h-8 md:w-9 md:h-9 rounded-full border-2 border-cyan-400/40 object-cover shadow-sm group-hover:border-cyan-500 transition-colors"
+                />
+                <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
+              </div>
               <div class="hidden sm:block text-sm text-left">
                 <p
                   id="headerUsername"
-                  class="font-medium text-gray-700 leading-tight"
+                  class="font-semibold text-slate-700 leading-tight group-hover:text-cyan-700 transition-colors"
                 >
                   Username
                 </p>
-                <p id="headerRole" class="text-xs text-gray-500 leading-tight">
+                <p id="headerRole" class="text-xs text-slate-400 leading-tight font-medium">
                   role
                 </p>
               </div>
-              <span class="text-gray-500">▾</span>
+              <svg class="w-4 h-4 text-slate-400 group-hover:text-cyan-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
             </button>
 
-            <!-- DROPDOWN MENU -->
+            <!-- DROPDOWN MENU - Enhanced -->
             <div
               id="userDropdown"
-              class="hidden absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border text-sm z-50"
+              class="hidden absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-elevated border border-gray-100 text-sm z-50 overflow-hidden animate-fade-in"
             >
+              <div class="p-3 bg-gradient-to-r from-cyan-50 to-blue-50 border-b border-gray-100">
+                <p class="font-semibold text-slate-800" id="dropdownUsername">Username</p>
+                <p class="text-xs text-slate-500" id="dropdownRole">role</p>
+              </div>
               <a
                 href="#"
                 onclick="openProfile()"
-                class="block px-4 py-2 hover:bg-gray-100"
+                class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-slate-700"
               >
-                👤 Profile
+                <span class="text-lg">👤</span> Profile
               </a>
-
+              <a
+                href="#"
+                class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-slate-700"
+              >
+                <span class="text-lg">⚙️</span> Settings
+              </a>
+              <div class="border-t border-gray-100"></div>
               <button
                 onclick="logout()"
-                class="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600"
+                class="w-full text-left flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors text-red-600 font-medium"
               >
-                🚪 Logout
+                <span class="text-lg">🚪</span> Logout
               </button>
             </div>
           </div>
         </div>
       </header>
 
-      <!-- CONTENT -->
-      <section id="app-content" class="p-6"></section>
+      <!-- CONTENT - Enhanced with animation -->
+      <section id="app-content" class="p-4 md:p-6 lg:p-8 animate-slide-up"></section>
     </main>
 
-    <!-- GLOBAL LOADING -->
+    <!-- ✨ GLOBAL LOADING - Enhanced -->
     <div
       id="global-loading"
-      class="fixed inset-0 bg-black/40 hidden items-center justify-center z-[9999]"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-[9999] transition-opacity duration-300"
     >
       <div
-        class="bg-white rounded-xl px-6 py-5 flex items-center gap-4 shadow-lg"
+        class="bg-white rounded-2xl px-8 py-6 flex flex-col items-center gap-4 shadow-2xl border border-gray-100 animate-fade-in"
       >
-        <svg
-          class="animate-spin h-6 w-6 text-purple-600"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            class="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            stroke-width="4"
-          ></circle>
-          <path
-            class="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z"
-          ></path>
-        </svg>
-
-        <span id="global-loading-text" class="text-sm font-medium">
-          Memproses...
-        </span>
+        <div class="relative">
+          <div class="w-12 h-12 border-4 border-cyan-100 rounded-full"></div>
+          <div class="absolute inset-0 w-12 h-12 border-4 border-cyan-500 rounded-full border-t-transparent animate-spin"></div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-2 h-2 bg-cyan-500 rounded-full animate-pulse"></div>
+          </div>
+        </div>
+        <div class="text-center">
+          <span id="global-loading-text" class="text-sm font-semibold text-slate-700 block">
+            Memproses...
+          </span>
+          <span class="text-xs text-slate-400 mt-1 block">Harap tunggu sebentar</span>
+        </div>
       </div>
     </div>
 
+    <!-- ✨ CUSTOM SCROLLBAR STYLE -->
+    <style>
+      .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+      .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { 
+        background: rgba(255,255,255,0.2); 
+        border-radius: 10px; 
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover { 
+        background: rgba(255,255,255,0.35); 
+      }
+    </style>
+
+    <!-- JavaScript Files -->
     <script src="assets/js/auth-guard.js"></script>
     <script src="assets/js/api.js"></script>
     <script src="assets/js/kegiatan.js"></script>
@@ -383,31 +413,218 @@
     <script src="assets/js/analitik-status.js"></script>
     <script src="assets/js/analitik-klasifikasi.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <script src="assets/js/analitik-geo.js"></script>
     <script src="assets/js/mitra.js"></script>
     <script src="assets/js/laporan-kegiatan.js"></script>
     <script src="assets/js/rekap-laporan.js"></script>
-
     <script src="assets/js/bentuk-kegiatan.js"></script>
-
     <script src="assets/js/nilai-iku.js"></script>
-
     <script src="assets/js/tambah-mitra.js"></script>
     <script src="assets/js/pendanaan.js"></script>
     <script src="assets/js/prodi-satker.js"></script>
     <script src="assets/js/fakultas-satker.js"></script>
-    <!-- ===================== -->
-    <!-- EXPORT LIBRARIES -->
-    <!-- ===================== -->
 
-    <!-- XLSX (Excel) -->
+    <!-- Export Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
-    <!-- jsPDF Core -->
     <script src="https://cdn.jsdelivr.net/npm/jspdf/dist/jspdf.umd.min.js"></script>
-
-    <!-- jsPDF AutoTable Plugin -->
     <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable"></script>
+
+    <!-- ✨ UTILITY SCRIPTS FOR ENHANCEMENTS -->
+    <script>
+      // Smooth dropdown animation
+      function toggleSidebarDropdown(id) {
+        const dropdown = document.getElementById(id);
+        const arrow = dropdown?.previousElementSibling?.querySelector('span:last-child');
+        
+        if (dropdown.classList.contains('hidden')) {
+          dropdown.classList.remove('hidden');
+          dropdown.classList.add('animate-fade-in');
+          if (arrow) arrow.style.transform = 'rotate(180deg)';
+        } else {
+          dropdown.classList.add('hidden');
+          dropdown.classList.remove('animate-fade-in');
+          if (arrow) arrow.style.transform = 'rotate(0deg)';
+        }
+      }
+
+      // User menu with animation
+      function toggleUserMenu() {
+        const menu = document.getElementById('userDropdown');
+        menu.classList.toggle('hidden');
+        if (!menu.classList.contains('hidden')) {
+          menu.classList.add('animate-fade-in');
+        }
+      }
+
+      // Close dropdowns when clicking outside
+      document.addEventListener('click', (e) => {
+        const userBtn = e.target.closest('button[onclick*="toggleUserMenu"]');
+        const userMenu = document.getElementById('userDropdown');
+        if (!userBtn && userMenu && !userMenu.contains(e.target)) {
+          userMenu.classList.add('hidden');
+        }
+      });
+
+      // Add active state to menu items
+      document.addEventListener('click', (e) => {
+        const menuLink = e.target.closest('.menu-link');
+        if (menuLink && !menuLink.querySelector('button')) {
+          document.querySelectorAll('.menu-link').forEach(el => {
+            el.classList.remove('bg-white/15', 'border-l-4', 'border-cyan-400');
+          });
+          menuLink.classList.add('bg-white/15', 'border-l-4', 'border-cyan-400');
+        }
+      });
+    </script>
+    <!-- 🪟 MODAL FORM KERJASAMA - WAJIB ADA DI LAYOUT.HTML -->
+<div
+  id="kerjasama-modal"
+  class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4 transition-opacity"
+>
+  <div
+    class="bg-white rounded-2xl w-full max-w-4xl p-5 sm:p-6 overflow-y-auto max-h-[90vh] shadow-2xl border border-gray-200"
+  >
+    <!-- Header Modal -->
+    <div class="flex justify-between items-center mb-5 pb-3 border-b border-gray-100">
+      <h3 id="modal-title" class="font-bold text-lg text-gray-800 flex items-center gap-2">
+        <span class="w-1.5 h-5 bg-purple-500 rounded-full"></span>
+        Detail Kerjasama
+      </h3>
+      <button onclick="closeKerjasamaForm()" class="text-gray-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors" type="button">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Hidden Input -->
+    <input type="hidden" id="editIndex" />
+
+    <!-- Form Grid -->
+    <div id="kerjasama-form" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs sm:text-sm">
+      
+      <!-- Mitra (dengan autocomplete) -->
+      <div class="flex flex-col gap-1.5 autocomplete-wrapper" id="mitra-wrapper">
+        <label class="text-xs font-medium text-gray-600">Mitra</label>
+        <input id="mitra" class="input w-full px-3 py-2.5 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all" placeholder="Cari / ketik Mitra Kerjasama" onclick="showAllMitra()" oninput="filterMitraDropdown()" autocomplete="off" />
+        <div id="k-no-dropdown" class="autocomplete-dropdown hidden mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto z-10"></div>
+      </div>
+
+      <!-- Benua -->
+      <div class="flex flex-col gap-1.5">
+        <label for="benua" class="text-xs font-medium text-gray-600">Benua</label>
+        <select id="benua" class="input w-full px-3 py-2.5 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all cursor-pointer">
+          <option value="">-- Pilih Benua --</option>
+        </select>
+      </div>
+
+      <!-- Negara -->
+      <div class="flex flex-col gap-1.5">
+        <label for="negara" class="text-xs font-medium text-gray-600">Negara</label>
+        <select id="negara" class="input w-full px-3 py-2.5 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all cursor-pointer">
+          <option value="">-- Pilih Negara --</option>
+        </select>
+      </div>
+
+      <!-- Mitra Terkait -->
+      <div class="flex flex-col gap-1.5">
+        <label for="mitraTerkait" class="text-xs font-medium text-gray-600">Mitra Terkait</label>
+        <input id="mitraTerkait" class="input w-full px-3 py-2.5 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all" />
+      </div>
+
+      <!-- Link File -->
+      <div class="flex flex-col gap-1.5">
+        <label for="linkFile" class="text-xs font-medium text-gray-600">Link File</label>
+        <input id="linkFile" class="input w-full px-3 py-2.5 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all" />
+      </div>
+
+      <!-- Unit -->
+      <div class="flex flex-col gap-1.5">
+        <label for="unit" class="text-xs font-medium text-gray-600">Fak / Prodi / Satker</label>
+        <select id="unit" class="input w-full px-3 py-2.5 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all cursor-pointer">
+          <option value="">-- Pilih Fakultas / Satker --</option>
+        </select>
+      </div>
+
+      <!-- No Surat -->
+      <div class="flex flex-col gap-1.5">
+        <label for="noSurat" class="text-xs font-medium text-gray-600">No Surat Dokumen</label>
+        <input id="noSurat" class="input w-full px-3 py-2.5 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all" />
+      </div>
+
+      <!-- Jenis Mitra -->
+      <div class="flex flex-col gap-1.5">
+        <label for="jenisMitra" class="text-xs font-medium text-gray-600">Jenis Mitra</label>
+        <select id="jenisMitra" class="input w-full px-3 py-2.5 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all cursor-pointer">
+          <option value="">-- Pilih Jenis Mitra --</option>
+        </select>
+      </div>
+
+      <!-- Jenis Dokumen -->
+      <div class="flex flex-col gap-1.5">
+        <label for="jenisDokumen" class="text-xs font-medium text-gray-600">Jenis Dokumen</label>
+        <select id="jenisDokumen" class="input w-full px-3 py-2.5 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all cursor-pointer">
+          <option value="">-- Pilih Jenis Dokumen --</option>
+          <option value="MoU (Memorandum of Understanding)">MoU (Memorandum of Understanding)</option>
+          <option value="MoA (Memorandum of Agreement)">MoA (Memorandum of Agreement)</option>
+          <option value="IA (Implementation Arrangement)">IA (Implementation Arrangement)</option>
+        </select>
+      </div>
+
+      <!-- Tingkat -->
+      <div class="flex flex-col gap-1.5">
+        <label for="tingkat" class="text-xs font-medium text-gray-600">Tingkat Kerjasama</label>
+        <select id="tingkat" class="input w-full px-3 py-2.5 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all cursor-pointer">
+          <option value="">-- Pilih Tingkat Kerjasama --</option>
+          <option value="Lokal">Lokal</option>
+          <option value="Nasional">Nasional</option>
+          <option value="Internasional">Internasional</option>
+        </select>
+      </div>
+
+      <!-- Status (readonly) -->
+      <div class="flex flex-col gap-1.5">
+        <label for="status" class="text-xs font-medium text-gray-600">Status Kerjasama</label>
+        <input id="status" class="input w-full px-3 py-2.5 border border-gray-200 rounded-lg bg-gray-100 focus:outline-none transition-all cursor-not-allowed text-gray-500" readonly />
+      </div>
+
+      <!-- Tanggal Mulai -->
+      <div class="flex flex-col gap-1.5">
+        <label for="tglMulai" class="text-xs font-medium text-gray-600">Tanggal Mulai</label>
+        <input type="date" id="tglMulai" class="input w-full px-3 py-2.5 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all" />
+      </div>
+
+      <!-- Tanggal Berakhir -->
+      <div class="flex flex-col gap-1.5">
+        <label for="tglBerakhir" class="text-xs font-medium text-gray-600">Tanggal Berakhir</label>
+        <input type="date" id="tglBerakhir" class="input w-full px-3 py-2.5 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all" />
+      </div>
+
+      <!-- Tahun Mulai (readonly) -->
+      <div class="flex flex-col gap-1.5">
+        <label for="tahunMulai" class="text-xs font-medium text-gray-600">Tahun Mulai</label>
+        <input id="tahunMulai" class="input w-full px-3 py-2.5 border border-gray-200 rounded-lg bg-gray-100 focus:outline-none transition-all cursor-not-allowed text-gray-500" readonly />
+      </div>
+
+      <!-- Tahun Berakhir (readonly) -->
+      <div class="flex flex-col gap-1.5">
+        <label for="tahunBerakhir" class="text-xs font-medium text-gray-600">Tahun Berakhir</label>
+        <input id="tahunBerakhir" class="input w-full px-3 py-2.5 border border-gray-200 rounded-lg bg-gray-100 focus:outline-none transition-all cursor-not-allowed text-gray-500" readonly />
+      </div>
+
+      <!-- Keterangan (full width) -->
+      <div class="flex flex-col gap-1.5 md:col-span-3 lg:col-span-3">
+        <label for="keterangan" class="text-xs font-medium text-gray-600">Keterangan</label>
+        <textarea id="keterangan" class="input w-full px-3 py-2.5 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all resize-y min-h-[80px]"></textarea>
+      </div>
+    </div>
+
+    <!-- Footer Buttons -->
+    <div class="flex justify-end gap-2 mt-6 pt-4 border-t border-gray-100">
+      <button id="btn-edit" onclick="switchToEdit()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl hidden hover:bg-blue-700 transition-colors font-medium shadow-sm" type="button">Edit</button>
+      <button id="btn-cancel" onclick="closeKerjasamaForm()" class="px-5 py-2.5 border border-gray-300 text-gray-700 bg-white rounded-xl hover:bg-gray-50 transition-colors font-medium" type="button">Tutup</button>
+      <button id="btn-save" onclick="saveKerjasama()" class="px-5 py-2.5 bg-purple-600 text-white rounded-xl hidden hover:bg-purple-700 transition-colors font-medium shadow-sm" type="button">Simpan</button>
+    </div>
+  </div>
+</div>
+<!-- ✅ END MODAL KERJASAMA -->
   </body>
 </html>
