@@ -1,0 +1,63 @@
+<div class="p-6">
+  <h1 class="text-xl font-semibold mb-4">🎓 Prodi / Satker</h1>
+
+  <button
+    onclick="openProdi()"
+    class="mb-4 bg-green-600 text-white px-4 py-2 rounded"
+  >
+    + Create Prodi / Satker
+  </button>
+
+  <table class="min-w-full border bg-white text-sm">
+    <thead class="bg-blue-600 text-white">
+      <tr>
+        <th class="border px-3 py-2 w-20">ID</th>
+        <th class="border px-3 py-2">Nama</th>
+        <th class="border px-3 py-2 w-32 text-center">Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="prodiBody"></tbody>
+  </table>
+</div>
+
+<div
+  id="prodiModal"
+  class="fixed inset-0 bg-black/40 hidden flex items-center justify-center"
+>
+  <div class="bg-white rounded-lg w-full max-w-md p-6">
+    <!-- TITLE -->
+    <h2 id="prodiModalTitle" class="text-lg font-semibold mb-4">
+      Create Prodi / Satker
+    </h2>
+
+    <input type="hidden" id="prodiIndex" />
+
+    <!-- INPUT -->
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-1">
+        Nama Prodi / Satker
+      </label>
+      <input
+        id="prodiNama"
+        type="text"
+        class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"
+        placeholder="Masukkan nama prodi / satker"
+      />
+    </div>
+
+    <!-- ACTION -->
+    <div class="flex justify-end gap-2">
+      <button onclick="closeProdi()" class="px-4 py-2 border rounded">
+        Batal
+      </button>
+      <button
+        onclick="saveProdi()"
+        class="bg-blue-600 text-white px-4 py-2 rounded"
+      >
+        Simpan
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/prodi-satker.js"></script>
