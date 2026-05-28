@@ -143,6 +143,19 @@ function renderChartProdi() {
     label: bidang,
     data: prodiList.map((prodi) => map[prodi]?.[bidang] || 0),
     backgroundColor: colors[i % colors.length],
+    // 🔥 Konfigurasi datalabels per dataset
+    datalabels: {
+      anchor: 'center',
+      align: 'center',
+      color: '#fff',
+      font: {
+        weight: 'bold',
+        size: 10,
+      },
+      formatter: (value) => {
+        return value > 0 ? value : '';
+      },
+    },
   }));
 
   chartProdiInstance = new Chart(canvas, {
@@ -174,8 +187,23 @@ function renderChartProdi() {
         legend: {
           position: "bottom",
         },
+        // 🔥 Konfigurasi global datalabels
+        datalabels: {
+          anchor: 'center',
+          align: 'center',
+          color: '#fff',
+          font: {
+            weight: 'bold',
+            size: 10,
+          },
+          formatter: (value) => {
+            return value > 0 ? value : '';
+          },
+        },
       },
     },
+    // 🔥 Register plugin datalabels
+    plugins: [ChartDataLabels],
   });
 }
 function initFilterProdi() {
