@@ -412,7 +412,7 @@ function renderChartSebaran() {
     },
     options: {
       responsive: true,
-      maintainAspectRatio: false, // 🔥 WAJIB
+      maintainAspectRatio: false,
       indexAxis: "y",
       layout: {
         padding: 10,
@@ -421,6 +421,9 @@ function renderChartSebaran() {
         x: {
           stacked: true,
           beginAtZero: true,
+          ticks: {
+            stepSize: 50,
+          },
         },
         y: {
           stacked: true,
@@ -433,8 +436,37 @@ function renderChartSebaran() {
             boxWidth: 12,
           },
         },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              let label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              if (context.parsed.x !== null) {
+                label += context.parsed.x + ' dokumen';
+              }
+              return label;
+            }
+          }
+        },
+        // 🔥 PLUGIN UNTUK MENAMPILKAN ANGKA DI BAR
+        datalabels: {
+          anchor: 'center',
+          align: 'center',
+          color: '#ffffff',
+          font: {
+            weight: 'bold',
+            size: 12,
+          },
+          formatter: (value) => {
+            return value > 0 ? value : '';
+          },
+        },
       },
     },
+    // 🔥 REGISTER PLUGIN DATALABELS
+    plugins: [ChartDataLabels],
   });
 }
 /* ===============================
@@ -505,6 +537,96 @@ function renderTabelStatusFromEvents(events, currentDate) {
 `;
   });
 }
+
+/* ===============================
+   FUNGSI DOWNLOAD CHART SEBARAN
+================================ */
+function downloadChartSebaran() {
+  const canvas = document.getElementById("chartSebaranDokumen");
+  const btn = document.getElementById("btnDownloadSebaran");
+  
+  if (!canvas || !btn) return;
+
+  // Disable tombol sementara
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="hidden sm:inline">Memproses...</span>`;
+
+  try {
+    // Generate PNG dari canvas
+    const imageURL = canvas.toDataURL("image/png");
+    
+    // Buat nama file dinamis berdasarkan filter
+    const statusLabel = currentStatusFilter === "all" 
+      ? "SemuaStatus" 
+      : currentStatusFilter.replace(/\s+/g, "_");
+    
+    const timestamp = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const filename = `Sebaran_Dokumen_${statusLabel}_${timestamp}`;
+    
+    // Trigger download
+    const link = document.createElement("a");
+    link.href = imageURL;
+    link.download = `${filename}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Feedback visual (opsional)
+    showDownloadToast("✅ Bagan berhasil diunduh!");
+    
+  } catch (error) {
+    console.error("Gagal download chart:", error);
+    showDownloadToast("❌ Gagal mengunduh bagan", true);
+  } finally {
+    // Restore tombol
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.innerHTML = originalText;
+    }, 800);
+  }
+}
+
+/* ===============================
+   TOAST NOTIFICATION (OPSIONAL)
+================================ */
+function showDownloadToast(message, isError = false) {
+  // Hapus toast lama jika ada
+  const oldToast = document.getElementById("download-toast");
+  if (oldToast) oldToast.remove();
+  
+  // Buat toast baru
+  const toast = document.createElement("div");
+  toast.id = "download-toast";
+  toast.className = `fixed bottom-4 right-4 px-4 py-2.5 rounded-lg shadow-lg z-50 text-sm font-medium
+                     ${isError ? "bg-red-500 text-white" : "bg-gray-800 text-white"}
+                     animate-[slideIn_0.3s_ease-out]`;
+  toast.innerHTML = `
+    <div class="flex items-center gap-2">
+      <span>${isError ? "⚠️" : "✅"}</span>
+      <span>${message}</span>
+    </div>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Auto hide setelah 3 detik
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transition = "opacity 0.3s";
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+/* ===============================
+   INIT EVENT LISTENER DOWNLOAD
+================================ */
+function initDownloadSebaran() {
+  const btn = document.getElementById("btnDownloadSebaran");
+  if (!btn) return;
+  
+  btn.addEventListener("click", downloadChartSebaran);
+}
 /* ===============================
    ENTRY POINT ANALITIK STATUS
 ================================ */
@@ -524,9 +646,13 @@ function initAnalitikStatus() {
 
   // 📦 LOAD DATA JIKA BELUM ADA
   if (!Array.isArray(window.KERJASAMA) || window.KERJASAMA.length === 0) {
-    loadKerjasamaFromSheet().then(renderAllAnalitikStatus);
+    loadKerjasamaFromSheet().then(() => {
+      renderAllAnalitikStatus();
+      initDownloadSebaran(); // 🔥 Init download setelah data siap
+    });
   } else {
     renderAllAnalitikStatus();
+    initDownloadSebaran(); // 🔥 Init download
   }
 }
 
