@@ -496,3 +496,137 @@ function goToGeoPage(page) {
   GEO_CURRENT_PAGE = page;
   renderGeoSummary();
 }
+/*********************************
+ * 📥 DOWNLOAD FUNCTIONS
+ *********************************/
+
+// 📊 Download Table sebagai CSV
+function downloadTableCSV() {
+  if (!window.KERJASAMA || !window.KERJASAMA.length) {
+    alert("⚠️ Data belum tersedia");
+    return;
+  }
+
+  // Ambil data lengkap (bukan hanya yang tampil di pagination)
+  const dataMap = {};
+  window.KERJASAMA.forEach((d) => {
+    const negara = (d.negara || "Indonesia").trim();
+    const jenisRaw = (d.jenisDokumen || "").toLowerCase();
+    
+    if (!dataMap[negara]) {
+      dataMap[negara] = { MoU: 0, MoA: 0, IA: 0 };
+    }
+    
+    if (jenisRaw.includes("memorandum of understanding") || jenisRaw === "mou") {
+      dataMap[negara].MoU++;
+    } else if (jenisRaw.includes("memorandum of agreement") || jenisRaw === "moa") {
+      dataMap[negara].MoA++;
+    } else if (jenisRaw.includes("implementation arrangement") || jenisRaw === "ia") {
+      dataMap[negara].IA++;
+    }
+  });
+
+  // Format ke CSV
+  const headers = ["No", "Negara", "MoU", "MoA", "IA", "Total"];
+  const rows = Object.entries(dataMap)
+    .map(([negara, v], i) => {
+      const total = v.MoU + v.MoA + v.IA;
+      return [i + 1, negara, v.MoU, v.MoA, v.IA, total];
+    })
+    .sort((a, b) => b[5] - a[5]); // Sort by Total DESC
+
+  let csv = headers.join(",") + "\n";
+  rows.forEach(row => {
+    // Escape koma dan quote di nama negara
+    const escaped = row.map(cell => 
+      typeof cell === "string" && (cell.includes(",") || cell.includes('"')) 
+        ? `"${cell.replace(/"/g, '""')}"` 
+        : cell
+    );
+    csv += escaped.join(",") + "\n";
+  });
+
+  // Trigger download
+  const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `top-negara-mitra-${new Date().toISOString().slice(0,10)}.csv`;
+  link.click();
+}
+
+// 📈 Download Table sebagai Excel (HTML-based, kompatibel dengan Excel)
+function downloadTableExcel() {
+  if (!window.KERJASAMA || !window.KERJASAMA.length) {
+    alert("⚠️ Data belum tersedia");
+    return;
+  }
+
+  // Reuse logic CSV untuk dapat data lengkap
+  const dataMap = {};
+  window.KERJASAMA.forEach((d) => {
+    const negara = (d.negara || "Indonesia").trim();
+    const jenisRaw = (d.jenisDokumen || "").toLowerCase();
+    
+    if (!dataMap[negara]) {
+      dataMap[negara] = { MoU: 0, MoA: 0, IA: 0 };
+    }
+    
+    if (jenisRaw.includes("memorandum of understanding") || jenisRaw === "mou") {
+      dataMap[negara].MoU++;
+    } else if (jenisRaw.includes("memorandum of agreement") || jenisRaw === "moa") {
+      dataMap[negara].MoA++;
+    } else if (jenisRaw.includes("implementation arrangement") || jenisRaw === "ia") {
+      dataMap[negara].IA++;
+    }
+  });
+
+  const rows = Object.entries(dataMap)
+    .map(([negara, v], i) => {
+      const total = v.MoU + v.MoA + v.IA;
+      return [i + 1, negara, v.MoU, v.MoA, v.IA, total];
+    })
+    .sort((a, b) => b[5] - a[5]);
+
+  // Format HTML Table untuk Excel
+  let html = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" 
+          xmlns:x="urn:schemas-microsoft-com:office:excel" 
+          xmlns="http://www.w3.org/TR/REC-html40">
+    <head>
+      <meta charset="utf-8">
+      <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets>
+      <x:ExcelWorksheet>
+        <x:Name>Data</x:Name>
+        <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>
+      </x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
+    </head>
+    <body>
+      <table border="1">
+        <thead style="background:#f1f5f9;font-weight:bold">
+          <tr>
+            <th>No</th><th>Negara</th><th>MoU</th><th>MoA</th><th>IA</th><th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+  
+  rows.forEach(row => {
+    html += `<tr>
+      <td>${row[0]}</td>
+      <td>${row[1]}</td>
+      <td style="text-align:right">${row[2]}</td>
+      <td style="text-align:right">${row[3]}</td>
+      <td style="text-align:right">${row[4]}</td>
+      <td style="text-align:right;font-weight:bold">${row[5]}</td>
+    </tr>`;
+  });
+  
+  html += `</tbody></table></body></html>`;
+
+  // Trigger download
+  const blob = new Blob([html], { type: "application/vnd.ms-excel" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `top-negara-mitra-${new Date().toISOString().slice(0,10)}.xls`;
+  link.click();
+}
