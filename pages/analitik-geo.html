@@ -41,6 +41,21 @@
     </h3>
 
     <div class="overflow-x-auto">
+      <!-- Action Buttons -->
+<div class="flex justify-end gap-2 mb-4">
+  <button onclick="downloadTableCSV()" 
+          class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium 
+                 bg-blue-600 hover:bg-blue-700 text-white rounded-lg 
+                 transition-colors shadow-sm">
+    📊 Download CSV
+  </button>
+  <button onclick="downloadTableExcel()" 
+          class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium 
+                 bg-green-600 hover:bg-green-700 text-white rounded-lg 
+                 transition-colors shadow-sm">
+    📈 Download Excel
+  </button>
+</div>
       <table class="min-w-[600px] w-full text-xs sm:text-sm">
         <thead class="text-gray-500 border-b bg-gray-50">
           <tr>
