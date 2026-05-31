@@ -59,10 +59,23 @@ function applyKerjasamaFilter() {
   CURRENT_PAGE = 1;
   renderKerjasamaTable();
 }
+
 /* ===============================
    GET FILTERED DATA (ADVANCED)
 =============================== */
 function getFilteredData() {
+  const role = getRole();
+  const username = localStorage.getItem("username");
+  
+  let data = KERJASAMA;
+  
+  // 🔥 FILTER: user hanya lihat data miliknya
+  if (role !== "admin") {
+    data = data.filter(item => 
+      item.created_by === username || 
+      item.created_by === undefined // data lama tanpa creator
+    );
+  }
   // 🔍 Global search
   const globalKeyword = SEARCH_KEY;
   
@@ -305,6 +318,8 @@ function renderKerjasamaTable() {
   const total = mitraList.length;
   const start = (CURRENT_PAGE - 1) * PER_PAGE;
   const pageMitra = mitraList.slice(start, start + PER_PAGE);
+  // 🔥 TAMBAHKAN DI ATAS FUNGSI
+  const role = getRole(); // admin | user
 
   // ===============================
   // RENDER TABLE
@@ -340,32 +355,36 @@ function renderKerjasamaTable() {
     for (let i = 0; i < items.length; i++) {
       const d = items[i];
       html += `
-        <tr class="border-b bg-gray-50 mitra-detail hidden"
-            data-mitra="${safeMitra}">
-          <td class="p-3 pl-6 text-sm">* ${d.mitraTerkait || "-"}</td>
-          <td class="p-3 text-sm">${d.noSurat || "-"}</td>
-          <td class="p-3 text-sm">${d.jenisDokumen || "-"}</td>
-          <td class="p-3 text-sm">${d.tingkat || "-"}</td>
-          <td class="p-3 text-sm">${d.status || "-"}</td>
-          <td class="p-3 text-sm">
-            ${d.tahunMulai || "-"} – ${d.tahunBerakhir || "-"}
-            <div class="flex gap-2 mt-1">
-              <button
-                onclick="openDetailKerjasama(${d.row})"
-                class="w-7 h-7 bg-indigo-100 text-indigo-600 rounded-lg"
-              >🔍</button>
-              <button
-                onclick="openFile(${d.row})"
-                class="w-7 h-7 bg-green-100 text-green-600 rounded-lg"
-              >📎</button>
-              <button
-                onclick="deleteKerjasama(${d.row})"
-                class="w-7 h-7 bg-red-100 text-red-600 rounded-lg"
-              >🗑️</button>
-            </div>
-          </td>
-        </tr>
-      `;
+  <tr class="border-b bg-gray-50 mitra-detail hidden"
+      data-mitra="${safeMitra}">
+    <td class="p-3 pl-6 text-sm">* ${d.mitraTerkait || "-"}</td>
+    <td class="p-3 text-sm">${d.noSurat || "-"}</td>
+    <td class="p-3 text-sm">${d.jenisDokumen || "-"}</td>
+    <td class="p-3 text-sm">${d.tingkat || "-"}</td>
+    <td class="p-3 text-sm">${d.status || "-"}</td>
+    <td class="p-3 text-sm">
+      ${d.tahunMulai || "-"} – ${d.tahunBerakhir || "-"}
+      <div class="flex gap-2 mt-1">
+        <button
+          onclick="openDetailKerjasama(${d.row})"
+          class="w-7 h-7 bg-indigo-100 text-indigo-600 rounded-lg"
+        >🔍</button>
+        <button
+          onclick="openFile(${d.row})"
+          class="w-7 h-7 bg-green-100 text-green-600 rounded-lg"
+        >📎</button>
+        
+        <!-- 🔥 HANYA TAMPILKAN UNTUK ADMIN -->
+        ${role === "admin" ? `
+          <button
+            onclick="deleteKerjasama(${d.row})"
+            class="w-7 h-7 bg-red-100 text-red-600 rounded-lg"
+          >🗑️</button>
+        ` : ''}
+      </div>
+    </td>
+  </tr>
+`;
     }
   });
 
@@ -1053,6 +1072,13 @@ function syncStatusKerjasama() {
    SAVE (CREATE & UPDATE)
 =============================== */
 async function saveKerjasama() {
+  const role = getRole();
+  
+  // 🔥 BLOKIR USER NON-ADMIN
+  if (role !== "admin") {
+    alert("Anda tidak memiliki izin untuk menyimpan data.");
+    return;
+  }
   showLoading("Menyimpan data kerjasama...");
 
   const ei = getEditIndex();
@@ -1134,6 +1160,8 @@ function setFormReadonly(isReadonly) {
 
 async function openDetailKerjasama(sheetRow) {
   showLoading("Membuka detail kerjasama...");
+  const role = getRole(); // 🔥 CEK ROLE
+
 
   try {
     IS_ADD_MODE = false; // 🔥 BUKAN TAMBAH
@@ -1171,8 +1199,19 @@ async function openDetailKerjasama(sheetRow) {
     syncStatusKerjasama();
 
     document.getElementById("modal-title").textContent = "Detail Kerjasama";
-    setFormReadonly(true);
-    document.getElementById("btn-edit").classList.remove("hidden");
+    
+    // 🔥 FORM SELALU READONLY UNTUK USER
+    setFormReadonly(true || role !== "admin"); 
+    
+    // 🔥 HANYA ADMIN LIHAT TOMBOL EDIT
+    const btnEdit = document.getElementById("btn-edit");
+    if (btnEdit) {
+      if (role === "admin") {
+        btnEdit.classList.remove("hidden");
+      } else {
+        btnEdit.classList.add("hidden");
+      }
+    }
     document.getElementById("btn-save").classList.add("hidden");
     document.getElementById("kerjasama-modal").classList.remove("hidden");
   } finally {
@@ -1232,6 +1271,13 @@ function editKerjasama(i) {
    DELETE
 =============================== */
 async function deleteKerjasama(sheetRow) {
+  const role = getRole();
+  
+  // 🔥 BLOKIR USER NON-ADMIN
+  if (role !== "admin") {
+    alert("Anda tidak memiliki izin untuk menghapus data.");
+    return;
+  }
   if (!confirm("Hapus data kerjasama ini?")) return;
 
   showLoading("Menghapus data...");
@@ -1296,6 +1342,22 @@ tglBerakhir?.addEventListener("change", () => {
 tglBerakhir?.addEventListener("input", () => {
   syncStatusKerjasama();
 });
+// 🔥 TERAPKAN ROLE SAAT FORM DI-BIND
+  const role = getRole();
+  
+  if (role !== "admin") {
+    // Sembunyikan tombol submit/save
+    const btnSave = document.getElementById("btn-save");
+    if (btnSave) btnSave.classList.add("hidden");
+    
+    // Nonaktifkan input (opsional, sebagai UX tambahan)
+    document.querySelectorAll("#kerjasama-form input, #kerjasama-form textarea")
+      .forEach(el => {
+        if (!ALWAYS_READONLY_FIELDS.includes(el.id)) {
+          el.readOnly = true;
+        }
+      });
+  }
   // 🔥 TAMBAH INI - Event listener untuk search mitra
   mitra?.addEventListener("input", () => {
     if (!IS_ADD_MITRA_MODE && !IS_EDIT_MODE) {
