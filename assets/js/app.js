@@ -69,7 +69,7 @@ function runPageScript(page) {
     role !== "admin" &&
     [
       // klau mau nambah halaman admin, tambahkan di sini //
-      "kerjasama",
+      
       "jenis-mitra",
       "bentuk-kegiatan",
       "pendanaan",
@@ -116,6 +116,7 @@ function runPageScript(page) {
     loadBenuaDropdown();
     loadCountryDropdown();
     loadKerjasamaFromSheet();
+    applyRoleUI(); // ← TAMBAHKAN INI
   }
 
   if (page === "kegiatan") {
