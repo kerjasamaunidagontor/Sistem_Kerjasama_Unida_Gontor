@@ -147,107 +147,191 @@
         </div>
       </div>
 
-      <!-- NAVIGATION - Enhanced -->
-      <nav class="p-3 space-y-1 text-sm">
-        <!-- Dashboard -->
-        <a
-          onclick="loadPage('dashboard')"
-          class="menu-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 hover:translate-x-1 transition-all duration-200 group"
-        >
-          <span class="text-lg group-hover:scale-110 transition-transform">📊</span>
-          <span class="font-medium">Dashboard</span>
-        </a>
+      <!-- NAVIGATION - Enhanced dengan SVG Icons -->
+<nav class="p-3 space-y-1 text-sm">
+  <!-- Dashboard -->
+  <a
+    onclick="loadPage('dashboard')"
+    class="menu-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 hover:translate-x-1 transition-all duration-200 group"
+  >
+    <span class="text-cyan-400 group-hover:scale-110 transition-transform">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+      </svg>
+    </span>
+    <span class="font-medium">Dashboard</span>
+  </a>
 
-        <!-- ANALITIK Dropdown -->
-        <div class="relative">
-          <button
-            onclick="toggleSidebarDropdown('analitikDropdown')"
-            class="menu-link w-full text-left flex justify-between items-center px-4 py-3 rounded-xl hover:bg-white/10 hover:translate-x-1 transition-all duration-200 group"
-          >
-            <div class="flex items-center gap-3">
-              <span class="text-lg group-hover:scale-110 transition-transform">📈</span>
-              <span class="font-medium">Analitik</span>
-            </div>
-            <span class="transform transition-transform duration-200 text-cyan-300">▾</span>
-          </button>
+  <!-- ANALITIK Dropdown -->
+  <div class="relative">
+    <button
+      onclick="toggleSidebarDropdown('analitikDropdown')"
+      class="menu-link w-full text-left flex justify-between items-center px-4 py-3 rounded-xl hover:bg-white/10 hover:translate-x-1 transition-all duration-200 group"
+    >
+      <div class="flex items-center gap-3">
+        <span class="text-cyan-400 group-hover:scale-110 transition-transform">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+        </span>
+        <span class="font-medium">Analitik</span>
+      </div>
+      <span class="transform transition-transform duration-200 text-cyan-300">▾</span>
+    </button>
 
-          <div id="analitikDropdown" class="hidden ml-4 mt-1 space-y-1 pl-2 border-l-2 border-cyan-400/30">
-            <a
-              onclick="loadPage('analitik-status')"
-              class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90"
-            >
-              <span>✅</span> Status Kerjasama
-            </a>
-            <a
-              onclick="loadPage('analitik-klasifikasi')"
-              class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90"
-            >
-              <span>🏷️</span> Klasifikasi Mitra
-            </a>
-            <a
-              onclick="loadPage('analitik-geo')"
-              class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90"
-            >
-              <span>🌍</span> Geo Mitra
-            </a>
-          </div>
-        </div>
+    <div id="analitikDropdown" class="hidden ml-4 mt-1 space-y-1 pl-2 border-l-2 border-cyan-400/30">
+      <a
+        onclick="loadPage('analitik-status')"
+        class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90"
+      >
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Status Kerjasama
+      </a>
+      <a
+        onclick="loadPage('analitik-klasifikasi')"
+        class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90"
+      >
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+        </svg>
+        Klasifikasi Mitra
+      </a>
+      <a
+        onclick="loadPage('analitik-geo')"
+        class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90"
+      >
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Geo Mitra
+      </a>
+    </div>
+  </div>
 
-        <!-- Kerjasama -->
-        <a
-          
-          onclick="loadPage('kerjasama')"
-          class="menu-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 hover:translate-x-1 transition-all duration-200 group"
-        >
-          <span class="text-lg group-hover:scale-110 transition-transform">📄</span>
-          <span class="font-medium">Kerjasama</span>
-        </a>
+  <!-- Kerjasama -->
+  <a
+    onclick="loadPage('kerjasama')"
+    class="menu-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 hover:translate-x-1 transition-all duration-200 group"
+  >
+    <span class="text-cyan-400 group-hover:scale-110 transition-transform">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+    </span>
+    <span class="font-medium">Kerjasama</span>
+  </a>
 
-        <!-- INPUT KEGIATAN Dropdown -->
-        <div class="relative">
-          <button
-            onclick="toggleSidebarDropdown('kegiatanDropdown')"
-            class="menu-link w-full text-left flex justify-between items-center px-4 py-3 rounded-xl hover:bg-white/10 hover:translate-x-1 transition-all duration-200 group"
-          >
-            <div class="flex items-center gap-3">
-              <span class="text-lg group-hover:scale-110 transition-transform">📥</span>
-              <span class="font-medium">Input Kegiatan</span>
-            </div>
-            <span class="transform transition-transform duration-200 text-cyan-300">▾</span>
-          </button>
+  <!-- INPUT KEGIATAN Dropdown -->
+  <div class="relative">
+    <button
+      onclick="toggleSidebarDropdown('kegiatanDropdown')"
+      class="menu-link w-full text-left flex justify-between items-center px-4 py-3 rounded-xl hover:bg-white/10 hover:translate-x-1 transition-all duration-200 group"
+    >
+      <div class="flex items-center gap-3">
+        <span class="text-cyan-400 group-hover:scale-110 transition-transform">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+        </span>
+        <span class="font-medium">Input Kegiatan</span>
+      </div>
+      <span class="transform transition-transform duration-200 text-cyan-300">▾</span>
+    </button>
 
-          <div id="kegiatanDropdown" class="hidden ml-4 mt-1 space-y-1 pl-2 border-l-2 border-cyan-400/30">
-            <a onclick="loadPage('kegiatan')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">📅 Kegiatan</a>
-            <a onclick="loadPage('laporan-kegiatan')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">📝 Laporan</a>
-            <a onclick="loadPage('rekap-laporan')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">📊 Rekapitulasi</a>
-          </div>
-        </div>
+    <div id="kegiatanDropdown" class="hidden ml-4 mt-1 space-y-1 pl-2 border-l-2 border-cyan-400/30">
+      <a onclick="loadPage('kegiatan')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        Kegiatan
+      </a>
+      <a onclick="loadPage('laporan-kegiatan')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        Laporan
+      </a>
+      <a onclick="loadPage('rekap-laporan')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        Rekapitulasi
+      </a>
+    </div>
+  </div>
 
-        <!-- LAINYA Dropdown -->
-        <div class="relative">
-          <button
-            onclick="toggleSidebarDropdown('lainyaDropdown')"
-            class="menu-link w-full text-left flex justify-between items-center px-4 py-3 rounded-xl hover:bg-white/10 hover:translate-x-1 transition-all duration-200 group"
-          >
-            <div class="flex items-center gap-3">
-              <span class="text-lg group-hover:scale-110 transition-transform">📂</span>
-              <span class="font-medium">Lainnya</span>
-            </div>
-            <span class="transform transition-transform duration-200 text-cyan-300">▾</span>
-          </button>
+  <!-- LAINYA Dropdown -->
+  <div class="relative">
+    <button
+      onclick="toggleSidebarDropdown('lainyaDropdown')"
+      class="menu-link w-full text-left flex justify-between items-center px-4 py-3 rounded-xl hover:bg-white/10 hover:translate-x-1 transition-all duration-200 group"
+    >
+      <div class="flex items-center gap-3">
+        <span class="text-cyan-400 group-hover:scale-110 transition-transform">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+          </svg>
+        </span>
+        <span class="font-medium">Lainnya</span>
+      </div>
+      <span class="transform transition-transform duration-200 text-cyan-300">▾</span>
+    </button>
 
-          <div id="lainyaDropdown" class="hidden ml-4 mt-1 space-y-1 pl-2 border-l-2 border-cyan-400/30 max-h-64 overflow-y-auto custom-scrollbar">
-            <a onclick="loadPage('mitra')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">🏢 Rekapitulasi Mitra</a>
-            <a data-admin onclick="loadPage('nilai-iku')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">📈 Nilai IKU</a>
-            <a data-admin onclick="loadPage('bentuk-kegiatan')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">🧩 Bentuk Kegiatan</a>
-            <a data-admin onclick="loadPage('jenis-mitra')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">🏷️ Jenis Mitra</a>
-            <a data-admin onclick="loadPage('tambah-mitra')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">➕ Tambah Mitra</a>
-            <a data-admin onclick="loadPage('pendanaan')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">💰 Pendanaan</a>
-            <a data-admin onclick="loadPage('prodi-satker')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">🎓 Prodi / Satker</a>
-            <a data-admin onclick="loadPage('fakultas-satker')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">🏛️ Fakultas / Satker</a>
-          </div>
-        </div>
-      </nav>
+    <div id="lainyaDropdown" class="hidden ml-4 mt-1 space-y-1 pl-2 border-l-2 border-cyan-400/30 max-h-64 overflow-y-auto custom-scrollbar">
+      <a onclick="loadPage('mitra')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+        </svg>
+        Rekapitulasi Mitra
+      </a>
+      <a data-admin onclick="loadPage('nilai-iku')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+        </svg>
+        Nilai IKU
+      </a>
+      <a data-admin onclick="loadPage('bentuk-kegiatan')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/>
+        </svg>
+        Bentuk Kegiatan
+      </a>
+      <a data-admin onclick="loadPage('jenis-mitra')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+        </svg>
+        Jenis Mitra
+      </a>
+      <a data-admin onclick="loadPage('tambah-mitra')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        Tambah Mitra
+      </a>
+      <a data-admin onclick="loadPage('pendanaan')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Pendanaan
+      </a>
+      <a data-admin onclick="loadPage('prodi-satker')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>
+        </svg>
+        Prodi / Satker
+      </a>
+      <a data-admin onclick="loadPage('fakultas-satker')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+        </svg>
+        Fakultas / Satker
+      </a>
+    </div>
+  </div>
+</nav>
 
       
     </aside>
