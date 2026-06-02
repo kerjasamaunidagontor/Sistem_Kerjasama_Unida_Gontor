@@ -237,7 +237,15 @@
         </span>
         <span class="font-medium">Input Kegiatan</span>
       </div>
-      <span class="transform transition-transform duration-200 text-cyan-300">▾</span>
+      
+      <!-- Wrapper untuk badge dan arrow agar sejajar -->
+      <div class="flex items-center gap-2">
+        <!-- Badge Notifikasi (Default hidden, akan muncul via JS jika kondisi terpenuhi) -->
+        <span id="kegiatan-status-badge" class="hidden bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center shadow-sm animate-pulse">
+          0
+        </span>
+        <span class="transform transition-transform duration-200 text-cyan-300">▾</span>
+      </div>
     </button>
 
     <div id="kegiatanDropdown" class="hidden ml-4 mt-1 space-y-1 pl-2 border-l-2 border-cyan-400/30">
@@ -260,7 +268,7 @@
         Rekapitulasi
       </a>
     </div>
-  </div>
+</div>
 
   <!-- LAINYA Dropdown -->
   <div class="relative">
