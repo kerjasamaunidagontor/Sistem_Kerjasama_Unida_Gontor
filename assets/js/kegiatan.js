@@ -449,6 +449,7 @@ function openKegiatanDetail(sheetRow) {
                  <option ${k.status === "Diterima" ? "selected" : ""}>Diterima</option>
                  <option ${k.status === "Direvisi" ? "selected" : ""}>Direvisi</option>
                  <option ${k.status === "Belum Sesuai" ? "selected" : ""}>Belum Sesuai</option>
+                 <option ${k.status === "Belum Laporan" ? "selected" : ""}>Belum Laporan</option>
                  <option ${k.status === "Proses" ? "selected" : ""}>Proses</option>
                </select>`
             : k.status || "-"
@@ -759,6 +760,9 @@ async function loadKegiatanFromSheet() {
     }
     // 🔥 POPULATE DROPDOWN FILTER SETELAH DATA SIAP
     populateColumnFilters();
+
+    // 🔥 UPDATE BADGE NOTIFIKASI STATUS KOSONG SETELAH DATA DIMUAT
+    updateKegiatanStatusBadge();
 
     // =====================================================
     // 🔥 AUTO EDIT JIKA DATANG DARI REKAP (TAMBAHAN BARU)
@@ -1241,3 +1245,29 @@ document.addEventListener("click", (e) => {
     kegiatanToggleMitraDropdown(false);
   }
 });
+/* ===============================
+   NOTIFIKASI STATUS KOSONG (ADMIN ONLY)
+=============================== */
+function updateKegiatanStatusBadge() {
+  // 1. Hanya tampilkan notifikasi untuk user dengan role "admin"
+  if (!isAdmin()) {
+    const badge = document.getElementById("kegiatan-status-badge");
+    if (badge) badge.classList.add("hidden");
+    return;
+  }
+
+  // 2. Hitung jumlah data yang status-nya kosong, null, undefined, atau string kosong
+  const emptyStatusCount = KEGIATAN.filter(k => !k.status || String(k.status).trim() === "").length;
+  const badge = document.getElementById("kegiatan-status-badge");
+  
+  // 3. Update tampilan badge
+  if (badge) {
+    if (emptyStatusCount > 0) {
+      // Tampilkan jumlah, jika lebih dari 99 tampilkan "99+" agar tidak merusak layout
+      badge.textContent = emptyStatusCount > 99 ? "99+" : emptyStatusCount;
+      badge.classList.remove("hidden");
+    } else {
+      badge.classList.add("hidden");
+    }
+  }
+}
