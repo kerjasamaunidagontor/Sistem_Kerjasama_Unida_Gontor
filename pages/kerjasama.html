@@ -188,20 +188,32 @@
       </div>
 
       <!-- Benua -->
-      <div class="flex flex-col gap-1">
-        <label for="benua" class="text-xs text-gray-500">Benua</label>
-        <select id="benua" class="input">
-          <option value="">-- Pilih Benua --</option>
-        </select>
-      </div>
+<div class="flex flex-col gap-1 autocomplete-wrapper" id="benua-wrapper">
+  <label class="text-xs text-gray-500">Benua</label>
+  <input
+    id="benua"
+    class="input"
+    placeholder="Cari / ketik Benua"
+    onclick="showAllAutocomplete('benua')"
+    oninput="filterAutocomplete('benua')"
+    autocomplete="off"
+  />
+  <div id="benua-dropdown" class="autocomplete-dropdown hidden"></div>
+</div>
 
       <!-- Negara -->
-      <div class="flex flex-col gap-1">
-        <label for="negara" class="text-xs text-gray-500">Negara</label>
-        <select id="negara" class="input">
-          <option value="">-- Pilih Negara --</option>
-        </select>
-      </div>
+<div class="flex flex-col gap-1 autocomplete-wrapper" id="negara-wrapper">
+  <label class="text-xs text-gray-500">Negara</label>
+  <input
+    id="negara"
+    class="input"
+    placeholder="Cari / ketik Negara"
+    onclick="showAllAutocomplete('negara')"
+    oninput="filterAutocomplete('negara')"
+    autocomplete="off"
+  />
+  <div id="negara-dropdown" class="autocomplete-dropdown hidden"></div>
+</div>
 
       <!-- Mitra Terkait -->
       <div class="flex flex-col gap-1">
@@ -218,14 +230,18 @@
       </div>
 
       <!-- Unit -->
-      <div class="flex flex-col gap-1">
-        <label for="unit" class="text-xs text-gray-500">
-          Fak / Prodi / Satker
-        </label>
-        <select id="unit" class="input">
-          <option value="">-- Pilih Fakultas / Satker --</option>
-        </select>
-      </div>
+<div class="flex flex-col gap-1 autocomplete-wrapper" id="unit-wrapper">
+  <label class="text-xs text-gray-500">Fak / Prodi / Satker</label>
+  <input
+    id="unit"
+    class="input"
+    placeholder="Cari / ketik Fakultas / Satker"
+    onclick="showAllAutocomplete('unit')"
+    oninput="filterAutocomplete('unit')"
+    autocomplete="off"
+  />
+  <div id="unit-dropdown" class="autocomplete-dropdown hidden"></div>
+</div>
 
       <!-- No Surat -->
       <div class="flex flex-col gap-1">
@@ -236,14 +252,18 @@
       </div>
 
       <!-- Jenis Mitra -->
-      <div class="flex flex-col gap-1">
-        <label for="jenisMitra" class="text-xs text-gray-500"
-          >Jenis Mitra</label
-        >
-        <select id="jenisMitra" class="input">
-          <option value="">-- Pilih Jenis Mitra --</option>
-        </select>
-      </div>
+<div class="flex flex-col gap-1 autocomplete-wrapper" id="jenisMitra-wrapper">
+  <label class="text-xs text-gray-500">Jenis Mitra</label>
+  <input
+    id="jenisMitra"
+    class="input"
+    placeholder="Cari / ketik Jenis Mitra"
+    onclick="showAllAutocomplete('jenisMitra')"
+    oninput="filterAutocomplete('jenisMitra')"
+    autocomplete="off"
+  />
+  <div id="jenisMitra-dropdown" class="autocomplete-dropdown hidden"></div>
+</div>
 
       <!-- Jenis Dokumen -->
       <div class="flex flex-col gap-1">
