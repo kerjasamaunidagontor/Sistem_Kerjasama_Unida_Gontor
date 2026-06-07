@@ -489,11 +489,12 @@ function goToPage(page) {
 let IS_EDIT_MODE = false;
 
 async function openKerjasamaForm() {
-  IS_ADD_MODE = true;   // 🔥 TAMBAH MODE
+  // 🔥 1️⃣ RESET STATE
+  IS_ADD_MODE = true;         // 🔥 MODE TAMBAH
   IS_EDIT_MODE = false;
-  IS_ADD_MITRA_MODE = false; // reset setiap buka form
+  IS_ADD_MITRA_MODE = false;  // reset setiap buka form
 
-
+  // 🔥 2️⃣ RESET FORM
   const editIndex = document.getElementById("editIndex");
   if (editIndex) editIndex.value = "";
 
@@ -501,24 +502,26 @@ async function openKerjasamaForm() {
 
   document
     .querySelectorAll(
-      "#kerjasama-form input, #kerjasama-form textarea, #kerjasama-form select",
+      "#kerjasama-form input, #kerjasama-form textarea, #kerjasama-form select"
     )
     .forEach((el) => (el.value = ""));
 
+  // 🔥 3️⃣ SET UI MODE (TAMBAH)
   setFormReadonly(false);
-
   document.getElementById("btn-edit").classList.add("hidden");
   document.getElementById("btn-save").classList.remove("hidden");
 
-  // 🔥 TARUH DI SINI
-  await initJenisMitraSelect(); // dropdown jenis mitra diisi
-  renderFakultasSelect(); // dropdown fakultas/satker diisi
-  renderJenisDokumenSelect(); // dropdown jenis dokumen diisi
+  // 🔥 4️⃣ LOAD SEMUA DATA AUTOCOMPLETE DULU
+  // (biar AUTOCOMPLETE_DATA terisi sebelum user mulai interaksi)
+  loadBenuaDropdown();              // isi AUTOCOMPLETE_DATA.benua
+  await loadCountryDropdown(true);  // isi AUTOCOMPLETE_DATA.negara
+  await initJenisMitraSelect();     // isi AUTOCOMPLETE_DATA.jenisMitra
+  await renderFakultasSelect();     // isi AUTOCOMPLETE_DATA.unit
+  
+  // 🔥 5️⃣ LOAD DATA KERJASAMA DARI SHEET
   await loadKerjasamaFromSheet();
 
-  loadBenuaDropdown();
-  await loadCountryDropdown(true);
-
+  // 🔥 6️⃣ TAMPILKAN MODAL
   document.getElementById("kerjasama-modal").classList.remove("hidden");
 }
 
@@ -534,151 +537,49 @@ function closeKerjasamaForm() {
 }
 
 // panggil ini dari openKerjasamaForm() dan dari openDetailKerjasama()
-async function loadCountryDropdown(force = false) {
-  const select = document.getElementById("negara");
-  if (!select) return;
-
-  // kalau sudah terisi (lebih dari 1 option), skip kecuali paksa
-  if (!force && select.options.length > 1) return;
+async function loadCountryDropdown(force = false, currentValue = "") {
+  const input = document.getElementById("negara");
 
   const COUNTRY_LIST = [
-    "Afghanistan",
-    "Albania",
-    "Algeria",
-    "Andorra",
-    "Angola",
-    "Argentina",
-    "Australia",
-    "Austria",
-    "Bangladesh",
-    "Belgium",
-    "Brazil",
-    "Brunei Darussalam",
-    "Cambodia",
-    "Canada",
-    "China",
-    "Denmark",
-    "Egypt",
-    "France",
-    "Germany",
-    "India",
-    "Indonesia",
-    "Iran",
-    "Iraq",
-    "Ireland",
-    "Italy",
-    "Japan",
-    "Jordan",
-    "Kenya",
-    "Kuwait",
-    "Laos",
-    "Malaysia",
-    "Mexico",
-    "Morocco",
-    "Myanmar",
-    "Netherlands",
-    "New Zealand",
-    "Nigeria",
-    "Norway",
-    "Pakistan",
-    "Philippines",
-    "Qatar",
-    "Russia",
-    "Saudi Arabia",
-    "Singapore",
-    "South Africa",
-    "South Korea",
-    "Spain",
-    "Sri Lanka",
-    "Sweden",
-    "Switzerland",
-    "Thailand",
-    "Turkey",
-    "United Arab Emirates",
-    "United Kingdom",
-    "United States",
-    "Vietnam",
-    "Yemen",
-    "Zimbabwe",
+    "Afghanistan","Albania","Algeria","Andorra","Angola","Argentina","Australia","Austria",
+    "Bangladesh","Belgium","Brazil","Brunei Darussalam","Cambodia","Canada","China","Denmark",
+    "Egypt","France","Germany","India","Indonesia","Iran","Iraq","Ireland","Italy","Japan",
+    "Jordan","Kenya","Kuwait","Laos","Malaysia","Mexico","Morocco","Myanmar","Netherlands",
+    "New Zealand","Nigeria","Norway","Pakistan","Philippines","Qatar","Russia","Saudi Arabia",
+    "Singapore","South Africa","South Korea","Spain","Sri Lanka","Sweden","Switzerland",
+    "Thailand","Turkey","United Arab Emirates","United Kingdom","United States","Vietnam",
+    "Yemen","Zimbabwe"
   ];
 
-  // fallback option: pakai list statis (reliable)
-  const renderOptions = (list) => {
-    select.innerHTML = `<option value="">-- Pilih Negara --</option>`;
-    list
-      .sort((a, b) => a.localeCompare(b))
-      .forEach((name) => {
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        select.appendChild(opt);
-      });
-    console.log(
-      "Country dropdown populated, count:",
-      select.options.length - 1,
-    );
-  };
-
-  // coba fetch API, kalau gagal pakai COUNTRY_LIST
   try {
     const res = await fetch("https://restcountries.com/v3.1/all?fields=name");
     if (!res.ok) throw new Error("HTTP " + res.status);
     const data = await res.json();
-    const countries = data.map((c) => c.name.common);
-    renderOptions(countries);
+    const countries = data.map(c => c.name.common).sort((a,b) => a.localeCompare(b));
+    setAutocompleteData("negara", countries);
+    console.log("Autocomplete negara siap (API):", countries.length);
   } catch (err) {
     console.warn("Gagal load countries API, pakai fallback list", err);
-    renderOptions(COUNTRY_LIST);
+    setAutocompleteData("negara", COUNTRY_LIST.sort());
   }
+
+  if (input && currentValue) input.value = currentValue;
 }
-function loadBenuaDropdown() {
-  const select = document.getElementById("benua");
-  if (!select) return;
-
+function loadBenuaDropdown(currentValue = "") {
   const BENUA_LIST = [
-    // ASIA
-    "Asia Tenggara",
-    "Asia Timur",
-    "Asia Selatan",
-    "Asia Tengah",
-    "Asia Barat (Timur Tengah)",
-
-    // EROPA
-    "Eropa Barat",
-    "Eropa Timur",
-    "Eropa Utara",
-    "Eropa Selatan",
-
-    // AMERIKA
-    "Amerika Utara",
-    "Amerika Tengah",
-    "Amerika Selatan",
-    "Karibia",
-
-    // AFRIKA
-    "Afrika Utara",
-    "Afrika Barat",
-    "Afrika Tengah",
-    "Afrika Timur",
-    "Afrika Selatan",
-
-    // OSEANIA
-    "Australia & Selandia Baru",
-    "Melanesia",
-    "Mikronesia",
-    "Polinesia",
+    "Asia Tenggara", "Asia Timur", "Asia Selatan", "Asia Tengah", "Asia Barat (Timur Tengah)",
+    "Eropa Barat", "Eropa Timur", "Eropa Utara", "Eropa Selatan",
+    "Amerika Utara", "Amerika Tengah", "Amerika Selatan", "Karibia",
+    "Afrika Utara", "Afrika Barat", "Afrika Tengah", "Afrika Timur", "Afrika Selatan",
+    "Australia & Selandia Baru", "Melanesia", "Mikronesia", "Polinesia",
   ];
 
-  select.innerHTML = `<option value="">-- Pilih Benua --</option>`;
+  setAutocompleteData("benua", BENUA_LIST);
 
-  BENUA_LIST.forEach((benua) => {
-    const opt = document.createElement("option");
-    opt.value = benua;
-    opt.textContent = benua;
-    select.appendChild(opt);
-  });
+  const input = document.getElementById("benua");
+  if (input && currentValue) input.value = currentValue;
 
-  console.log("Dropdown benua siap:", BENUA_LIST.length);
+  console.log("Autocomplete benua siap:", BENUA_LIST.length);
 }
 // ===============================
 // DATA MITRA UNTUK DROPDOWN
@@ -763,7 +664,89 @@ function showAllMitra() {
   input.value = "";
   filterMitraDropdown(true);
 }
+/* ===============================
+   GENERIC AUTOCOMPLETE (Benua, Negara, Unit, Jenis Mitra, Jenis Dokumen)
+=============================== */
 
+// Cache data untuk setiap field autocomplete
+const AUTOCOMPLETE_DATA = {
+  benua: [],
+  negara: [],
+  unit: [],
+  jenisMitra: [],
+  
+};
+
+// Set data untuk field tertentu
+function setAutocompleteData(fieldId, dataArray) {
+  AUTOCOMPLETE_DATA[fieldId] = (dataArray || []).filter(Boolean);
+}
+
+// Filter dropdown berdasarkan keyword
+function filterAutocomplete(fieldId, forceShow = false) {
+  const input = document.getElementById(fieldId);
+  const dropdown = document.getElementById(`${fieldId}-dropdown`);
+  if (!input || !dropdown) return;
+
+  const data = AUTOCOMPLETE_DATA[fieldId] || [];
+  const keyword = input.value.toLowerCase().trim();
+
+  const filtered = keyword
+    ? data.filter(x => x.toLowerCase().includes(keyword))
+    : data;
+
+  dropdown.innerHTML = "";
+
+  if (!filtered.length && !forceShow) {
+    dropdown.classList.add("hidden");
+    return;
+  }
+
+  // Kalau tidak ada hasil tapi user mengetik, tampilkan pesan
+  if (!filtered.length && forceShow) {
+    dropdown.classList.add("hidden");
+    return;
+  }
+
+  filtered.forEach(item => {
+    const div = document.createElement("div");
+    div.textContent = item;
+    div.className = "px-3 py-2 text-sm cursor-pointer hover:bg-purple-100";
+
+    // Pakai mousedown agar tidak konflik dengan blur/click outside
+    div.onmousedown = (e) => {
+      e.preventDefault();
+      input.value = item;
+      dropdown.classList.add("hidden");
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    };
+
+    dropdown.appendChild(div);
+  });
+
+  dropdown.classList.remove("hidden");
+}
+
+// Tampilkan semua opsi saat input diklik
+function showAllAutocomplete(fieldId) {
+  const input = document.getElementById(fieldId);
+  if (!input) return;
+
+  // Jangan kosongkan value saat klik (biar user bisa lihat list sambil tetap ada nilai)
+  filterAutocomplete(fieldId, true);
+}
+
+// Tutup dropdown saat klik di luar wrapper
+document.addEventListener("click", (e) => {
+  const fields = ["benua", "negara", "unit", "jenisMitra"];
+  fields.forEach(fieldId => {
+    const wrapper = document.getElementById(`${fieldId}-wrapper`);
+    const dropdown = document.getElementById(`${fieldId}-dropdown`);
+    if (wrapper && dropdown && !wrapper.contains(e.target)) {
+      dropdown.classList.add("hidden");
+    }
+  });
+});
 function toggleMitraDropdown(show) {
   const dropdown = document.getElementById("k-no-dropdown");
   if (!dropdown) return;
@@ -788,49 +771,24 @@ document.addEventListener("click", (e) => {
 ================================ */
 
 // 1️⃣ render select (punyamu)
-function renderJenisMitraSelect(selectedValue = "") {
-  const select = document.getElementById("jenisMitra");
-  if (!select) return;
-
-  const data = Array.isArray(window.JENIS_MITRA) ? window.JENIS_MITRA : [];
-
-  select.innerHTML = `<option value="">-- Pilih Jenis Mitra --</option>`;
-
-  let found = false;
-
-  data.forEach((item) => {
-    const opt = document.createElement("option");
-    opt.value = item.nama;
-    opt.textContent = item.nama;
-
-    if (item.nama === selectedValue) {
-      opt.selected = true;
-      found = true;
-    }
-
-    select.appendChild(opt);
-  });
-
-  if (selectedValue && !found) {
-    const opt = document.createElement("option");
-    opt.value = selectedValue;
-    opt.textContent = selectedValue;
-    opt.selected = true;
-    select.appendChild(opt);
-  }
-}
-
-// 2️⃣ INIT (INI YANG KAMU TANYAKAN)
 async function initJenisMitraSelect(selectedValue = "") {
-  // pastikan data sudah ada
   if (!Array.isArray(window.JENIS_MITRA) || window.JENIS_MITRA.length === 0) {
     if (typeof loadJenisMitra === "function") {
       await loadJenisMitra();
     }
   }
 
-  renderJenisMitraSelect(selectedValue);
+  const data = Array.isArray(window.JENIS_MITRA)
+    ? window.JENIS_MITRA.map(x => x.nama).filter(Boolean)
+    : [];
+
+  setAutocompleteData("jenisMitra", data);
+
+  const input = document.getElementById("jenisMitra");
+  if (input && selectedValue) input.value = selectedValue;
 }
+
+
 // ======= BUKA LINK DOKUMEN ======= //
 function openFile(row) {
   const data = KERJASAMA.find((x) => Number(x.row) === Number(row));
@@ -852,10 +810,9 @@ function openFile(row) {
 
 //======== AMBIL DATA FAKULTAS / SATKER ========//
 async function renderFakultasSelect(selectedValue = "") {
-  const select = document.getElementById("unit");
-  if (!select) return;
+  const input = document.getElementById("unit");
+  if (!input) return;
 
-  // 🔥 PAKSA LOAD JIKA DATA BELUM ADA
   if (
     (!Array.isArray(FAKULTAS) || FAKULTAS.length === 0) &&
     typeof loadFakultas === "function"
@@ -864,32 +821,9 @@ async function renderFakultasSelect(selectedValue = "") {
   }
 
   const data = window.getFakultasData?.() || [];
+  setAutocompleteData("unit", data);
 
-  select.innerHTML = `<option value="">-- Pilih Fakultas / Satker --</option>`;
-
-  let found = false;
-
-  data.forEach((nama) => {
-    const opt = document.createElement("option");
-    opt.value = nama;
-    opt.textContent = nama;
-
-    if (nama === selectedValue) {
-      opt.selected = true;
-      found = true;
-    }
-
-    select.appendChild(opt);
-  });
-
-  // fallback data lama
-  if (selectedValue && !found) {
-    const opt = document.createElement("option");
-    opt.value = selectedValue;
-    opt.textContent = selectedValue;
-    opt.selected = true;
-    select.appendChild(opt);
-  }
+  if (selectedValue) input.value = selectedValue;
 }
 
 //======== AMBIL DATA JENIS DOKUMEN ========//
@@ -1162,13 +1096,11 @@ async function openDetailKerjasama(sheetRow) {
   showLoading("Membuka detail kerjasama...");
   const role = getRole(); // 🔥 CEK ROLE
 
-
   try {
     IS_ADD_MODE = false; // 🔥 BUKAN TAMBAH
     IS_EDIT_MODE = true; // 🔥 MODE DETAIL / EDIT
 
-    await loadCountryDropdown(true);
-
+    // 🔍 Cari data berdasarkan row
     const idx = KERJASAMA.findIndex((x) => Number(x.row) === Number(sheetRow));
     if (idx === -1) {
       alert("Data tidak ditemukan");
@@ -1180,29 +1112,35 @@ async function openDetailKerjasama(sheetRow) {
     const ei = getEditIndex();
     if (ei) ei.value = d.row;
 
-    await initJenisMitraSelect(d.jenisMitra);
-    renderFakultasSelect(d.unit);
-    renderJenisDokumenSelect(d.jenisDokumen);
+    // 🔥 1️⃣ LOAD SEMUA DATA AUTOCOMPLETE DULU
+    // (biar AUTOCOMPLETE_DATA terisi sebelum value di-set)
+    await loadCountryDropdown(true);   // isi AUTOCOMPLETE_DATA.negara
+    loadBenuaDropdown();               // isi AUTOCOMPLETE_DATA.benua
+    await initJenisMitraSelect();      // isi AUTOCOMPLETE_DATA.jenisMitra
+    await renderFakultasSelect();      // isi AUTOCOMPLETE_DATA.unit
+    
 
+    // 🔥 2️⃣ BARU SET VALUE DARI DATA
     Object.keys(d).forEach((k) => {
       const el = document.getElementById(k);
       if (!el) return;
 
       if (el.type === "date") {
-        el.value = toDateInputValue(d[k]); // 🔥 FIX
+        el.value = toDateInputValue(d[k]); // 🔥 FIX format tanggal
       } else {
-        el.value = d[k];
+        el.value = d[k] ?? "";
       }
     });
 
+    // 🔥 3️⃣ SYNC FIELD TURUNAN
     syncTahunFromTanggal();
     syncStatusKerjasama();
 
     document.getElementById("modal-title").textContent = "Detail Kerjasama";
-    
+
     // 🔥 FORM SELALU READONLY UNTUK USER
-    setFormReadonly(true || role !== "admin"); 
-    
+    setFormReadonly(true || role !== "admin");
+
     // 🔥 HANYA ADMIN LIHAT TOMBOL EDIT
     const btnEdit = document.getElementById("btn-edit");
     if (btnEdit) {
@@ -1225,9 +1163,10 @@ async function switchToEdit() {
   document.getElementById("modal-title").textContent = "Edit Kerjasama";
   setFormReadonly(false);
 
-  await initJenisMitraSelect(jenisMitra.value);
-  renderFakultasSelect(unit.value);
-  renderJenisDokumenSelect(jenisDokumen.value);
+  // 🔥 Tidak perlu passing selectedValue, karena value sudah ada di input
+  await initJenisMitraSelect();
+  await renderFakultasSelect();
+  renderJenisDokumenSelect();
 
   document.getElementById("btn-edit").classList.add("hidden");
   document.getElementById("btn-save").classList.remove("hidden");
