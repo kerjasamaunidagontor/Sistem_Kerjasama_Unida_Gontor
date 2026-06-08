@@ -247,17 +247,21 @@
           </div>
 
           <div>
-            <label for="k-jenis-mitra" class="block text-sm font-medium mb-1">
-              Jenis Mitra
-            </label>
-            <select id="k-jenis-mitra" class="input w-full">
-              <option value="">Pilih Jenis Mitra</option>
-              <option>Perguruan Tinggi</option>
-              <option>Industri</option>
-              <option>Pemerintah</option>
-              <option>Lainnya</option>
-            </select>
-          </div>
+  <label class="block text-sm font-medium mb-1">Jenis Mitra</label>
+  <div id="jenis-mitra-wrapper" class="relative w-full">
+    <input
+      id="k-jenis-mitra-search"
+      type="text"
+      placeholder="Cari Jenis Mitra..."
+      class="w-full border px-3 py-2 rounded"
+      onfocus="kegiatanShowAutocomplete('jenisMitra')"
+      oninput="kegiatanFilterAutocomplete('jenisMitra')"
+      autocomplete="off"
+    />
+    <input type="hidden" id="k-jenis-mitra" />
+    <div id="k-jenis-mitra-dropdown" class="absolute left-0 right-0 mt-1 bg-white border rounded shadow-lg max-h-48 overflow-auto hidden z-50"></div>
+  </div>
+</div>
 
           <div>
             <label for="k-jenis-dokumen" class="block text-sm font-medium mb-1">
@@ -272,13 +276,21 @@
           </div>
 
           <div>
-            <label for="k-bentuk" class="block text-sm font-medium mb-1">
-              Bentuk Kegiatan
-            </label>
-            <select id="k-bentuk" class="input w-full">
-              <option value="">Pilih Bentuk Kegiatan</option>
-            </select>
-          </div>
+  <label class="block text-sm font-medium mb-1">Bentuk Kegiatan</label>
+  <div id="bentuk-wrapper" class="relative w-full">
+    <input
+      id="k-bentuk-search"
+      type="text"
+      placeholder="Cari Bentuk Kegiatan..."
+      class="w-full border px-3 py-2 rounded"
+      onfocus="kegiatanShowAutocomplete('bentuk')"
+      oninput="kegiatanFilterAutocomplete('bentuk')"
+      autocomplete="off"
+    />
+    <input type="hidden" id="k-bentuk" />
+    <div id="k-bentuk-dropdown" class="absolute left-0 right-0 mt-1 bg-white border rounded shadow-lg max-h-48 overflow-auto hidden z-50"></div>
+  </div>
+</div>
 
           <div>
             <label for="k-bidang" class="block text-sm font-medium mb-1">
@@ -295,31 +307,55 @@
           </div>
 
           <div>
-            <label for="k-pendanaan" class="block text-sm font-medium mb-1">
-              Pendanaan
-            </label>
-            <select id="k-pendanaan" class="input w-full">
-              <option value="">Pilih Pendanaan</option>
-            </select>
-          </div>
+  <label class="block text-sm font-medium mb-1">Pendanaan</label>
+  <div id="pendanaan-wrapper" class="relative w-full">
+    <input
+      id="k-pendanaan-search"
+      type="text"
+      placeholder="Cari Pendanaan..."
+      class="w-full border px-3 py-2 rounded"
+      onfocus="kegiatanShowAutocomplete('pendanaan')"
+      oninput="kegiatanFilterAutocomplete('pendanaan')"
+      autocomplete="off"
+    />
+    <input type="hidden" id="k-pendanaan" />
+    <div id="k-pendanaan-dropdown" class="absolute left-0 right-0 mt-1 bg-white border rounded shadow-lg max-h-48 overflow-auto hidden z-50"></div>
+  </div>
+</div>
 
           <div>
-            <label for="k-fakultas" class="block text-sm font-medium mb-1">
-              Fakultas / Satker
-            </label>
-            <select id="k-fakultas" class="input w-full">
-              <option value="">Pilih Fakultas / Satker</option>
-            </select>
-          </div>
+  <label class="block text-sm font-medium mb-1">Fakultas / Satker</label>
+  <div id="fakultas-wrapper" class="relative w-full">
+    <input
+      id="k-fakultas-search"
+      type="text"
+      placeholder="Cari Fakultas / Satker..."
+      class="w-full border px-3 py-2 rounded"
+      onfocus="kegiatanShowAutocomplete('fakultas')"
+      oninput="kegiatanFilterAutocomplete('fakultas')"
+      autocomplete="off"
+    />
+    <input type="hidden" id="k-fakultas" />
+    <div id="k-fakultas-dropdown" class="absolute left-0 right-0 mt-1 bg-white border rounded shadow-lg max-h-48 overflow-auto hidden z-50"></div>
+  </div>
+</div>
 
-          <div>
-            <label for="k-pj" class="block text-sm font-medium mb-1">
-              Penanggung Jawab (PJ)
-            </label>
-            <select id="k-pj" class="input w-full">
-              <option value="">Pilih PJ</option>
-            </select>
-          </div>
+<div>
+  <label class="block text-sm font-medium mb-1">Penanggung Jawab (PJ)</label>
+  <div id="pj-wrapper" class="relative w-full">
+    <input
+      id="k-pj-search"
+      type="text"
+      placeholder="Cari PJ..."
+      class="w-full border px-3 py-2 rounded"
+      onfocus="kegiatanShowAutocomplete('pj')"
+      oninput="kegiatanFilterAutocomplete('pj')"
+      autocomplete="off"
+    />
+    <input type="hidden" id="k-pj" />
+    <div id="k-pj-dropdown" class="absolute left-0 right-0 mt-1 bg-white border rounded shadow-lg max-h-48 overflow-auto hidden z-50"></div>
+  </div>
+</div>
 
           <div>
             <label for="k-tahun" class="block text-sm font-medium mb-1">
