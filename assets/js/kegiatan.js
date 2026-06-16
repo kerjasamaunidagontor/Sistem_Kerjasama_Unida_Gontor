@@ -305,7 +305,7 @@ function renderKegiatanTable() {
         <td class="p-3">${k.bidang}</td>
         <td class="p-3">${k.bentuk}</td>
         <td class="p-3">${k.tingkat}</td>
-        <td class="p-3">${formatTanggal(k.tanggal)}</td>
+        <td class="p-3">${formatTanggalMMDDYYYY(k.tanggal)}</td>
         <td class="p-3">${k.deskripsi}</td>
         <td class="p-3">${k.mitra}</td>
         <td class="p-3">
@@ -690,34 +690,122 @@ async function deleteKegiatan(sheetRow) {
   }
 }
 
-function toInputDate(val) {
-  if (!val) return "";
+/* ===============================
+   FORMAT TANGGAL → "5 Mei 2026" (Indonesia)
+   🔥 AUTO-DETECT: DD/MM/YYYY atau MM/DD/YYYY
+=============================== */
+function formatTanggal(val) {
+  if (!val || val === "-") return "-";
 
-  // 1️⃣ Kalau Date object
-  if (val instanceof Date && !isNaN(val)) {
-    return val.toISOString().split("T")[0];
-  }
+  const BULAN = [
+    "Januari","Februari","Maret","April","Mei","Juni",
+    "Juli","Agustus","September","Oktober","November","Desember"
+  ];
 
-  // 2️⃣ Kalau number (serial / timestamp)
-  if (typeof val === "number") {
-    const d = new Date(val);
-    if (!isNaN(d)) return d.toISOString().split("T")[0];
-  }
+  let d, m, y;
 
-  // 3️⃣ Kalau string
   if (typeof val === "string") {
     val = val.trim();
 
-    // sudah format input
-    if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
-
-    // ISO
-    if (!isNaN(Date.parse(val))) {
-      const d = new Date(val);
-      return d.toISOString().split("T")[0];
+    // ISO 8601 → parse ke local time
+    if (val.includes("T")) {
+      const dt = new Date(val);
+      if (!isNaN(dt)) {
+        d = dt.getDate();
+        m = dt.getMonth();
+        y = dt.getFullYear();
+        return `${d} ${BULAN[m]} ${y}`;
+      }
     }
 
-    // MM/DD/YYYY
+    // YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
+      const [yr, mo, dy] = val.split("-");
+      return `${parseInt(dy)} ${BULAN[parseInt(mo)-1]} ${yr}`;
+    }
+
+    // 🔥 AUTO-DETECT: DD/MM/YYYY atau MM/DD/YYYY
+    const p = val.split("/");
+    if (p.length === 3) {
+      const part1 = parseInt(p[0]);
+      const part2 = parseInt(p[1]);
+      const yr = p[2];
+
+      // 🔍 Deteksi format berdasarkan nilai
+      if (part1 > 12) {
+        // part1 > 12 → pasti DD/MM/YYYY (contoh: 18/6/2026)
+        d = part1;
+        m = part2 - 1;
+      } else if (part2 > 12) {
+        // part2 > 12 → pasti MM/DD/YYYY (contoh: 6/18/2026)
+        m = part1 - 1;
+        d = part2;
+      } else {
+        // Keduanya <= 12 → asumsikan MM/DD/YYYY (format database)
+        // Contoh: 5/2/2026 = 2 Mei 2026
+        m = part1 - 1;
+        d = part2;
+      }
+
+      if (m >= 0 && m < 12 && d > 0 && d <= 31) {
+        return `${d} ${BULAN[m]} ${yr}`;
+      }
+    }
+  }
+
+  if (val instanceof Date && !isNaN(val)) {
+    return `${val.getDate()} ${BULAN[val.getMonth()]} ${val.getFullYear()}`;
+  }
+
+  return val;
+}
+
+/* ===============================
+   TO INPUT DATE → YYYY-MM-DD (untuk date picker)
+   🔥 KUNCI: gunakan LOCAL TIME, bukan UTC!
+=============================== */
+function toInputDate(val) {
+  if (!val) return "";
+
+  // 1️⃣ Date object → LOCAL time (bukan toISOString yang UTC!)
+  if (val instanceof Date && !isNaN(val)) {
+    const y = val.getFullYear();
+    const m = String(val.getMonth() + 1).padStart(2, "0");
+    const d = String(val.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+
+  // 2️⃣ Number (timestamp / serial)
+  if (typeof val === "number") {
+    const dt = new Date(val);
+    if (!isNaN(dt)) {
+      const y = dt.getFullYear();
+      const m = String(dt.getMonth() + 1).padStart(2, "0");
+      const d = String(dt.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+  }
+
+  // 3️⃣ String
+  if (typeof val === "string") {
+    val = val.trim();
+
+    // Sudah YYYY-MM-DD → langsung return
+    if (/^\d{4}-\d{2}-\d{2}$/.test(val)) return val;
+
+    // 🔥 ISO 8601 → parse ke Date, lalu ambil LOCAL date
+    // JANGAN pakai toISOString() karena itu UTC!
+    if (val.includes("T")) {
+      const dt = new Date(val);
+      if (!isNaN(dt)) {
+        const y = dt.getFullYear();
+        const m = String(dt.getMonth() + 1).padStart(2, "0");
+        const d = String(dt.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+      }
+    }
+
+    // 🔥 MM/DD/YYYY → konversi LANGSUNG tanpa Date object
     const p = val.split("/");
     if (p.length === 3) {
       const mm = p[0].padStart(2, "0");
@@ -730,10 +818,79 @@ function toInputDate(val) {
   console.warn("Tanggal tidak dikenali:", val);
   return "";
 }
+
+/* ===============================
+   FROM INPUT DATE → MM/DD/YYYY (untuk simpan ke DB)
+=============================== */
 function fromInputDate(val) {
   if (!val) return "";
-  const [y, m, d] = val.split("-");
+  const parts = val.split("-");
+  if (parts.length !== 3) return "";
+  const [y, m, d] = parts;
   return `${m}/${d}/${y}`;
+}
+
+/* ===============================
+   FORMAT TANGGAL → MM/DD/YYYY (untuk tabel)
+=============================== */
+function formatTanggalMMDDYYYY(val) {
+  if (!val || val === "-") return "-";
+
+  let d, m, y;
+
+  if (typeof val === "string") {
+    val = val.trim();
+
+    // ISO 8601
+    if (val.includes("T")) {
+      const dt = new Date(val);
+      if (!isNaN(dt)) {
+        m = String(dt.getMonth() + 1).padStart(2, "0");
+        d = String(dt.getDate()).padStart(2, "0");
+        y = dt.getFullYear();
+        return `${m}/${d}/${y}`;
+      }
+    }
+
+    // YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
+      const [yr, mo, dy] = val.split("-");
+      return `${mo}/${dy}/${yr}`;
+    }
+
+    // 🔥 AUTO-DETECT: DD/MM/YYYY atau MM/DD/YYYY
+    const p = val.split("/");
+    if (p.length === 3) {
+      const part1 = parseInt(p[0]);
+      const part2 = parseInt(p[1]);
+      const yr = p[2];
+
+      if (part1 > 12) {
+        // DD/MM/YYYY → convert ke MM/DD/YYYY
+        m = String(part2).padStart(2, "0");
+        d = String(part1).padStart(2, "0");
+      } else if (part2 > 12) {
+        // MM/DD/YYYY → tetap
+        m = String(part1).padStart(2, "0");
+        d = String(part2).padStart(2, "0");
+      } else {
+        // Keduanya ≤ 12 → asumsikan MM/DD/YYYY
+        m = String(part1).padStart(2, "0");
+        d = String(part2).padStart(2, "0");
+      }
+
+      return `${m}/${d}/${yr}`;
+    }
+  }
+
+  if (val instanceof Date && !isNaN(val)) {
+    m = String(val.getMonth() + 1).padStart(2, "0");
+    d = String(val.getDate()).padStart(2, "0");
+    y = val.getFullYear();
+    return `${m}/${d}/${y}`;
+  }
+
+  return val;
 }
 
 async function loadKegiatanFromSheet() {
