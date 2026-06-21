@@ -391,10 +391,17 @@ function downloadMitraPDF() {
 }
 
 /* ===============================
-   INIT DENGAN POLLING
+   INIT DENGAN POLLING (DIPERBAIKI)
 =============================== */
 function initTambahMitra() {
   console.log('🚀 initTambahMitra dipanggil');
+
+  // 🔥 PERBAIKAN: Cek dulu apakah elemen ada sebelum polling
+  const tb = document.getElementById("tambahMitraBody");
+  if (!tb) {
+    console.log('ℹ️ Halaman ini bukan halaman Tambah Mitra, polling dilewati.');
+    return; // ⛔ JANGAN lanjut ke polling!
+  }
 
   TM_CURRENT_PAGE = 1;
 
@@ -413,6 +420,15 @@ function initTambahMitra() {
       maxAttempts++;
       console.log(`🔄 Polling attempt ${maxAttempts}/40...`);
 
+      // 🔥 PERBAIKAN: Cek lagi apakah elemen masih ada
+      const tbCheck = document.getElementById("tambahMitraBody");
+      if (!tbCheck) {
+        console.log('ℹ️ Elemen hilang, polling dihentikan.');
+        clearInterval(renderInterval);
+        renderInterval = null;
+        return;
+      }
+
       const success = renderTM();
 
       if (success || maxAttempts >= 40) {
@@ -421,9 +437,8 @@ function initTambahMitra() {
 
         if (!success) {
           console.warn('⚠️ Timeout: Data KERJASAMA tidak muncul setelah 20 detik');
-          const tb = document.getElementById("tambahMitraBody");
-          if (tb) {
-            tb.innerHTML = `
+          if (tbCheck) {
+            tbCheck.innerHTML = `
               <tr>
                 <td colspan="5" class="p-4 text-center text-red-500">
                   ⚠️ Gagal memuat data mitra. Silakan refresh halaman.
@@ -443,7 +458,7 @@ function initTambahMitra() {
     window.loadKerjasamaFromSheet = async function (...args) {
       console.log('🔄 loadKerjasamaFromSheet dipanggil, akan re-render mitra');
       const result = await originalLoad.apply(this, args);
-      window._mitraFiltersPopulated = false; // Reset flag untuk populate ulang
+      window._mitraFiltersPopulated = false;
       TM_CURRENT_PAGE = 1;
       renderTM();
       return result;
