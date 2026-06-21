@@ -2,28 +2,68 @@
 <div class="bg-white p-4 rounded-xl shadow mb-6">
   <div class="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
     
-    <!-- SEARCH -->
+    <!-- SEARCH - 🔥 fungsi di-rename -->
     <input
+      type="text"
       id="mitra-search"
-      oninput="applyMitraFilter()"
+      oninput="applyMitraPageFilter()"
       placeholder="Cari mitra / kegiatan / PJ..."
       class="border rounded-lg px-4 py-2 w-full sm:w-72 text-sm focus:ring-2 focus:ring-cyan-500 focus:outline-none"
     />
 
-    <!-- FILTER -->
-    <select
-      id="mitra-filter-jenis"
-      onchange="applyMitraFilter()"
-      class="border rounded-lg px-4 py-2 text-sm w-full sm:w-60 focus:ring-2 focus:ring-cyan-500 focus:outline-none"
-    >
-      <option value="">Semua Jenis Mitra</option>
-      <option value="Lokal">Lokal</option>
-      <option value="Nasional">Nasional</option>
-      <option value="Internasional">Internasional</option>
-    </select>
+    <!-- FILTER DROPDOWN - 🔥 UNTUK TINGKAT KERJASAMA -->
+<select
+  id="mitra-filter-tingkat"
+  onchange="applyMitraPageFilter()"
+  class="border rounded-lg px-4 py-2 text-sm w-full sm:w-60 focus:ring-2 focus:ring-cyan-500 focus:outline-none"
+>
+  <option value="">Semua Tingkat Kerjasama</option>
+  <option value="Lokal">Lokal</option>
+  <option value="Nasional">Nasional</option>
+  <option value="Internasional">Internasional</option>
+</select>
+  </div>
+
+  <!-- DOWNLOAD BUTTONS & RESET FILTER -->
+  <div class="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between mt-3">
+    
+    <!-- Tombol Download - 🔥 fungsi di-rename -->
+    <div class="flex flex-wrap gap-2">
+      <button onclick="downloadMitraPageCSV()" class="btn-green px-4 py-2 rounded-lg text-white text-sm font-medium bg-green-600 hover:bg-green-700 transition">
+        📄 CSV
+      </button>
+      <button onclick="downloadMitraPageExcel()" class="btn-blue px-4 py-2 rounded-lg text-white text-sm font-medium bg-blue-600 hover:bg-blue-700 transition">
+        📊 Excel
+      </button>
+      <button onclick="downloadMitraPagePDF()" class="btn-red px-4 py-2 rounded-lg text-white text-sm font-medium bg-red-600 hover:bg-red-700 transition">
+        📑 PDF
+      </button>
+    </div>
+
+    <!-- Tombol Reset - 🔥 fungsi di-rename -->
+    <div class="flex justify-end">
+      <button onclick="resetMitraPageFilters()" 
+              class="group relative inline-flex items-center gap-2 px-4 py-2 text-gray-600 text-xs font-medium 
+                     hover:text-purple-600 hover:bg-purple-50 
+                     focus:outline-none focus:ring-2 focus:ring-purple-400 
+                     rounded-lg transition-all duration-200">
+        <span class="relative">
+          <svg class="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" 
+               fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          <span class="absolute -top-1 -right-1 flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+          </span>
+        </span>
+        <span>Reset Filter</span>
+      </button>
+    </div>
+
   </div>
 </div>
-
 
 <!-- DATA SECTION -->
 <div class="flex flex-col gap-4">
@@ -52,14 +92,16 @@
 
     <!-- PAGINATION -->
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 px-4 py-3 border-t text-sm">
-
-  <div id="mitra-info"
-       class="text-gray-600 text-center sm:text-left"></div>
-
-  <div class="w-full overflow-x-auto">
-    <div id="mitra-pagination"
-         class="flex items-center gap-2 min-w-max justify-start sm:justify-end">
+      <div id="mitra-info" class="text-gray-600 text-center sm:text-left"></div>
+      <div class="w-full overflow-x-auto">
+        <div id="mitra-pagination"
+             class="flex items-center gap-2 min-w-max justify-start sm:justify-end">
+        </div>
+      </div>
     </div>
   </div>
-
 </div>
+
+<!-- Library untuk PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
