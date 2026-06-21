@@ -1,54 +1,108 @@
 <div class="p-6">
-  <h1 class="text-xl font-semibold mb-4">➕ Tambah Mitra</h1>
-  <button
-    onclick="openTambahMitra()"
-    class="mb-4 bg-green-600 text-white px-4 py-2 rounded"
-  >
-    + Create Mitra
-  </button>
+  <h1 class="text-xl font-semibold mb-4">➕ Daftar Mitra</h1>
+
+  <!-- 🔍 SEARCH & EXPORT BUTTONS -->
+  <div class="flex flex-col sm:flex-row gap-2 mb-4">
+    <input
+      type="text"
+      id="search-mitra"
+      onkeyup="applyMitraFilter()"
+      placeholder="Cari mitra..."
+      class="input w-full sm:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition"
+    />
+
+    <div class="flex flex-wrap gap-2">
+      <button onclick="downloadMitraCSV()" class="btn-green px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">CSV</button>
+      <button onclick="downloadMitraExcel()" class="btn-blue px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Excel</button>
+      <button onclick="downloadMitraPDF()" class="btn-red px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">PDF</button>
+    </div>
+
+    <!-- Tombol Reset Filter -->
+    <div class="flex justify-end">
+      <button onclick="resetMitraFilters()" 
+              class="group relative inline-flex items-center gap-2 px-4 py-2 text-gray-600 text-xs font-medium 
+                     hover:text-purple-600 hover:bg-purple-50 
+                     focus:outline-none focus:ring-2 focus:ring-purple-400 
+                     rounded-lg transition-all duration-200">
+        <span class="relative">
+          <svg class="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" 
+               fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          <span class="absolute -top-1 -right-1 flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+          </span>
+        </span>
+        <span>Reset Filter</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 📊 TABEL MITRA -->
   <table class="min-w-full border bg-white text-sm">
     <thead class="bg-blue-600 text-white">
       <tr>
-        <th class="border px-3 py-2 w-20">ID</th>
-        <th class="border px-3 py-2">Nama</th>
-        <th class="border px-3 py-2 w-32 text-center">Aksi</th>
+        <th class="border px-3 py-2 w-16 text-center">No</th>
+        <th class="border px-3 py-2">Nama Mitra</th>
+        <th class="border px-3 py-2">Negara</th>
+        <th class="border px-3 py-2">Jenis Mitra</th>
+        <th class="border px-3 py-2">Tingkat</th>
       </tr>
+      
+      <!-- 🔍 FILTER PER KOLOM -->
+<tr class="bg-gray-50 border-t">
+  <th class="p-2"></th>
+  
+  <!-- Nama Mitra - TEXT SEARCH -->
+  <th class="p-2">
+    <input type="text" id="filter-nama-mitra" 
+           placeholder="Cari nama..." 
+           class="w-full text-xs px-2 py-1.5 border border-gray-300 rounded bg-white text-gray-700 focus:border-purple-500 focus:ring-1 focus:ring-purple-200 outline-none transition placeholder-gray-400" 
+           onkeyup="applyMitraFilter()">
+  </th>
+  
+  <!-- Negara - DROPDOWN -->
+  <th class="p-2">
+    <select id="filter-negara" 
+            class="w-full text-xs px-2 py-1.5 border border-gray-300 rounded bg-white text-gray-700 focus:border-purple-500 focus:ring-1 focus:ring-purple-200 outline-none transition" 
+            onchange="applyMitraFilter()">
+      <option value="">Semua Negara</option>
+    </select>
+  </th>
+  
+  <!-- Jenis Mitra - DROPDOWN -->
+  <th class="p-2">
+    <select id="filter-jenis-mitra" 
+            class="w-full text-xs px-2 py-1.5 border border-gray-300 rounded bg-white text-gray-700 focus:border-purple-500 focus:ring-1 focus:ring-purple-200 outline-none transition" 
+            onchange="applyMitraFilter()">
+      <option value="">Semua Jenis</option>
+    </select>
+  </th>
+  
+  <!-- Tingkat - DROPDOWN -->
+  <th class="p-2">
+    <select id="filter-tingkat" 
+            class="w-full text-xs px-2 py-1.5 border border-gray-300 rounded bg-white text-gray-700 focus:border-purple-500 focus:ring-1 focus:ring-purple-200 outline-none transition" 
+            onchange="applyMitraFilter()">
+      <option value="">Semua Tingkat</option>
+    </select>
+  </th>
+</tr>
     </thead>
-    <tbody id="tambahMitraBody"></tbody>
+    <tbody id="tambahMitraBody">
+      <tr>
+        <td colspan="5" class="p-4 text-center text-gray-500">Memuat data...</td>
+      </tr>
+    </tbody>
   </table>
-</div>
 
-<div
-  id="tambahMitraModal"
-  class="fixed inset-0 bg-black/40 hidden flex items-center justify-center"
->
-  <div class="bg-white rounded-lg w-full max-w-md p-6">
-    <h2 id="tambahMitraModalTitle" class="text-lg font-semibold mb-4">
-      Create Mitra
-    </h2>
-
-    <input type="hidden" id="tambahMitraIndex" />
-
-    <div class="mb-4">
-      <label class="block text-sm font-medium mb-1"> Nama Mitra </label>
-      <input
-        id="tambahMitraNama"
-        type="text"
-        class="w-full border rounded px-3 py-2"
-        placeholder="Masukkan nama mitra"
-      />
-    </div>
-
-    <div class="flex justify-end gap-2">
-      <button onclick="closeTambahMitra()" class="px-4 py-2 border rounded">
-        Batal
-      </button>
-      <button
-        onclick="saveTambahMitra()"
-        class="bg-blue-600 text-white px-4 py-2 rounded"
-      >
-        Simpan
-      </button>
+  <!-- 🔥 PAGINATION HALAMAN -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-5 text-xs sm:text-sm">
+    <div id="tm-pagination-info" class="text-gray-500"></div>
+    <div class="w-full sm:w-auto overflow-x-auto">
+      <div class="flex gap-2 min-w-max" id="tm-pagination"></div>
     </div>
   </div>
 </div>
