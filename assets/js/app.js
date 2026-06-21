@@ -190,9 +190,48 @@ function runPageScript(page) {
   if (page === "bentuk-kegiatan" && typeof initBentukKegiatan === "function") {
     initBentukKegiatan();
   }
-  if (page === "tambah-mitra" && typeof initTambahMitra === "function") {
-    initTambahMitra();
+  // ✅ GANTI DENGAN INI
+if (page === "tambah-mitra") {
+  console.log("📄 Loading halaman tambah-mitra...");
+  
+  // 🔥 PASTIKAN DATA KERJASAMA SUDAH DI-LOAD DULU
+  if (!window.KERJASAMA || window.KERJASAMA.length === 0) {
+    console.log("⏳ Data KERJASAMA belum ada, load dulu...");
+    
+    if (typeof loadKerjasamaFromSheet === "function") {
+      loadKerjasamaFromSheet().then(() => {
+        console.log("✅ Data KERJASAMA siap, init tambah-mitra...");
+        setTimeout(() => {
+          if (typeof initTambahMitra === "function") {
+            initTambahMitra();
+          }
+        }, 300);
+      }).catch(err => {
+        console.error("❌ Gagal load KERJASAMA:", err);
+        // Tetap coba init meskipun gagal
+        setTimeout(() => {
+          if (typeof initTambahMitra === "function") {
+            initTambahMitra();
+          }
+        }, 300);
+      });
+    } else {
+      console.warn("⚠️ Fungsi loadKerjasamaFromSheet tidak ditemukan");
+      setTimeout(() => {
+        if (typeof initTambahMitra === "function") {
+          initTambahMitra();
+        }
+      }, 300);
+    }
+  } else {
+    console.log("✅ Data KERJASAMA sudah ada, langsung init...");
+    setTimeout(() => {
+      if (typeof initTambahMitra === "function") {
+        initTambahMitra();
+      }
+    }, 100);
   }
+}
   if (page === "pendanaan" && typeof initPendanaan === "function") {
     initPendanaan();
   }
