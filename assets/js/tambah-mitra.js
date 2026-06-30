@@ -9,7 +9,6 @@ const TM_PER_PAGE = 50;
 
 let renderInterval = null;
 let maxAttempts = 0;
-
 // 🔥 SEARCH & FILTER STATE
 let TM_SEARCH_KEY = "";
 let TM_FILTER_NAMA = "";
