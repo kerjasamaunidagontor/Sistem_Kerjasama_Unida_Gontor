@@ -34,7 +34,6 @@ function buildMitraFromKegiatan() {
 
   console.log("MITRA built:", MITRA);
 }
-
 /* ===============================
    🔥 BUAT GRUP MITRA (DIPERBAIKI)
    - HAPUS populateJenisMitraDropdown()
