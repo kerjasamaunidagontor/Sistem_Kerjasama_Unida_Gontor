@@ -19,7 +19,6 @@ function buildMitraFromKegiatan() {
     MITRA = [];
     return;
   }
-
   MITRA = KEGIATAN.map((k) => ({
     mitra: k.no || "-",
     mitraTerkait: k.mitra || "-",
