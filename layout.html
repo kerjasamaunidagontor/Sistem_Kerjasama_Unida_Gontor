@@ -570,6 +570,27 @@
           menuLink.classList.add('bg-white/15', 'border-l-4', 'border-cyan-400');
         }
       });
+      // 🔥 GLOBAL LOADING - DEFINISI PASTI (paling akhir, tidak bisa ditimpa)
+      window.showLoading = function(message = "Memproses...") {
+        const overlay = document.getElementById("global-loading");
+        if (!overlay) {
+          console.warn("⚠️ global-loading tidak ditemukan!");
+          return;
+        }
+        const textEl = overlay.querySelector("#global-loading-text");
+        if (textEl) textEl.textContent = message;
+        overlay.classList.remove("hidden");
+        overlay.style.display = "flex";
+        console.log("✅ showLoading:", message);
+      };
+
+      window.hideLoading = function() {
+        const overlay = document.getElementById("global-loading");
+        if (!overlay) return;
+        overlay.classList.add("hidden");
+        overlay.style.display = "none";
+        console.log("✅ hideLoading");
+      };
     </script>
     
   </body>
