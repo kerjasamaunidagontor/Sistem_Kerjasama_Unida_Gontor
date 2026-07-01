@@ -1,5 +1,7 @@
 let IS_ADD_MODE = false; // 🔥 KHUSUS tambah kerjasama
 let IS_ADD_MITRA_MODE = false; // 🔥 MODE TAMBAH MITRA BARU
+
+
 /* ===============================
    HELPER DOM
 ================================ */
@@ -13,6 +15,7 @@ function getEditIndex() {
 window.KERJASAMA = [];
 
 async function loadKerjasamaFromSheet() {
+  // 🔥 TAMBAHKAN INI - Loading saat load data pertama kali
   showLoading("Memuat data kerjasama...");
 
   try {
@@ -36,6 +39,7 @@ async function loadKerjasamaFromSheet() {
     KERJASAMA = [];
     renderKerjasamaTable();
   } finally {
+    // 🔥 PASTIKAN LOADING DITUTUP
     hideLoading();
   }
 }
@@ -489,6 +493,9 @@ function goToPage(page) {
 let IS_EDIT_MODE = false;
 
 async function openKerjasamaForm() {
+  // 🔥 TAMBAHKAN INI - Tampilkan loading SEBELUM proses dimulai
+  showLoading("Menyiapkan form...");
+  
   // 🔥 1️⃣ RESET STATE
   IS_ADD_MODE = true;         // 🔥 MODE TAMBAH
   IS_EDIT_MODE = false;
@@ -511,18 +518,31 @@ async function openKerjasamaForm() {
   document.getElementById("btn-edit").classList.add("hidden");
   document.getElementById("btn-save").classList.remove("hidden");
 
-  // 🔥 4️⃣ LOAD SEMUA DATA AUTOCOMPLETE DULU
-  // (biar AUTOCOMPLETE_DATA terisi sebelum user mulai interaksi)
-  loadBenuaDropdown();              // isi AUTOCOMPLETE_DATA.benua
-  await loadCountryDropdown(true);  // isi AUTOCOMPLETE_DATA.negara
-  await initJenisMitraSelect();     // isi AUTOCOMPLETE_DATA.jenisMitra
-  await renderFakultasSelect();     // isi AUTOCOMPLETE_DATA.unit
-  
-  // 🔥 5️⃣ LOAD DATA KERJASAMA DARI SHEET
-  await loadKerjasamaFromSheet();
+  try {
+    // 🔥 4️⃣ LOAD SEMUA DATA AUTOCOMPLETE DULU
+    showLoading("Memuat data negara...");
+    loadBenuaDropdown();              // isi AUTOCOMPLETE_DATA.benua
+    await loadCountryDropdown(true);  // isi AUTOCOMPLETE_DATA.negara
+    
+    showLoading("Memuat jenis mitra...");
+    await initJenisMitraSelect();     // isi AUTOCOMPLETE_DATA.jenisMitra
+    
+    showLoading("Memuat data fakultas...");
+    await renderFakultasSelect();     // isi AUTOCOMPLETE_DATA.unit
+    
+    // 🔥 5️⃣ LOAD DATA KERJASAMA DARI SHEET
+    showLoading("Memuat data kerjasama...");
+    await loadKerjasamaFromSheet();
 
-  // 🔥 6️⃣ TAMPILKAN MODAL
-  document.getElementById("kerjasama-modal").classList.remove("hidden");
+    // 🔥 6️⃣ TAMPILKAN MODAL
+    document.getElementById("kerjasama-modal").classList.remove("hidden");
+  } catch (err) {
+    console.error("Error di openKerjasamaForm:", err);
+    alert("Gagal membuka form: " + err.message);
+  } finally {
+    // 🔥 PASTIKAN LOADING SELALU DITUTUP
+    hideLoading();
+  }
 }
 
 function closeKerjasamaForm() {
@@ -551,17 +571,9 @@ async function loadCountryDropdown(force = false, currentValue = "") {
     "Yemen","Zimbabwe"
   ];
 
-  try {
-    const res = await fetch("https://restcountries.com/v3.1/all?fields=name");
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    const data = await res.json();
-    const countries = data.map(c => c.name.common).sort((a,b) => a.localeCompare(b));
-    setAutocompleteData("negara", countries);
-    console.log("Autocomplete negara siap (API):", countries.length);
-  } catch (err) {
-    console.warn("Gagal load countries API, pakai fallback list", err);
-    setAutocompleteData("negara", COUNTRY_LIST.sort());
-  }
+  // 🔥 LANGSUNG PAKAI FALLBACK (tanpa fetch API)
+  setAutocompleteData("negara", COUNTRY_LIST.sort());
+  console.log("Autocomplete negara siap (fallback):", COUNTRY_LIST.length);
 
   if (input && currentValue) input.value = currentValue;
 }
@@ -1113,10 +1125,16 @@ async function openDetailKerjasama(sheetRow) {
     if (ei) ei.value = d.row;
 
     // 🔥 1️⃣ LOAD SEMUA DATA AUTOCOMPLETE DULU
-    // (biar AUTOCOMPLETE_DATA terisi sebelum value di-set)
+    showLoading("Memuat data negara...");
     await loadCountryDropdown(true);   // isi AUTOCOMPLETE_DATA.negara
+    
+    showLoading("Memuat data benua...");
     loadBenuaDropdown();               // isi AUTOCOMPLETE_DATA.benua
+    
+    showLoading("Memuat jenis mitra...");
     await initJenisMitraSelect();      // isi AUTOCOMPLETE_DATA.jenisMitra
+    
+    showLoading("Memuat data fakultas...");
     await renderFakultasSelect();      // isi AUTOCOMPLETE_DATA.unit
     
 
@@ -1152,6 +1170,9 @@ async function openDetailKerjasama(sheetRow) {
     }
     document.getElementById("btn-save").classList.add("hidden");
     document.getElementById("kerjasama-modal").classList.remove("hidden");
+  } catch (err) {
+    console.error("Error di openDetailKerjasama:", err);
+    alert("Gagal membuka detail: " + err.message);
   } finally {
     hideLoading(); // 🔥 DIJAMIN TUTUP
   }
@@ -1163,10 +1184,15 @@ async function switchToEdit() {
   document.getElementById("modal-title").textContent = "Edit Kerjasama";
   setFormReadonly(false);
 
+  // 🔥 SIMPAN NILAI SEBELUM RE-RENDER
+  const currentJenisDokumen = document.getElementById("jenisDokumen")?.value || "";
+
   // 🔥 Tidak perlu passing selectedValue, karena value sudah ada di input
   await initJenisMitraSelect();
   await renderFakultasSelect();
-  renderJenisDokumenSelect();
+  
+  // 🔥 PASS NILAI YANG DISIMPAN KE renderJenisDokumenSelect
+  renderJenisDokumenSelect(currentJenisDokumen);
 
   document.getElementById("btn-edit").classList.add("hidden");
   document.getElementById("btn-save").classList.remove("hidden");
