@@ -157,12 +157,12 @@ function downloadKegiatanCSV() {
   ];
 
   const rows = data.map((d) => [
-    d.fakultas,
+    d.pj,
     d.bidang,
     d.bentuk,
     d.tingkat,
     d.tanggal,
-    d.judul,
+    d.deskripsi,
     d.mitra,
     d.jenisMitra || "",   // 🔥 BARU
     d.status,
@@ -192,12 +192,12 @@ function downloadKegiatanExcel() {
   }
 
   const formatted = data.map((d) => ({
-    Unit: d.fakultas,
+    Unit: d.pj,
     Jenis: d.bidang,
     "Bentuk Kegiatan": d.bentuk,
     Tingkat: d.tingkat,
     Tanggal: d.tanggal,
-    Judul: d.judul,
+    Judul: d.deskripsi,
     Mitra: d.mitra,
     "Jenis Mitra": d.jenisMitra || "",   // 🔥 BARU
     Status: d.status,
@@ -225,12 +225,12 @@ async function downloadKegiatanPDF() {
   const doc = new jsPDF("l", "mm", "a4"); // landscape biar muat 11 kolom
 
   const tableData = data.map((d) => [
-    d.fakultas,
+    d.pj,
     d.bidang,
     d.bentuk,
     d.tingkat,
     d.tanggal,
-    d.judul,
+    d.deskripsi,
     d.mitra,
     d.jenisMitra || "",   // 🔥 BARU
     d.status,
