@@ -2,7 +2,7 @@
    GLOBAL API CONFIG
 =============================== */
 window.API_BASE =
-  "https://script.google.com/macros/s/AKfycbzHzKcm-fPEVOfKeU9iWoC3OcaDiR-G2hoMEh868zO1d0KpGeTUXI8sA1ljP658gjSWxQ/exec";
+  "https://script.google.com/macros/s/AKfycbznrVnZKXyiCihy6xh4x0bv1ihMqKROPaCHFzAF05uXawR5LWetMMoMgx_0azPpNYvrSA/exec";
 
 window.API = {
   kerjasama: `${window.API_BASE}?sheet=INPUT%20KERJASAMA`,
