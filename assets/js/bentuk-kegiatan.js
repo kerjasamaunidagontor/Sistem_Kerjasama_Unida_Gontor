@@ -1,6 +1,6 @@
 // URL web app Apps Script
 const API_BASE =
-  "https://script.google.com/macros/s/AKfycbznrVnZKXyiCihy6xh4x0bv1ihMqKROPaCHFzAF05uXawR5LWetMMoMgx_0azPpNYvrSA/exec";
+  "https://script.google.com/macros/s/AKfycbzp8FL_Wn8TQ9Pk19S5XFbvkLy0I2D5D3Y--fowysbCnn45NzRH7YhY9wdAV1BWsYhs/exec";
 
 let BENTUK_KEGIATAN = [];
 const SHEET_BENTUK = "BENTUK KEGIATAN";
