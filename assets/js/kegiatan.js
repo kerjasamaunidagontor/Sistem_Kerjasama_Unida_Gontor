@@ -352,7 +352,11 @@ async function openKegiatanForm() {
   
   // 🔥 Tambahkan await untuk fungsi async
   await populateBentukKegiatanSelect();
-  await populateJenisMitraSelect();  // ← TAMBAHKAN await
+  if (typeof loadJenisMitra === "function") {
+    await loadJenisMitra();
+  }
+
+  populateJenisMitraSelect();
   renderPendanaanDropdown();
   renderFakultasDropdown();
   renderProdiDropdown();
@@ -1170,26 +1174,20 @@ async function setMitraForEdit(nama) {
   DROPDOWN JENIS MITRA → AUTOCOMPLETE (SIMPLE VERSION)
 ===============================*/
 function populateJenisMitraSelect(selectedValue = "") {
-  // 🔥 Ambil data unik dari KEGIATAN yang sudah di-load
-  let data = [];
-  
-  if (Array.isArray(KEGIATAN) && KEGIATAN.length > 0) {
-    data = [...new Set(KEGIATAN.map(k => k.jenisMitra).filter(Boolean))].sort();
-  }
-  
-  // Fallback kalau belum ada data
-  if (data.length === 0) {
-    data = ["Perguruan Tinggi", "Industri", "Pemerintah", "LSM", "Lainnya"];
-  }
-  
-  console.log("📋 Jenis Mitra data:", data);
+  const data = (window.JENIS_MITRA || [])
+    .map(item => item.nama)
+    .filter(Boolean)
+    .sort();
+
+  console.log("📋 Jenis Mitra dari MASTER:", data);
+
   setKegiatanAutocompleteData("jenisMitra", data);
 
   const searchInput = document.getElementById("k-jenis-mitra-search");
   const hiddenInput = document.getElementById("k-jenis-mitra");
-  
-  if (searchInput && selectedValue) searchInput.value = selectedValue;
-  if (hiddenInput && selectedValue) hiddenInput.value = selectedValue;
+
+  if (searchInput) searchInput.value = selectedValue || "";
+  if (hiddenInput) hiddenInput.value = selectedValue || "";
 }
 
 /*==============================
