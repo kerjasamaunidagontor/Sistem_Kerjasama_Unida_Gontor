@@ -2,7 +2,7 @@
 // CONFIG
 // ===============================
 window.API_BASE =
-  "https://script.google.com/macros/s/AKfycbzp8FL_Wn8TQ9Pk19S5XFbvkLy0I2D5D3Y--fowysbCnn45NzRH7YhY9wdAV1BWsYhs/exec";
+  "https://script.google.com/macros/s/AKfycbxpVtZfx-t8lCiwGVCoskxj5-CpeDDOnz99_RkdA0tW1qnp-_hEap1wISEzLDCsulxa/exec";
 
 let JENIS_MITRA = [];
 let editRow = null;
