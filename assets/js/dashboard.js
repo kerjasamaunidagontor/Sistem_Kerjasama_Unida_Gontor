@@ -3,6 +3,7 @@
 ============================== */
 let bentukChart, mitraChart, topMitraChart, topQSChart;
 const kegiatan = JSON.parse(localStorage.getItem("kegiatan")) || [];
+let allKegiatanData = []; // 🔥 Variabel baru untuk menyimpan data kegiatan agar bisa difilter tanpa fetch ulang
 
 /* ==============================
    LOAD PAGE (SPA)
@@ -373,53 +374,89 @@ async function loadDashboardKegiatan() {
   try {
     const res = await fetch(API.kegiatan);
     const data = await res.json();
+    
+    // 🔥 Simpan data ke variabel global agar bisa difilter tanpa fetch ulang
+    allKegiatanData = data;
 
-    const bentukMap = {};
-    const mitraMap = {};
-    const topMitraMap = {};
-    const topQSMap = {}; // ✅ map baru
-
+    // 🔥 AMBIL LIST TAHUN UNIK UNTUK FILTER
+    const tahunSet = new Set();
     data.forEach((k) => {
-      const bentuk = (k.bentuk || "-").trim();
-      const jenisMitra = (k.jenisMitra || "-").trim();
-      const mitra = (k.no || "-").toString().trim();
-
-      bentukMap[bentuk] = (bentukMap[bentuk] || 0) + 1;
-      mitraMap[jenisMitra] = (mitraMap[jenisMitra] || 0) + 1;
-      topMitraMap[mitra] = (topMitraMap[mitra] || 0) + 1;
-
-      // ✅ FILTER KHUSUS QS200 BY SUBJECT
-      if (
-        jenisMitra ===
-        "Perguruan Tinggi yang masuk dalam daftar QS200 berdasarkan bidang ilmu (QS200 by subject)"
-      ) {
-        topQSMap[mitra] = (topQSMap[mitra] || 0) + 1;
+      let tahun = "";
+      if (k.tanggal) {
+        tahun = k.tanggal.toString().slice(-4);
+      } else if (k.tahun) {
+        tahun = k.tahun.toString().slice(-4);
+      }
+      
+      if (tahun && tahun.length === 4 && !isNaN(tahun)) {
+        tahunSet.add(tahun);
       }
     });
+    
+    const tahunList = Array.from(tahunSet).sort((a, b) => b - a);
 
-    const topBentuk = Object.entries(bentukMap)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
+    // 🔥 ISI DROPDOWN FILTER (hanya jika belum terisi)
+    const selectYear = document.getElementById("filter-tahun-top-kegiatan");
+    if (selectYear && selectYear.options.length <= 1) {
+      tahunList.forEach((t) => {
+        selectYear.innerHTML += `<option value="${t}">${t}</option>`;
+      });
+    }
 
-    const topJenisMitra = Object.entries(mitraMap)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
-
-    const topMitra = Object.entries(topMitraMap)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
-
-    const topQS = Object.entries(topQSMap)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
-
-    renderBentukChart(topBentuk);
-    renderMitraChart(topJenisMitra);
-    renderTopMitraChart(topMitra);
-    renderTopQSChart(topQS); // ✅ render baru
+    // 🔥 Render chart pertama kali dengan filter default 'ALL'
+    renderTopKegiatanCharts("ALL");
+    
   } catch (err) {
     console.error("Dashboard kegiatan error:", err);
   }
+}
+
+// 🔥 FUNGSI BARU: Merender chart berdasarkan tahun yang dipilih
+function renderTopKegiatanCharts(selectedYear = "ALL") {
+  const data = allKegiatanData;
+  if (!data || data.length === 0) return;
+
+  // 🔥 FILTER DATA BERDASARKAN TAHUN
+  const filteredData = selectedYear === "ALL" 
+    ? data 
+    : data.filter((k) => {
+        const tahunKegiatan = k.tahun ? k.tahun.toString().slice(-4) : (k.tanggal ? k.tanggal.toString().slice(-4) : "");
+        return tahunKegiatan === selectedYear;
+      });
+
+  const bentukMap = {};
+  const mitraMap = {};
+  const topMitraMap = {};
+  const topQSMap = {};
+
+  filteredData.forEach((k) => {
+    const bentuk = (k.bentuk || "-").trim();
+    const jenisMitra = (k.jenisMitra || "-").trim();
+    
+    // 🔥 SESUAI PERMINTAAN: Ambil data mitra strictly dari k.no
+    const mitra = (k.no || "-").toString().trim();
+
+    bentukMap[bentuk] = (bentukMap[bentuk] || 0) + 1;
+    mitraMap[jenisMitra] = (mitraMap[jenisMitra] || 0) + 1;
+    topMitraMap[mitra] = (topMitraMap[mitra] || 0) + 1;
+
+    // ✅ FILTER KHUSUS QS200 BY SUBJECT
+    if (jenisMitra === "Perguruan Tinggi yang masuk dalam daftar QS200 berdasarkan bidang ilmu (QS200 by subject)") {
+      topQSMap[mitra] = (topQSMap[mitra] || 0) + 1;
+    }
+  });
+
+  // 🔥 Urutkan dan ambil Top 5
+  const topBentuk = Object.entries(bentukMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const topJenisMitra = Object.entries(mitraMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const topMitra = Object.entries(topMitraMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const topQS = Object.entries(topQSMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+  // 🔥 Render ulang semua chart
+  renderBentukChart(topBentuk);
+  renderMitraChart(topJenisMitra);
+  renderTopMitraChart(topMitra);
+  renderTopQSChart(topQS);
 }
 function getHorizontalBarOptions() {
   return {
