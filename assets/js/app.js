@@ -13,14 +13,19 @@ function loadPage(page) {
       return res.text();
     })
     .then((html) => {
-      document.getElementById("main-content").innerHTML = html;
+      // 🔥 UBAH "main-content" MENJADI "app-content"
+      document.getElementById("app-content").innerHTML = html;
 
       // 🔥 jalankan logic per halaman
       runPageScript(page);
+
+      // 🔥 TAMBAHKAN BARIS INI: Sembunyikan elemen admin setelah halaman dimuat
+      applyRoleUI();
     })
     .catch((err) => {
       console.error("LoadPage error:", err);
-      document.getElementById("main-content").innerHTML = `
+      // 🔥 UBAH JUGA DI SINI
+      document.getElementById("app-content").innerHTML = `
         <div class="p-6 text-red-500">
           Gagal memuat halaman <b>${page}</b>
         </div>
@@ -75,7 +80,7 @@ function runPageScript(page) {
       "pendanaan",
       "prodi-satker",
       "fakultas-satker",
-      "tambah-mitra",
+      
       "nilai-iku",
     ].includes(page)
   ) {
@@ -189,6 +194,9 @@ function runPageScript(page) {
   }
   if (page === "bentuk-kegiatan" && typeof initBentukKegiatan === "function") {
     initBentukKegiatan();
+  }
+   if (page === "template" && typeof initTemplatePage === "function") {
+    initTemplatePage();
   }
   // ✅ GANTI DENGAN INI
 if (page === "tambah-mitra") {
