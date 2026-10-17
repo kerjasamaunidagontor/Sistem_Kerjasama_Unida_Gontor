@@ -228,8 +228,8 @@
     <span class="font-medium">Kerjasama</span>
   </a>
 
-  <!-- INPUT KEGIATAN Dropdown -->
-  <div class="relative">
+    <!-- INPUT KEGIATAN Dropdown -->
+  <div class="relative" id="kegiatanMenuWrapper">
     <button
       onclick="toggleSidebarDropdown('kegiatanDropdown')"
       class="menu-link w-full text-left flex justify-between items-center px-4 py-3 rounded-xl hover:bg-white/10 hover:translate-x-1 transition-all duration-200 group"
@@ -243,15 +243,18 @@
         <span class="font-medium">Input Kegiatan</span>
       </div>
       
-      <!-- Wrapper untuk badge dan arrow agar sejajar -->
+      <!-- Wrapper untuk badge dan arrow -->
       <div class="flex items-center gap-2">
-        <!-- Badge Notifikasi (Default hidden, akan muncul via JS jika kondisi terpenuhi) -->
-        <span id="kegiatan-status-badge" class="hidden bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center shadow-sm animate-pulse">
+        <!--  Badge Total Notifikasi (muncul jika ada status yang perlu perhatian) -->
+        <span id="kegiatan-status-badge" class="hidden bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[20px] text-center shadow-sm">
           0
         </span>
         <span class="transform transition-transform duration-200 text-cyan-300">▾</span>
       </div>
     </button>
+
+    <!-- 🔥 POPUP NOTIFIKASI STATUS (Muncul saat hover) -->
+
 
     <div id="kegiatanDropdown" class="hidden ml-4 mt-1 space-y-1 pl-2 border-l-2 border-cyan-400/30">
       <a onclick="loadPage('kegiatan')" class="menu-link flex items-center gap-2 px-4 py-2.5 rounded-lg hover:bg-white/10 transition-all duration-200 text-cyan-100/90">
@@ -273,7 +276,7 @@
         Rekapitulasi
       </a>
     </div>
-</div>
+  </div>
 
 <!-- 🔥 BARU: Menu Template (Berdiri Sendiri di atas Lainnya) -->
   <a onclick="loadPage('template')" class="menu-link flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 hover:translate-x-1 transition-all duration-200 group">
@@ -645,4 +648,14 @@
       </div>
     </div>
   </body>
+  <!-- 🔥 POPUP NOTIFIKASI STATUS - DILETAKKAN DI LUAR SIDEBAR -->
+  <div id="kegiatanStatusPopup" class="hidden fixed w-72 bg-white rounded-xl shadow-2xl border border-gray-200 z-[9999] overflow-hidden animate-fade-in" style="top: 130px; left: 260px;">
+    <div class="bg-gradient-to-r from-slate-800 to-slate-700 px-4 py-3">
+      <h4 class="text-white font-semibold text-sm">📊 Status Kegiatan</h4>
+      <p class="text-slate-300 text-xs mt-0.5">Perlu perhatian</p>
+    </div>
+    <div class="p-2 space-y-1 max-h-64 overflow-y-auto" id="kegiatanStatusList">
+      <!-- Diisi oleh JavaScript -->
+    </div>
+  </div>
 </html>
