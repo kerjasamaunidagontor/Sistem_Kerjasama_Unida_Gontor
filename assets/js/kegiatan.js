@@ -1486,28 +1486,187 @@ document.addEventListener("click", (e) => {
   }
 });
 /* ===============================
-   NOTIFIKASI STATUS KOSONG (ADMIN ONLY)
+   NOTIFIKASI STATUS KEGIATAN (POPUP)
 =============================== */
 function updateKegiatanStatusBadge() {
-  // 1. Hanya tampilkan notifikasi untuk user dengan role "admin"
+  const badge = document.getElementById("kegiatan-status-badge");
+  const popup = document.getElementById("kegiatanStatusPopup");
+  const statusList = document.getElementById("kegiatanStatusList");
+
+  // Jika bukan admin, sembunyikan semua
   if (!isAdmin()) {
-    const badge = document.getElementById("kegiatan-status-badge");
     if (badge) badge.classList.add("hidden");
+    if (popup) popup.classList.add("hidden");
     return;
   }
 
-  // 2. Hitung jumlah data yang status-nya kosong, null, undefined, atau string kosong
-  const emptyStatusCount = KEGIATAN.filter(k => !k.status || String(k.status).trim() === "").length;
-  const badge = document.getElementById("kegiatan-status-badge");
-  
-  // 3. Update tampilan badge
+  // Hitung jumlah per status
+  const statusCounts = {
+    "Proses": 0,
+    "Direvisi": 0,
+    "Belum Sesuai": 0,
+    "Belum Laporan": 0
+  };
+
+  KEGIATAN.forEach(k => {
+    const status = (k.status || "").trim();
+    if (statusCounts.hasOwnProperty(status)) {
+      statusCounts[status]++;
+    }
+  });
+
+  // Total semua status
+  const total = Object.values(statusCounts).reduce((sum, count) => sum + count, 0);
+
+  // Update badge
   if (badge) {
-    if (emptyStatusCount > 0) {
-      // Tampilkan jumlah, jika lebih dari 99 tampilkan "99+" agar tidak merusak layout
-      badge.textContent = emptyStatusCount > 99 ? "99+" : emptyStatusCount;
+    if (total > 0) {
+      badge.textContent = total > 99 ? "99+" : total;
       badge.classList.remove("hidden");
     } else {
       badge.classList.add("hidden");
     }
   }
+
+  // Update popup content
+  if (statusList && popup) {
+    if (total === 0) {
+      statusList.innerHTML = `
+        <div class="px-3 py-4 text-center">
+          <div class="text-3xl mb-1">✅</div>
+          <p class="text-xs text-slate-500">Semua kegiatan sudah sesuai</p>
+        </div>
+      `;
+    } else {
+      const statusConfig = {
+        "Proses": { bg: "bg-blue-50", border: "border-blue-200", text: "text-blue-700", icon: "⏳", label: "Proses" },
+        "Direvisi": { bg: "bg-yellow-50", border: "border-yellow-200", text: "text-yellow-700", icon: "📝", label: "Direvisi" },
+        "Belum Sesuai": { bg: "bg-red-50", border: "border-red-200", text: "text-red-700", icon: "❌", label: "Belum Sesuai" },
+        "Belum Laporan": { bg: "bg-gray-50", border: "border-gray-200", text: "text-gray-700", icon: "📄", label: "Belum Laporan" }
+      };
+
+      let html = "";
+      for (const [status, count] of Object.entries(statusCounts)) {
+        if (count > 0) {
+          const cfg = statusConfig[status];
+          html += `
+            <div onclick="filterByStatus('${status}')" 
+                 class="flex items-center justify-between px-3 py-2 rounded-lg ${cfg.bg} border ${cfg.border} mb-1 cursor-pointer hover:shadow-md transition-all hover:scale-[1.02]">
+              <div class="flex items-center gap-2">
+                <span class="text-sm">${cfg.icon}</span>
+                <span class="text-xs font-medium ${cfg.text}">${cfg.label}</span>
+              </div>
+              <span class="text-xs font-bold ${cfg.text} bg-white px-2 py-0.5 rounded-full border ${cfg.border}">
+                ${count}
+              </span>
+            </div>
+          `;
+        }
+      }
+      statusList.innerHTML = html;
+    }
+  }
+
+  // 🔥 PASTIKAN SETUP HANYA DIPANGGIL 1 KALI
+  setupStatusPopupHover();
+}
+
+/* ===============================
+   FILTER BERDASARKAN STATUS (KLIK POPUP)
+=============================== */
+function filterByStatus(status) {
+  const popup = document.getElementById("kegiatanStatusPopup");
+  if (popup) popup.classList.add("hidden");
+  
+  loadPage('kegiatan');
+  
+  setTimeout(() => {
+    const filterDropdown = document.getElementById("filter-keterangan");
+    if (filterDropdown) {
+      filterDropdown.value = status;
+      filterDropdown.dispatchEvent(new Event('change'));
+    }
+    
+    const tableBody = document.getElementById("kegiatan-body");
+    if (tableBody) {
+      tableBody.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 300);
+}
+
+/* ===============================
+   HOVER POPUP HANDLER (ANTI FLICKER & ANTI MULTIPLE BINDING)
+=============================== */
+let popupTimeout;
+let isHoveringWrapper = false;
+let isHoveringPopup = false;
+let isPopupHoverSetup = false; // 🔥 FLAG PENTING: Mencegah event listener menumpuk
+
+function setupStatusPopupHover() {
+  // 🔥 Jika sudah disetup, JANGAN lakukan lagi (ini yang memperbaiki bug flicker)
+  if (isPopupHoverSetup) return;
+  
+  const wrapper = document.getElementById("kegiatanMenuWrapper");
+  const popup = document.getElementById("kegiatanStatusPopup");
+
+  if (!wrapper || !popup) return;
+
+  function checkHoverState() {
+    if (isHoveringWrapper || isHoveringPopup) {
+      clearTimeout(popupTimeout);
+      popup.classList.remove("hidden");
+      
+      // Posisi dinamis menempel pada menu (overlap -2px agar tidak ada celah)
+      const rect = wrapper.getBoundingClientRect();
+      popup.style.top = (rect.top + window.scrollY) + 'px';
+      popup.style.left = (rect.right + window.scrollX - 2) + 'px'; 
+    } else {
+      popupTimeout = setTimeout(() => {
+        popup.classList.add("hidden");
+      }, 300); // Delay 300ms agar transisi mouse mulus
+    }
+  }
+
+  // 1. Event pada Menu Wrapper (Sidebar)
+  wrapper.addEventListener("mouseenter", () => {
+    isHoveringWrapper = true;
+    checkHoverState();
+  });
+  
+  wrapper.addEventListener("mouseleave", () => {
+    isHoveringWrapper = false;
+    checkHoverState();
+  });
+
+  // 2. Event pada Popup itu sendiri
+  popup.addEventListener("mouseenter", () => {
+    isHoveringPopup = true;
+    checkHoverState();
+  });
+  
+  popup.addEventListener("mouseleave", () => {
+    isHoveringPopup = false;
+    checkHoverState();
+  });
+
+  // 3. Tutup popup jika user klik di area lain
+  document.addEventListener("click", (e) => {
+    if (!wrapper.contains(e.target) && !popup.contains(e.target)) {
+      isHoveringWrapper = false;
+      isHoveringPopup = false;
+      popup.classList.add("hidden");
+    }
+  });
+
+  // 4. Update posisi saat scroll
+  window.addEventListener("scroll", () => {
+    if (!popup.classList.contains("hidden")) {
+      const rect = wrapper.getBoundingClientRect();
+      popup.style.top = (rect.top + window.scrollY) + 'px';
+      popup.style.left = (rect.right + window.scrollX - 2) + 'px';
+    }
+  }, true);
+
+  // 🔥 Tandai bahwa setup sudah selesai agar tidak dipanggil lagi
+  isPopupHoverSetup = true;
 }
