@@ -83,6 +83,37 @@
   <div class="relative w-full h-[300px] sm:h-[380px]">
     <canvas id="chartSebaranDokumen" class="!w-full !h-full"></canvas>
   </div>
+  <!-- 🔥 BARU: CONTAINER TABEL DETAIL SEBARAN (Awalnya Tersembunyi) -->
+    <div id="detailSebaranContainer" class="hidden mt-6 border-t border-gray-200 pt-4 animate-fade-in">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-semibold text-sm sm:text-base text-blue-700 flex items-center gap-2" id="detailSebaranTitle">
+          📋 Detail Sebaran
+        </h3>
+        <button onclick="hideDetailSebaran()" class="text-gray-500 hover:text-red-500 text-sm font-medium px-3 py-1 rounded hover:bg-red-50 transition flex items-center gap-1">
+          <span>✕</span> Tutup
+        </button>
+      </div>
+      
+      <div class="overflow-x-auto rounded-lg border">
+        <table class="min-w-full w-full text-xs sm:text-sm">
+          <thead class="bg-blue-50 text-blue-800">
+            <tr>
+              <th class="border-b border-r px-3 py-2 text-left w-12">No</th>
+              <th class="border-b border-r px-3 py-2 text-left">Mitra</th>
+              <th class="border-b border-r px-3 py-2 text-left">Jenis Dokumen</th>
+              <th class="border-b border-r px-3 py-2 text-left">Tingkat</th>
+              <th class="border-b px-3 py-2 text-center w-24">Status</th>
+            </tr>
+          </thead>
+          <tbody id="detailSebaranBody" class="bg-white divide-y divide-gray-100">
+            <!-- Data akan di-inject di sini oleh JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- 🔥 AKHIR CONTAINER TABEL DETAIL -->
+
+  
 </div>
 
   <!-- TABEL -->
