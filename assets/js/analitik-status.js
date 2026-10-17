@@ -220,36 +220,25 @@ function renderChartStatus() {
     },
     options: {
       responsive: true,
-      maintainAspectRatio: false, // 🔥 WAJIB supaya full container
+      maintainAspectRatio: false,
       cutout: "65%",
-      layout: {
-        padding: 10,
-      },
+      layout: { padding: 10 },
       plugins: {
         legend: {
           position: "bottom",
-          labels: {
-            boxWidth: 12,
-          },
+          labels: { boxWidth: 12 },
         },
-
         tooltip: {
           callbacks: {
             label(ctx) {
               const jenis = ctx.label;
               const d = stat[jenis];
-
               return [`Aktif : ${d.aktif}`, `Tidak Aktif : ${d.tidakAktif}`];
             },
           },
         },
       },
-
-      onClick(_, elements) {
-        if (!elements.length) return;
-        const index = elements[0].index;
-        renderDetailStatus(labels[index], stat[labels[index]]);
-      },
+      // ⚠️ JANGAN ADA onClick DI SINI
     },
   });
 }
@@ -383,10 +372,18 @@ function hitungSebaranDokumen(data = []) {
   return { jenisList, tingkatList, data: result };
 }
 
+/* ===============================
+   BAR SEBARAN DOKUMEN
+================================ */
 function renderChartSebaran() {
+  console.log("🔥 RENDER CHART SEBARAN DIPANGGIL");
   console.log("FILTER:", currentStatusFilter);
+  
   const canvas = document.getElementById("chartSebaranDokumen");
-  if (!canvas) return;
+  if (!canvas) {
+    console.error("❌ Canvas chartSebaranDokumen tidak ditemukan!");
+    return;
+  }
 
   const ctx = canvas.getContext("2d");
   if (chartSebaran) chartSebaran.destroy();
@@ -395,6 +392,8 @@ function renderChartSebaran() {
   const hasil = hitungSebaranDokumen(filteredData);
 
   const { jenisList, tingkatList, data } = hasil;
+  
+  console.log("📊 Data untuk chart:", { jenisList, tingkatList });
 
   const colors = ["#2563eb", "#22c55e", "#f59e0b", "#ef4444"];
 
@@ -414,60 +413,63 @@ function renderChartSebaran() {
       responsive: true,
       maintainAspectRatio: false,
       indexAxis: "y",
-      layout: {
-        padding: 10,
-      },
+      layout: { padding: 10 },
       scales: {
-        x: {
-          stacked: true,
-          beginAtZero: true,
-          ticks: {
-            stepSize: 50,
-          },
-        },
-        y: {
-          stacked: true,
-        },
+        x: { stacked: true, beginAtZero: true, ticks: { stepSize: 50 } },
+        y: { stacked: true },
       },
       plugins: {
-        legend: {
-          position: "bottom",
-          labels: {
-            boxWidth: 12,
-          },
-        },
+        legend: { position: "bottom", labels: { boxWidth: 12 } },
         tooltip: {
           callbacks: {
             label: function(context) {
               let label = context.dataset.label || '';
-              if (label) {
-                label += ': ';
-              }
-              if (context.parsed.x !== null) {
-                label += context.parsed.x + ' dokumen';
-              }
+              if (label) label += ': ';
+              if (context.parsed.x !== null) label += context.parsed.x + ' dokumen';
               return label;
             }
           }
         },
-        // 🔥 PLUGIN UNTUK MENAMPILKAN ANGKA DI BAR
         datalabels: {
-          anchor: 'center',
-          align: 'center',
-          color: '#ffffff',
-          font: {
-            weight: 'bold',
-            size: 12,
-          },
-          formatter: (value) => {
-            return value > 0 ? value : '';
-          },
+          anchor: 'center', align: 'center', color: '#ffffff',
+          font: { weight: 'bold', size: 12 },
+          formatter: (value) => value > 0 ? value : '',
         },
       },
+      
+      //  EVENT ON CLICK DENGAN DEBUGGING
+      onClick: (event, elements) => {
+        console.log("🖱️ CHART DIKLIK!");
+        console.log("Elements:", elements);
+        
+        if (elements.length > 0) {
+          const firstPoint = elements[0];
+          const datasetIndex = firstPoint.datasetIndex;
+          const index = firstPoint.index;
+
+          const clickedTingkat = tingkatList[datasetIndex];
+          const clickedJenis = jenisList[index];
+
+          console.log("✅ Klik pada:", clickedJenis, clickedTingkat);
+          
+          // Panggil fungsi showDetailSebaran
+          if (typeof showDetailSebaran === 'function') {
+            showDetailSebaran(clickedJenis, clickedTingkat);
+          } else {
+            console.error("❌ Fungsi showDetailSebaran tidak ditemukan!");
+          }
+        } else {
+          console.log("🔽 Klik di area kosong, sembunyikan tabel");
+          if (typeof hideDetailSebaran === 'function') {
+            hideDetailSebaran();
+          }
+        }
+      }
     },
-    // 🔥 REGISTER PLUGIN DATALABELS
     plugins: [ChartDataLabels],
   });
+  
+  console.log("✅ Chart Sebaran berhasil dibuat");
 }
 /* ===============================
    RENDER TABEL STATUS (RINGAN)
@@ -626,6 +628,105 @@ function initDownloadSebaran() {
   if (!btn) return;
   
   btn.addEventListener("click", downloadChartSebaran);
+}
+/* ===============================
+   TABEL DETAIL SEBARAN (INTERAKTIF)
+================================ */
+/* ===============================
+   TABEL DETAIL SEBARAN (INTERAKTIF)
+================================ */
+function showDetailSebaran(jenis, tingkat) {
+  console.log(" showDetailSebaran dipanggil untuk:", jenis, tingkat);
+  
+  const container = document.getElementById("detailSebaranContainer");
+  const tbody = document.getElementById("detailSebaranBody");
+  const title = document.getElementById("detailSebaranTitle");
+
+  if (!container) {
+    console.error("❌ Element detailSebaranContainer tidak ditemukan!");
+    return;
+  }
+  
+  if (!tbody) {
+    console.error("❌ Element detailSebaranBody tidak ditemukan!");
+    return;
+  }
+
+  console.log("✅ Container ditemukan, memfilter data...");
+
+  // Update judul tabel
+  const statusText = currentStatusFilter === "all" ? "Semua Status" : currentStatusFilter;
+  title.innerHTML = `📋 Detail: <span class="font-bold text-gray-800">${jenis}</span> - <span class="font-bold text-gray-800">${tingkat}</span> <span class="text-gray-500 text-xs font-normal">(${statusText})</span>`;
+
+  // Filter data
+  const filteredData = (window.KERJASAMA || []).filter(d => {
+    const docJenis = (d.jenisDokumen || "").toUpperCase();
+    const docTingkat = d.tingkat;
+    const docStatus = getStatusDokumen(d);
+
+    const matchJenis = docJenis.includes(jenis.toUpperCase());
+    const matchTingkat = docTingkat === tingkat;
+    const matchStatus = currentStatusFilter === "all" || docStatus === currentStatusFilter;
+
+    return matchJenis && matchTingkat && matchStatus;
+  });
+
+  console.log(`📊 Ditemukan ${filteredData.length} data`);
+
+  // Render isi tabel
+  tbody.innerHTML = "";
+  if (filteredData.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5" class="text-center py-6 text-gray-500 italic">
+          Tidak ada data kerjasama yang sesuai dengan filter ini.
+        </td>
+      </tr>`;
+  } else {
+    filteredData.forEach((d, i) => {
+      const status = getStatusDokumen(d);
+      const badgeClass = status === "Aktif" 
+        ? "bg-green-100 text-green-700 border border-green-200" 
+        : "bg-red-100 text-red-700 border border-red-200";
+
+      tbody.innerHTML += `
+        <tr class="hover:bg-blue-50/50 transition-colors">
+          <td class="border-r px-3 py-2.5 text-gray-500">${i + 1}</td>
+          <td class="border-r px-3 py-2.5 font-medium text-gray-800">${d.mitra || "Tanpa Nama"}</td>
+          <td class="border-r px-3 py-2.5 text-gray-600">${d.jenisDokumen || "-"}</td>
+          <td class="border-r px-3 py-2.5 text-gray-600">${d.tingkat || "-"}</td>
+          <td class="px-3 py-2.5 text-center">
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${badgeClass}">
+              ${status}
+            </span>
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  // Tampilkan container
+  console.log("✅ Menampilkan tabel detail");
+  container.classList.remove("hidden");
+  
+  setTimeout(() => {
+    container.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, 100);
+}
+
+function hideDetailSebaran() {
+  console.log("🔽 hideDetailSebaran dipanggil");
+  const container = document.getElementById("detailSebaranContainer");
+  if (container) {
+    container.classList.add("hidden");
+  }
+}
+
+function hideDetailSebaran() {
+  const container = document.getElementById("detailSebaranContainer");
+  if (container) {
+    container.classList.add("hidden");
+  }
 }
 /* ===============================
    ENTRY POINT ANALITIK STATUS
